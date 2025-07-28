@@ -728,6 +728,8 @@
 
     <script>
         // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
+        const GEMINI_API_KEY = "AIzaSyCldW53rqjHejtKvuGyxyQM8R9kuEtgZN0";
+        
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -1432,7 +1434,7 @@
         async function identifyFoodFromImage(base64ImageData) {
             const prompt = "What food is in this image? Describe it in a short phrase. If it's not food, say 'not food'.";
             const payload = { contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64ImageData } }] }] };
-            const apiKey = ""; // Leave empty
+            const apiKey = GEMINI_API_KEY;
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             try {
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -1451,7 +1453,7 @@
         async function getNutritionalInfo(prompt) {
             const chatHistory = [{ role: "user", parts: [{ text: `Provide the estimated nutritional information for "${prompt}" in a valid JSON format. The JSON object should only contain these keys: "food" (string), "calories" (number), "protein" (number, in grams), "fat" (number, in grams), and "carbs" (number, in grams).` }] }];
             const payload = { contents: chatHistory, generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "food": { "type": "STRING" }, "calories": { "type": "NUMBER" }, "protein": { "type": "NUMBER" }, "fat": { "type": "NUMBER" }, "carbs": { "type": "NUMBER" } }, required: ["food", "calories", "protein", "fat", "carbs"] } } };
-            const apiKey = ""; // Leave empty
+            const apiKey = GEMINI_API_KEY;
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             try {
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -2226,7 +2228,7 @@
                     }
                 }
             };
-            const apiKey = ""; // Leave empty
+            const apiKey = GEMINI_API_KEY;
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             try {
                 const response = await fetch(apiUrl, {
