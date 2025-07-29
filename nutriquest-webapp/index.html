@@ -1007,20 +1007,44 @@
             barcodeReader = new ZXing.BrowserMultiFormatReader();
         }
 
-        // --- Initial Load ---
+        // --- Initial Load Logic ---
+
+        // 1. create a Promise to inform the user that the splash screen has finished
+        const splashScreenFinished = new Promise(resolve => {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    splashScreen.style.opacity = '0';
+                }, 2200);
+
+                setTimeout(() => {
+                    splashScreen.classList.add('hidden');
+                    mainAppContent.style.opacity = '1';
+                    resolve(); // Notification of animation completion.
+                }, 2700);
+            });
+        });
+
+        // 2. wait for the end of the splash screen before checking the authentication status
+        auth.onAuthStateChanged(async user => {
+            await splashScreenFinished; // Wait here until the animation is finished.
+
+            if (user) {
+                await loadUserGoals();
+                await loadFavourites();
+                showAppContainer(true);
+                userEmailDropdown.textContent = user.email;
+                showLoader('loadingData');
+                await loadMealsFromFirestore();
+                hideLoader();
+            } else {
+                showAuthContainer(); // Show login screen after animation.
+            }
+        });
+
+        // 3. other initial settings
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                splashScreen.style.opacity = '0';
-            }, 2200); 
-
-            setTimeout(() => {
-                splashScreen.classList.add('hidden');
-                mainAppContent.style.opacity = '1';
-            }, 2700);
-
             setDefaultMealType();
-            
-            // Language setup
+
             const savedLang = localStorage.getItem('language') || 'en';
             setLanguage(savedLang);
 
@@ -1032,112 +1056,6 @@
 
             captureBtn.addEventListener('click', captureImage);
             closeCameraBtn.addEventListener('click', closeCamera);
-        });
-
-        // --- Sticky Header Shadow on Scroll ---
-        window.addEventListener('scroll', () => {
-            if (appHeader) { 
-                if (window.scrollY > 10) { 
-                    appHeader.classList.add('shadow-md');
-                } else {
-                    appHeader.classList.remove('shadow-md');
-                }
-            }
-        });
-        
-        function setDefaultMealType() {
-            const hour = new Date().getHours();
-            let defaultMealType = 'Snack'; 
-
-            if (hour >= 5 && hour < 11) { // 5am to 10:59am
-                defaultMealType = 'Breakfast';
-            } else if (hour >= 11 && hour < 17) { // 11am to 4:59pm
-                defaultMealType = 'Lunch';
-            } else { // 5pm to 4:59am
-                defaultMealType = 'Dinner';
-            }
-
-            // Remove active class from all buttons first
-            document.querySelectorAll('.meal-type-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Add active class to the correct button
-            const activeButton = document.querySelector(`.meal-type-btn[data-type="${defaultMealType}"]`);
-            if (activeButton) {
-                activeButton.classList.add('active');
-            }
-        }
-
-        // --- Loader Functions ---
-        function showLoader(messageKey) {
-            const currentLang = localStorage.getItem('language') || 'en';
-            const message = translations[currentLang][messageKey] || translations[currentLang].analysing;
-            loadingText.textContent = message;
-            loadingOverlay.classList.remove('hidden');
-        }
-        function hideLoader() {
-            loadingOverlay.classList.add('hidden');
-        }
-
-
-        // --- Custom Modal Logic ---
-        const alertModal = document.getElementById('alert-modal');
-        const alertMessage = document.getElementById('alert-message');
-        const alertOkBtn = document.getElementById('alert-ok-btn');
-        const alertConfirmBtn = document.getElementById('alert-confirm-btn');
-        const alertCancelBtn = document.getElementById('alert-cancel-btn');
-
-        function showAlert(message) {
-            return new Promise(resolve => {
-                alertMessage.textContent = message;
-                alertOkBtn.style.display = 'inline-block';
-                alertConfirmBtn.style.display = 'none';
-                alertCancelBtn.style.display = 'none';
-                alertModal.classList.remove('hidden');
-                mainContent.style.filter = 'blur(5px)';
-                alertOkBtn.onclick = () => {
-                    alertModal.classList.add('hidden');
-                    mainContent.style.filter = 'none';
-                    resolve(true);
-                };
-            });
-        }
-
-        function showConfirm(message) {
-            return new Promise(resolve => {
-                alertMessage.textContent = message;
-                alertOkBtn.style.display = 'none';
-                alertConfirmBtn.style.display = 'inline-block';
-                alertCancelBtn.style.display = 'inline-block';
-                alertModal.classList.remove('hidden');
-                mainContent.style.filter = 'blur(5px)';
-                alertConfirmBtn.onclick = () => {
-                    alertModal.classList.add('hidden');
-                    mainContent.style.filter = 'none';
-                    resolve(true);
-                };
-                alertCancelBtn.onclick = () => {
-                    alertModal.classList.add('hidden');
-                    mainContent.style.filter = 'none';
-                    resolve(false);
-                };
-            });
-        }
-
-        // --- Authentication Logic ---
-        auth.onAuthStateChanged(async user => {
-            if (user) {
-                await loadUserGoals();
-                await loadFavourites();
-                showAppContainer(true); 
-                userEmailDropdown.textContent = user.email;
-                showLoader('loadingData');
-                await loadMealsFromFirestore();
-                hideLoader();
-            } else {
-                showAuthContainer();
-            }
         });
         forgotPasswordLink.addEventListener('click', async (e) => {
             e.preventDefault();
