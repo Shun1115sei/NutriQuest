@@ -455,6 +455,12 @@
                              </div>
                         </div>
 
+                        <div class="mt-8 text-center">
+                            <button id="toggle-dashboard-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 text-lg rounded-lg shadow-md transition-all w-full sm:w-auto">
+                                <span data-lang-key="viewDashboard">View Dashboard</span>
+                            </button>
+                        </div>
+
                         <div id="dashboard" class="mt-10 w-full max-w-6xl mx-auto hidden">
                             <div class="flex justify-center space-x-2 mb-6">
                                 <button data-period="day" class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all" data-lang-key="today">Today</button>
@@ -790,6 +796,8 @@
                 adviceStart: "Let's get started! For your next meal, try to include a mix of protein, healthy fats, and complex carbs.",
                 rateLimitError: "Requests are currently busy. Please wait a moment and try again.",
                 removeFavouriteConfirm: "Are you sure you want to remove this favourite?",
+                viewDashboard: "View Dashboard",
+                hideDashboard: "Hide Dashboard",
                 confirmFoodTitle: "Confirm Food & Quantity",
                 quantityLabel: "Enter quantity (e.g., 1 piece, 100g)",
                 // New translations for charts
@@ -815,6 +823,8 @@
                 adviceStart: "让我们开始吧！下一餐，试着摄入蛋白质、健康脂肪和复合碳水化合物的混合物。",
                 rateLimitError: "请求繁忙。请稍后再试。",
                 removeFavouriteConfirm: "您确定要删除这个收藏吗？",
+                viewDashboard: "查看仪表板",
+                hideDashboard: "隐藏仪表板",
                 confirmFoodTitle: "确认食物和数量",
                 quantityLabel: "输入数量（例如：1个，100克）",
                  // New translations for charts
@@ -869,6 +879,7 @@
             if (!appContainer.classList.contains('hidden')) {
                 updateDashboard(activePeriod);
             }
+            syncToggleDashboardButton();
         }
 
         // --- DOM Elements ---
@@ -895,6 +906,7 @@
         const goToLoginBtn = document.getElementById('go-to-login-btn');
         const googleSignInBtn = document.getElementById('google-signin-btn');
         const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const toggleDashboardBtn = document.getElementById('toggle-dashboard-btn');
         
         // New/Modified Buttons
         const voiceInputBtn = document.getElementById('voice-input-btn');
@@ -1332,6 +1344,7 @@
             const snapshot = await mealsCollection.orderBy("timestamp", "desc").get();
             allMeals = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             if(allMeals.length > 0) dashboard.classList.remove('hidden');
+            syncToggleDashboardButton();
             updateDashboard(activePeriod);
         }
 
@@ -1352,6 +1365,7 @@
             const storedMeals = localStorage.getItem('guestMeals');
             allMeals = storedMeals ? JSON.parse(storedMeals) : [];
             if(allMeals.length > 0) dashboard.classList.remove('hidden');
+            syncToggleDashboardButton();
             updateDashboard(activePeriod);
         }
         
@@ -1359,9 +1373,32 @@
             localStorage.setItem('guestMeals', JSON.stringify(allMeals));
         }
 
+        unction syncToggleDashboardButton() {
+            const isHidden = dashboard.classList.contains('hidden');
+            const currentLang = localStorage.getItem('language') || 'en';
+            const buttonTextSpan = toggleDashboardBtn.querySelector('span');
+        
+            if (isHidden) {
+                buttonTextSpan.textContent = translations[currentLang].viewDashboard;
+                buttonTextSpan.setAttribute('data-lang-key', 'viewDashboard');
+            } else {
+                buttonTextSpan.textContent = translations[currentLang].hideDashboard;
+                buttonTextSpan.setAttribute('data-lang-key', 'hideDashboard');
+            }
+        }
+
         // --- Main App Logic ---
         analyseBtn.addEventListener('click', () => processNewMeal());
         foodInput.addEventListener('keypress', (e) => e.key === 'Enter' && processNewMeal());
+        toggleDashboardBtn.addEventListener('click', () => {
+            dashboard.classList.toggle('hidden');
+            syncToggleDashboardButton();
+            if (!dashboard.classList.contains('hidden')) {
+                setTimeout(() => {
+                    dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        });
 
         document.querySelectorAll('.quick-food-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -2425,6 +2462,7 @@
                 };
                 processNewMeal(mealData);
                 servingModal.classList.add('hidden');
+                syncToggleDashboardButton();
                 currentScannedProduct = null;
             }
         });
