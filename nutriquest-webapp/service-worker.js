@@ -5,33 +5,48 @@ const CACHE_NAME = 'nutriquest-cache-v1';
 const urlsToCache = [
   './',
   './index.html'
-  // Add here if you have anything else that you desire to cache
+  // Add more assets here
   // (eg. './style.css', './app.js', './images/logo.png' ...)
 ];
 
-// Processing the installation of service-worker
+// Install: cache files
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+      .then((cache) => cache.addAll(urlsToCache))
   );
+  self.skipWaiting();
 });
 
-// Processing responses to the request
+// Activate: clean up old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      )
+    )
+  );
+  self.clients.claim();
+});
+
+// Fetch: cache-first, fallback to network, fallback to offline
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // If it hits the cache, it returns it
-        if (response) {
-          return response;
-        }
-        // If not in cache, retrieved from network
-        return fetch(event.request);
-      }
-    )
+        if (response) return response;
+        return fetch(event.request)
+          .catch(() => {
+            // Optionally, return a fallback page for navigation requests
+            if (event.request.mode === 'navigate') {
+              return caches.match('./index.html');
+            }
+          });
+      })
   );
 });
