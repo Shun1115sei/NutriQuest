@@ -1097,6 +1097,7 @@
         forgotPasswordLink.addEventListener('click', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
+            const currentLang = localStorage.getItem('language') || 'en';
             if (!email) {
                 await showAlert(translations[currentLang].enterEmailForReset);
                 return;
