@@ -1,5 +1,5 @@
 // 2025-07-29 14:09:20: Updated file for cache busting
-// キャッシュの名前を定義
+// Define the name of the cache
 const CACHE_NAME = 'nutriquest-cache-v1';
 // キャッシュするファイルのリスト
 const urlsToCache = [
