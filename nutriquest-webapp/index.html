@@ -1372,7 +1372,7 @@
             localStorage.setItem('guestMeals', JSON.stringify(allMeals));
         }
 
-        unction syncToggleDashboardButton() {
+        function syncToggleDashboardButton() {
             const isHidden = dashboard.classList.contains('hidden');
             const currentLang = localStorage.getItem('language') || 'en';
             const buttonTextSpan = toggleDashboardBtn.querySelector('span');
