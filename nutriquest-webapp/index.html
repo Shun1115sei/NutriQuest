@@ -382,9 +382,14 @@
                                 <button data-lang="zh" class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors"><span class="hidden sm:inline">中文</span><span class="inline sm:hidden">中</span></button>
                             </div>
                             <!-- Logged In Header -->
-                            <div id="user-header" class="flex items-center">
-                                <span id="user-email" class="text-gray-600 mr-2 sm:mr-4 hidden sm:inline"></span>
-                                <button id="sign-out-btn" data-lang-key="signOutButton" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm">Sign Out</button>
+                            <div id="user-header" class="relative">
+                                <button id="account-menu-btn" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                </button>
+                                <div id="account-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                    <div class="px-4 py-2 text-sm text-gray-700 border-b" id="user-email-dropdown"></div>
+                                    <a href="#" id="sign-out-btn-dropdown" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang-key="signOutButton">Sign Out</a>
+                                </div>
                             </div>
                             <!-- Guest Header -->
                             <div id="guest-header">
@@ -856,9 +861,11 @@
         const authTitle = document.getElementById('auth-title');
         const authSubmitBtn = document.getElementById('auth-submit-btn');
         const authError = document.getElementById('auth-error');
-        const signOutBtn = document.getElementById('sign-out-btn');
-        const userEmailSpan = document.getElementById('user-email');
         const foodInput = document.getElementById('food-input');
+        const accountMenuBtn = document.getElementById('account-menu-btn');
+        const accountDropdown = document.getElementById('account-dropdown');
+        const userEmailDropdown = document.getElementById('user-email-dropdown');
+        const signOutBtnDropdown = document.getElementById('sign-out-btn-dropdown');
         const analyseBtn = document.getElementById('analyse-btn');
         const dashboard = document.getElementById('dashboard');
         const mealList = document.getElementById('meal-list');
@@ -1086,7 +1093,7 @@
                 await loadUserGoals();
                 await loadFavourites();
                 showAppContainer(true); 
-                userEmailSpan.textContent = user.email;
+                userEmailDropdown.textContent = user.email;
                 showLoader('loadingData');
                 await loadMealsFromFirestore();
                 hideLoader();
@@ -1151,8 +1158,19 @@
             setLanguage(localStorage.getItem('language') || 'en'); // Re-apply language to update button text
         });
 
-        signOutBtn.addEventListener('click', () => {
+        signOutBtnDropdown.addEventListener('click', (e) => {
+            e.preventDefault();
             auth.signOut();
+        });
+
+        accountMenuBtn.addEventListener('click', () => {
+            accountDropdown.classList.toggle('hidden');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!accountMenuBtn.contains(e.target) && !accountDropdown.contains(e.target)) {
+                accountDropdown.classList.add('hidden');
+            }
         });
         
         guestModeBtn.addEventListener('click', () => {
