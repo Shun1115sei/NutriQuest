@@ -1509,9 +1509,9 @@
             context.drawImage(cameraView, 0, 0, cameraCanvas.width, cameraCanvas.height);
             const imageDataUrl = cameraCanvas.toDataURL('image/jpeg');
             closeCamera();
-
+        
             showLoader('analysing'); // Show loader while identifying
-
+        
             try {
                 const foodName = await identifyFoodFromImage(imageDataUrl.split(',')[1]);
                 hideLoader(); // Hide loader after identification
@@ -1538,7 +1538,6 @@
                 foodInput.placeholder = translations[currentLang].foodInputPlaceholder;
             }
         }
-            
             foodInput.placeholder = "Identifying food from image...";
             
             try {
@@ -2483,6 +2482,7 @@
             const currentLang = localStorage.getItem('language') || 'en';
             foodInput.placeholder = translations[currentLang].foodInputPlaceholder;
         });
+
         // --- Favourites Logic ---
         favouritesBtn.addEventListener('click', () => {
             renderFavouritesList();
