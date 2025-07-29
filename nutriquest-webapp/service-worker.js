@@ -1,4 +1,4 @@
-//ずみへんj
+//ずみへんjjasidja
 // キャッシュの名前を定義
 const CACHE_NAME = 'nutriquest-cache-v1';
 // キャッシュするファイルのリスト
