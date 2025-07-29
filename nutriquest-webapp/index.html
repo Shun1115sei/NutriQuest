@@ -1009,13 +1009,12 @@
 
         // --- Initial Load ---
         window.addEventListener('load', () => {
-            setTimeout(() => {
                 splashScreen.style.opacity = '0';
                 splashScreen.addEventListener('transitionend', () => {
                     splashScreen.classList.add('hidden');
                     mainAppContent.style.opacity = '1';
                 }, { once: true });
-            }, 2800); // Adjusted duration for all animations
+            
             setDefaultMealType();
             
             // Language setup
