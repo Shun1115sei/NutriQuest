@@ -800,7 +800,6 @@
                 hideDashboard: "Hide Dashboard",
                 confirmFoodTitle: "Confirm Food & Quantity",
                 quantityLabel: "Enter quantity (e.g., 1 piece, 100g)",
-                // New translations for charts
                 sun: "S", mon: "M", tue: "T", wed: "W", thu: "T", fri: "F", sat: "S",
                 week: "Week", periodGoal: "Period Goal", actualIntake: "Actual Intake"
             },
@@ -827,7 +826,6 @@
                 hideDashboard: "隐藏仪表板",
                 confirmFoodTitle: "确认食物和数量",
                 quantityLabel: "输入数量（例如：1个，100克）",
-                 // New translations for charts
                 sun: "日", mon: "一", tue: "二", wed: "三", thu: "四", fri: "五", sat: "六",
                 week: "周", periodGoal: "期间目标", actualIntake: "实际摄入"
             }
@@ -926,6 +924,7 @@
         const identifiedFoodNameEl = document.getElementById('identified-food-name');
         const quantityInput = document.getElementById('quantity-input');
         const cancelQuantityBtn = document.getElementById('cancel-quantity-btn');
+        
         let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, cameraStream = null, barcodeReader = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
         if (typeof ZXing !== 'undefined') barcodeReader = new ZXing.BrowserMultiFormatReader();
 
@@ -1099,11 +1098,14 @@
                 foodInput.value = '';
                 currentDate = new Date();
                 activePeriod = 'day';
+                if (dashboard.classList.contains('hidden')) {
+                    dashboard.classList.remove('hidden');
+                    syncToggleDashboardButton();
+                }
             } catch (error) {
                 if (error.message === "RATE_LIMIT_EXCEEDED") showAlert(translations[localStorage.getItem('language') || 'en'].rateLimitError);
                 else { console.error('Error processing new meal:', error); await showAlert('Could not analyse meal. Please try again.'); }
             } finally {
-                if (allMeals.length > 0) dashboard.classList.remove('hidden');
                 updateDashboard(activePeriod);
                 hideLoader();
                 if (!dashboard.classList.contains('hidden')) setTimeout(() => dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
@@ -1210,7 +1212,6 @@
                 toggleDetailsBtn.textContent = translations[currentLang].showDetails;
                 toggleDetailsBtn.setAttribute('data-lang-key', 'showDetails');
             }
-            if (allMeals.length > 0) dashboard.classList.remove('hidden');
         }
         function renderMealList(meals) {
             mealList.innerHTML = '';
@@ -1273,7 +1274,7 @@
                 isFuture = currentDate > today;
             } else if (activePeriod === 'week') {
                 const startOfWeek = new Date(currentDate);
-                startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+                startOfWeek.setDate(currentDate.getDate() - startOfWeek.getDay());
                 startOfWeek.setHours(0, 0, 0, 0);
                 const endOfWeek = new Date(startOfWeek);
                 endOfWeek.setDate(endOfWeek.getDate() + 6);
@@ -1581,6 +1582,187 @@
         function saveFavouritesToStorage() {
             if (!auth.currentUser) localStorage.setItem('guestFavourites', JSON.stringify(favouriteMeals));
         }
+        function startVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) { showAlert('Your browser does not support voice input.'); return; }
+            const recognition = new SpeechRecognition();
+            const currentLang = localStorage.getItem('language') || 'en';
+            recognition.lang = currentLang === 'zh' ? 'zh-CN' : 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            listeningTextStatus.textContent = translations[currentLang].listening;
+            listeningModal.classList.remove('hidden');
+            recognition.start();
+            recognition.onresult = async (event) => {
+                listeningModal.classList.add('hidden');
+                const speechResult = event.results[0][0].transcript;
+                foodInput.placeholder = translations[currentLang].checkingSpeech;
+                showLoader('checkingSpeech');
+                try {
+                    const correctedFood = await getSimilarSoundingFood(speechResult);
+                    hideLoader();
+                    if (correctedFood && correctedFood.toLowerCase() !== speechResult.toLowerCase()) {
+                        const message = translations[currentLang].didYouMean.replace('{foodName}', correctedFood);
+                        if (await showConfirm(message)) foodInput.value = correctedFood;
+                        else foodInput.value = '';
+                    } else foodInput.value = speechResult;
+                } catch (error) {
+                    console.error("Error correcting speech:", error);
+                    foodInput.value = speechResult;
+                    hideLoader();
+                } finally { foodInput.placeholder = translations[currentLang].foodInputPlaceholder; }
+            };
+            recognition.onspeechend = () => { recognition.stop(); listeningModal.classList.add('hidden'); };
+            recognition.onerror = (event) => {
+                listeningModal.classList.add('hidden');
+                showAlert(translations[currentLang].speechError.replace('{error}', event.error));
+            };
+        }
+        async function getSimilarSoundingFood(prompt) {
+            const chatHistory = [{ role: "user", parts: [{ text: `A user said "${prompt}" via voice input. If this is a common food item, return the food item's name. If it is not a food item, return the name of a common food item that sounds similar. Respond with only the food name in a valid JSON format. The JSON object should only contain the key "food".` }] }];
+            const payload = { contents: chatHistory, generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "food": { type: "STRING" } }, required: ["food"] } } };
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const result = await response.json();
+                const text = result.candidates[0].content.parts[0].text;
+                return JSON.parse(text).food;
+            } catch (error) { console.error("Error fetching from Gemini API for correction:", error); return null; }
+        }
+
+        // --- APPLICATION INITIALIZATION ---
+        function initializeAppEventListeners() {
+            window.addEventListener('scroll', () => { if (appHeader) appHeader.classList.toggle('shadow-md', window.scrollY > 10); });
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                authError.textContent = '';
+                showLoader('signingIn');
+                try {
+                    if (isLoginMode) await auth.signInWithEmailAndPassword(email, password);
+                    else await auth.createUserWithEmailAndPassword(email, password);
+                } catch (error) { authError.textContent = error.message; } 
+                finally { hideLoader(); }
+            });
+            googleSignInBtn.addEventListener('click', signInWithGoogle);
+            authToggleLink.addEventListener('click', (e) => { e.preventDefault(); isLoginMode = !isLoginMode; setLanguage(localStorage.getItem('language') || 'en'); });
+            forgotPasswordLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const currentLang = localStorage.getItem('language') || 'en';
+                if (!email) { await showAlert(translations[currentLang].enterEmailForReset); return; }
+                try {
+                    await auth.sendPasswordResetEmail(email);
+                    await showAlert(translations[currentLang].passwordResetSent);
+                } catch (error) { authError.textContent = error.message; }
+            });
+            signOutBtnDropdown.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+            accountMenuBtn.addEventListener('click', () => accountDropdown.classList.toggle('hidden'));
+            window.addEventListener('click', (e) => { if (!accountMenuBtn.contains(e.target) && !accountDropdown.contains(e.target)) accountDropdown.classList.add('hidden'); });
+            guestModeBtn.addEventListener('click', () => {
+                loadUserGoals();
+                loadFavourites();
+                showAppContainer(false);
+                loadMealsFromStorage();
+            });
+            goToLoginBtn.addEventListener('click', showAuthContainer);
+            settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+            closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+            diagnosisForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const gender = document.getElementById('gender').value, age = parseInt(document.getElementById('age').value), height = parseInt(document.getElementById('height').value), weight = parseInt(document.getElementById('weight').value), activityLevel = parseFloat(document.getElementById('activity-level').value);
+                const bmr = (gender === 'male') ? (10 * weight + 6.25 * height - 5 * age + 5) : (10 * weight + 6.25 * height - 5 * age - 161);
+                const tdee = Math.round(bmr * activityLevel);
+                setAndSaveGoals(tdee);
+                settingsModal.classList.add('hidden');
+                showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', tdee));
+            });
+            manualGoalForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const manualCalories = parseInt(document.getElementById('manual-calories').value);
+                if (manualCalories > 0) {
+                    setAndSaveGoals(manualCalories);
+                    settingsModal.classList.add('hidden');
+                    showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', manualCalories));
+                }
+            });
+            analyseBtn.addEventListener('click', () => processNewMeal());
+            foodInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') processNewMeal(); });
+            toggleDashboardBtn.addEventListener('click', () => {
+                dashboard.classList.toggle('hidden');
+                syncToggleDashboardButton();
+                if (!dashboard.classList.contains('hidden')) setTimeout(() => dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+            });
+            document.querySelectorAll('.quick-food-btn').forEach(btn => btn.addEventListener('click', () => { foodInput.value = btn.textContent; processNewMeal(); }));
+            document.querySelectorAll('.meal-type-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelector('.meal-type-btn.active')?.classList.remove('active'); btn.classList.add('active'); }));
+            cameraScanBtn.addEventListener('click', () => cameraChoiceModal.classList.remove('hidden'));
+            voiceInputBtn.addEventListener('click', startVoiceRecognition);
+            closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.classList.add('hidden'));
+            scanMealBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); openCamera(); });
+            scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); startBarcodeScanner(); });
+            captureBtn.addEventListener('click', captureImage);
+            closeCameraBtn.addEventListener('click', closeCamera);
+            closeBarcodeBtn.addEventListener('click', () => { barcodeReader.reset(); barcodeModal.classList.add('hidden'); });
+            servingForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const servingSize = parseFloat(document.getElementById('serving-size').value);
+                if (servingSize > 0 && currentScannedProduct) {
+                    const multiplier = servingSize / 100;
+                    processNewMeal({ food: currentScannedProduct.food, calories: currentScannedProduct.calories_100g * multiplier, protein: currentScannedProduct.protein_100g * multiplier, fat: currentScannedProduct.fat_100g * multiplier, carbs: currentScannedProduct.carbs_100g * multiplier });
+                    servingModal.classList.add('hidden');
+                    currentScannedProduct = null;
+                }
+            });
+            cancelServingBtn.addEventListener('click', () => servingModal.classList.add('hidden'));
+            quantityForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const quantity = quantityInput.value.trim();
+                if (quantity && identifiedFoodName) {
+                    foodInput.value = `${quantity} ${identifiedFoodName}`;
+                    quantityModal.classList.add('hidden');
+                    processNewMeal();
+                }
+            });
+            cancelQuantityBtn.addEventListener('click', () => quantityModal.classList.add('hidden'));
+            favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.classList.remove('hidden'); });
+            closeFavouritesBtn.addEventListener('click', () => favouritesModal.classList.add('hidden'));
+            setupDashboardListeners();
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+        }
+
+        const splashScreenFinished = new Promise(resolve => {
+            window.addEventListener('load', () => {
+                setTimeout(() => { splashScreen.style.opacity = '0'; }, 2200);
+                setTimeout(() => {
+                    splashScreen.classList.add('hidden');
+                    mainAppContent.style.opacity = '1';
+                    resolve();
+                }, 2700);
+            });
+        });
+
+        auth.onAuthStateChanged(async user => {
+            await splashScreenFinished;
+            if (user) {
+                await loadUserGoals();
+                await loadFavourites();
+                showAppContainer(true);
+                userEmailDropdown.textContent = user.email;
+                showLoader('loadingData');
+                await loadMealsFromFirestore();
+                hideLoader();
+            } else {
+                showAuthContainer();
+            }
+        });
+
+        window.addEventListener('load', () => {
+            setDefaultMealType();
+            setLanguage(localStorage.getItem('language') || 'en');
+            initializeAppEventListeners();
+        });
     </script>
     <script>
   if ('serviceWorker' in navigator) {
