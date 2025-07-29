@@ -1512,45 +1512,25 @@
             const imageDataUrl = cameraCanvas.toDataURL('image/jpeg');
             closeCamera();
         
-            showLoader('analysing'); // Show loader while identifying
+            showLoader('analysing');
+            foodInput.placeholder = "Identifying food from image...";
         
             try {
                 const foodName = await identifyFoodFromImage(imageDataUrl.split(',')[1]);
-                hideLoader(); // Hide loader after identification
+                
                 if (foodName) {
-                    identifiedFoodName = foodName;
-                    identifiedFoodNameEl.textContent = foodName;
-                    quantityInput.value = '1'; 
-                    quantityModal.classList.remove('hidden');
-                    quantityInput.focus();
-                } else {
-                    throw new Error("Could not identify the food.");
-                }
-            } catch (error) {
-                hideLoader();
-                if (error.message === "RATE_LIMIT_EXCEEDED") {
-                    const currentLang = localStorage.getItem('language') || 'en';
-                    showAlert(translations[currentLang].rateLimitError);
-                } else {
-                    console.error("Image identification error:", error);
-                    await showAlert("Sorry, we couldn't identify the food in the image. Please try typing it manually.");
-                }
-            } finally {
-                const currentLang = localStorage.getItem('language') || 'en';
-                foodInput.placeholder = translations[currentLang].foodInputPlaceholder;
-            }
-        }
-            foodInput.placeholder = "Identifying food from image...";
-            
-            try {
-                const foodName = await identifyFoodFromImage(imageDataUrl.split(',')[1]);
-                if (foodName) {
+                    // If successful: processNewMeal hides the loader internally
                     foodInput.value = foodName;
                     await processNewMeal();
                 } else {
-                    throw new Error("Could not identify the food.");
+                    // If recognition fails: hide the loader and then alert
+                    hideLoader();
+                    await showAlert("Sorry, we couldn't identify the food in the image. Please try typing it manually.");
                 }
             } catch (error) {
+                // Always hide the loader, even if other errors occur.
+                hideLoader(); 
+                
                 if (error.message === "RATE_LIMIT_EXCEEDED") {
                     const currentLang = localStorage.getItem('language') || 'en';
                     showAlert(translations[currentLang].rateLimitError);
