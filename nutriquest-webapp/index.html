@@ -158,7 +158,7 @@
 
         /* --- Splash Screen Styles --- */
         #splash-screen {
-            transition: opacity 0.5s ease-out 2.2s; /* Start fading out after 2.2s */
+            transition: opacity 0.5s ease-out; /* Start fading out after 2.2s */
             overflow: hidden;
         }
         #splash-title-container {
@@ -1009,12 +1009,15 @@
 
         // --- Initial Load ---
         window.addEventListener('load', () => {
+            setTimeout(() => {
                 splashScreen.style.opacity = '0';
-                splashScreen.addEventListener('transitionend', () => {
-                    splashScreen.classList.add('hidden');
-                    mainAppContent.style.opacity = '1';
-                }, { once: true });
-            
+            }, 2200); 
+
+            setTimeout(() => {
+                splashScreen.classList.add('hidden');
+                mainAppContent.style.opacity = '1';
+            }, 2700);
+
             setDefaultMealType();
             
             // Language setup
