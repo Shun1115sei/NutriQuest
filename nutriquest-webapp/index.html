@@ -714,6 +714,22 @@
         </div>
     </div>
 
+    <!-- Quantity Confirmation Modal -->
+    <div id="quantity-modal" class="modal-overlay hidden">
+        <div class="modal-content text-left">
+            <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="confirmFoodTitle">Confirm Food & Quantity</h2>
+            <p class="text-center mb-4">We identified this as: <strong id="identified-food-name" class="capitalize"></strong>. Is this correct?</p>
+            <form id="quantity-form">
+                <label for="quantity-input" class="block text-sm font-medium text-gray-700" data-lang-key="quantityLabel">Enter quantity (e.g., 1 piece, 100g)</label>
+                <input type="text" id="quantity-input" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" id="cancel-quantity-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg" data-lang-key="cancelButton">Cancel</button>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="confirmButton">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="modal-overlay hidden">
         <div class="flex flex-col items-center justify-center text-white">
@@ -775,6 +791,8 @@
                 adviceStart: "Let's get started! For your next meal, try to include a mix of protein, healthy fats, and complex carbs.",
                 rateLimitError: "Requests are currently busy. Please wait a moment and try again.",
                 removeFavouriteConfirm: "Are you sure you want to remove this favourite?",
+                confirmFoodTitle: "Confirm Food & Quantity",
+                quantityLabel: "Enter quantity (e.g., 1 piece, 100g)",
                 // New translations for charts
                 sun: "S", mon: "M", tue: "T", wed: "W", thu: "T", fri: "F", sat: "S",
                 week: "Week", periodGoal: "Period Goal", actualIntake: "Actual Intake"
@@ -798,6 +816,8 @@
                 adviceStart: "让我们开始吧！下一餐，试着摄入蛋白质、健康脂肪和复合碳水化合物的混合物。",
                 rateLimitError: "请求繁忙。请稍后再试。",
                 removeFavouriteConfirm: "您确定要删除这个收藏吗？",
+                confirmFoodTitle: "确认食物和数量",
+                quantityLabel: "输入数量（例如：1个，100克）",
                  // New translations for charts
                 sun: "日", mon: "一", tue: "二", wed: "三", thu: "四", fri: "五", sat: "六",
                 week: "周", periodGoal: "期间目标", actualIntake: "实际摄入"
@@ -944,6 +964,11 @@
         const calendarNextMonth = document.getElementById('calendar-next-month');
         const closeCalendarBtn = document.getElementById('close-calendar-btn');
         const calendarMonthGrid = document.getElementById('calendar-month-grid');
+        const quantityModal = document.getElementById('quantity-modal');
+        const quantityForm = document.getElementById('quantity-form');
+        const identifiedFoodNameEl = document.getElementById('identified-food-name');
+        const quantityInput = document.getElementById('quantity-input');
+        const cancelQuantityBtn = document.getElementById('cancel-quantity-btn');
 
 
         // --- State and Chart variables ---
@@ -1439,6 +1464,8 @@
             cameraModal.classList.add('hidden');
         }
 
+        
+
         async function captureImage() {
             const context = cameraCanvas.getContext('2d');
             cameraCanvas.width = cameraView.videoWidth;
@@ -1446,6 +1473,35 @@
             context.drawImage(cameraView, 0, 0, cameraCanvas.width, cameraCanvas.height);
             const imageDataUrl = cameraCanvas.toDataURL('image/jpeg');
             closeCamera();
+
+            showLoader('analysing'); // Show loader while identifying
+
+            try {
+                const foodName = await identifyFoodFromImage(imageDataUrl.split(',')[1]);
+                hideLoader(); // Hide loader after identification
+                if (foodName) {
+                    identifiedFoodName = foodName;
+                    identifiedFoodNameEl.textContent = foodName;
+                    quantityInput.value = '1'; 
+                    quantityModal.classList.remove('hidden');
+                    quantityInput.focus();
+                } else {
+                    throw new Error("Could not identify the food.");
+                }
+            } catch (error) {
+                hideLoader();
+                if (error.message === "RATE_LIMIT_EXCEEDED") {
+                    const currentLang = localStorage.getItem('language') || 'en';
+                    showAlert(translations[currentLang].rateLimitError);
+                } else {
+                    console.error("Image identification error:", error);
+                    await showAlert("Sorry, we couldn't identify the food in the image. Please try typing it manually.");
+                }
+            } finally {
+                const currentLang = localStorage.getItem('language') || 'en';
+                foodInput.placeholder = translations[currentLang].foodInputPlaceholder;
+            }
+        }
             
             foodInput.placeholder = "Identifying food from image...";
             
@@ -2375,6 +2431,21 @@
         });
         cancelServingBtn.addEventListener('click', () => servingModal.classList.add('hidden'));
 
+        quantityForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const quantity = quantityInput.value.trim();
+            if (quantity && identifiedFoodName) {
+                foodInput.value = `${quantity} ${identifiedFoodName}`;
+                quantityModal.classList.add('hidden');
+                processNewMeal(); 
+            }
+        });
+        
+        cancelQuantityBtn.addEventListener('click', () => {
+            quantityModal.classList.add('hidden');
+            const currentLang = localStorage.getItem('language') || 'en';
+            foodInput.placeholder = translations[currentLang].foodInputPlaceholder;
+        });
         // --- Favourites Logic ---
         favouritesBtn.addEventListener('click', () => {
             renderFavouritesList();
