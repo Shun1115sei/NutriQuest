@@ -1,4 +1,4 @@
-//ずみへんjjasidja
+// 2025-07-29: Updated file for cache busting
 // キャッシュの名前を定義
 const CACHE_NAME = 'nutriquest-cache-v1';
 // キャッシュするファイルのリスト
