@@ -4,7 +4,6 @@ const CACHE_NAME = 'nutriquest-cache-v1';
 // List of the files that you cache
 const urlsToCache = [
   './',
-  './index.html'
   // Add more assets here
   // (eg. './style.css', './app.js', './images/logo.png' ...)
 ];

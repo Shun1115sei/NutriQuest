@@ -8,5 +8,5 @@ import {
 
 export default [
   index("./app.tsx"),
-  route("testing", "app2.tsx")
+  route("testing", "./app2.tsx")
 ] satisfies RouteConfig;
