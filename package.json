@@ -4,7 +4,7 @@
     "start": "vite",
     "dev": "vite",
     "build": "react-router build",
-    "serve": "react-router serve"
+    "serve": "vite preview"
   },
   "devDependencies": {
     "@react-router/dev": "^7.7.1",
