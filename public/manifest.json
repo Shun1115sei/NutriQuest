@@ -5,12 +5,13 @@
   "start_url": "/",
   "display": "standalone",
   "display_override": [
-    "minimal-ui",
+    "window-controls-overlay",
     "standalone",
+    "minimal-ui",
     "browser"
   ],
-  "background_color": "#f3f4f6",
-  "theme_color": "#4f46e5",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "/icons/192.png",

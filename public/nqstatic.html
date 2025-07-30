@@ -417,10 +417,21 @@
       color: #333;
       /* No !important rules - let JavaScript control visibility */
     }
+
+    #custom-titlebar {
+      -webkit-app-region: drag;
+      app-region: drag;
+    }
+
+    #custom-titlebar button,
+    #custom-titlebar input {
+      -webkit-app-region: no-drag;
+      app-region: no-drag;
+    }
   </style>
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100 text-gray-800 custom-titlebar">
   <!-- PWA Install Prompt Button (hidden by default) -->
   <div id="install-banner"
     class="height:56px w-full flex justify-center items-center bg-yellow-50 border-b border-yellow-300 p-4 fixed top-0 left-0 z-50 shadow transition-all hidden">
@@ -537,7 +548,7 @@
       <!-- Main Application Container -->
       <div id="app-container" class="hidden h-screen flex flex-col">
         <!-- Header -->
-        <header id="app-header"
+        <header id="app-header custom-titlebar"
           class="w-full sticky top-0 z-50 bg-white transition-shadow duration-300 ease-in-out h-16 sm:h-auto">
           <div class="max-w-6xl mx-auto flex justify-between items-center px-2 sm:px-4 py-3">
 
@@ -1017,8 +1028,11 @@
 
       <div class="my-6 border-t pt-6">
         <h3 class="text-lg font-semibold text-red-700" data-lang-key="dangerZone">Danger Zone</h3>
-        <p class="text-sm text-gray-600 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be certain.</p>
-        <button id="reset-all-btn" class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="deleteAllData">Delete All Data</button>
+        <p class="text-sm text-gray-600 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be
+          certain.</p>
+        <button id="reset-all-btn"
+          class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
+          data-lang-key="deleteAllData">Delete All Data</button>
       </div>
       <button id="close-settings-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
         data-lang-key="closeButton">Close</button>
@@ -1698,50 +1712,50 @@
       hideLoader();
     }
     async function resetTodayData() {
-    const currentLang = localStorage.getItem('language') || 'en';
-    if (!await showConfirm(translations[currentLang].deleteTodayConfirm)) return;
+      const currentLang = localStorage.getItem('language') || 'en';
+      if (!await showConfirm(translations[currentLang].deleteTodayConfirm)) return;
 
-    showLoader('deletingData');
+      showLoader('deletingData');
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const endOfToday = new Date();
-    endOfToday.setHours(23, 59, 59, 999);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const endOfToday = new Date();
+      endOfToday.setHours(23, 59, 59, 999);
 
-    // Separate meals to be deleted from those to be retained.
-    const mealsToDelete = allMeals.filter(meal => {
+      // Separate meals to be deleted from those to be retained.
+      const mealsToDelete = allMeals.filter(meal => {
         const mealDate = new Date(meal.timestamp);
         return mealDate >= today && mealDate <= endOfToday;
-    });
-    const mealsToKeep = allMeals.filter(meal => {
+      });
+      const mealsToKeep = allMeals.filter(meal => {
         const mealDate = new Date(meal.timestamp);
         return mealDate < today || mealDate > endOfToday;
-    });
+      });
 
-    if (mealsToDelete.length === 0) {
+      if (mealsToDelete.length === 0) {
         hideLoader();
         return; // No data to delete.
-    }
+      }
 
-    if (auth.currentUser) {
+      if (auth.currentUser) {
         const batch = db.batch();
         mealsToDelete.forEach(meal => {
-            const mealRef = db.collection('users').doc(auth.currentUser.uid).collection('meals').doc(meal.id);
-            batch.delete(mealRef);
+          const mealRef = db.collection('users').doc(auth.currentUser.uid).collection('meals').doc(meal.id);
+          batch.delete(mealRef);
         });
         await batch.commit();
-    }
+      }
 
-    // Update the local array and save it for guests
-    allMeals = mealsToKeep;
-    if (!auth.currentUser) {
+      // Update the local array and save it for guests
+      allMeals = mealsToKeep;
+      if (!auth.currentUser) {
         saveMealsToStorage();
-    }
+      }
 
-    // Updated UI.
-    updateDashboard(activePeriod);
-    hideLoader();
-}
+      // Updated UI.
+      updateDashboard(activePeriod);
+      hideLoader();
+    }
     function provideNutritionalAdvice(periodMeals) {
       const adviceCard = document.getElementById('advice-card'), adviceIcon = document.getElementById('advice-icon'), adviceText = document.getElementById('advice-text'), currentLang = localStorage.getItem('language') || 'en';
       if (periodMeals.length === 0) { adviceCard.classList.add('hidden'); return; }
