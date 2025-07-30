@@ -1194,6 +1194,7 @@
         deleteTodayConfirm: "Are you sure you want to delete all meals recorded today?",
         dangerZone: "Danger Zone",
         dangerZoneDesc: "This action cannot be undone. Please be certain.",
+        deleteAllDataConfirm: "Are you sure you want to delete all your data? This action cannot be undone.",
         sun: "S", mon: "M", tue: "T", wed: "W", thu: "T", fri: "F", sat: "S",
         week: "Week", periodGoal: "Period Goal", actualIntake: "Actual Intake"
       },
@@ -1226,6 +1227,7 @@
         deleteTodayConfirm: "您确定要删除今天记录的所有膳食吗？",
         dangerZone: "危险区域",
         dangerZoneDesc: "此操作无法撤销，请谨慎操作。",
+        deleteAllDataConfirm: "您确定要删除所有数据吗？此操作无法撤销。",
         sun: "日", mon: "一", tue: "二", wed: "三", thu: "四", fri: "五", sat: "六",
         week: "周", periodGoal: "期间目标", actualIntake: "实际摄入"
       }
@@ -1717,7 +1719,11 @@
       }
     }
     async function resetAllData() {
-      if (!await showConfirm('Are you sure you want to delete all your data? This action cannot be undone.')) return;
+      settingsModal.classList.add('hidden');
+
+      const currentLang = localStorage.getItem('language') || 'en';
+      if (!await showConfirm(translations[currentLang].deleteAllDataConfirm)) return;
+
       showLoader('deletingData');
       if (auth.currentUser) {
         const snapshot = await db.collection('users').doc(auth.currentUser.uid).collection('meals').get();
