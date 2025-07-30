@@ -1,0 +1,417 @@
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .main-container {
+      padding: 1rem;
+      transition: filter 0.3s;
+    }
+
+    @media (min-width: 640px) {
+      .main-container {
+        padding: 2rem;
+      }
+    }
+
+    #auth-container,
+    #app-container {
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .filter-btn.active,
+    .meal-type-btn.active {
+      background-color: #374151;
+      color: white;
+      border-color: #374151;
+    }
+
+    .camera-modal-content video {
+      width: 100%;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (min-width: 640px) {
+      .modal-content {
+        padding: 2rem;
+      }
+    }
+
+    .favourite-star {
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .favourite-star.favourited {
+      color: #facc15;
+    }
+
+    .favourite-star:not(.favourited) svg {
+      fill: none;
+    }
+
+    .favourite-star.favourited svg {
+      fill: currentColor;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.4);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .star-pop {
+      animation: pop 0.3s ease-in-out;
+    }
+
+    .favourite-star-container {
+      position: relative;
+    }
+
+    .favourite-star-container.sparkling::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 50%;
+      border: 2px solid #facc15;
+      transform: scale(0);
+      opacity: 0;
+      animation: sparkle-ring 0.5s ease-out;
+    }
+
+    @keyframes sparkle-ring {
+      0% {
+        transform: scale(0.5);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    /* --- Loading Animation Styles --- */
+    .loader {
+      width: 80px;
+      aspect-ratio: 1;
+      color: #E8204E;
+      background:
+        radial-gradient(circle at 60% 65%, currentColor 62%, #0000 65%) top left,
+        radial-gradient(circle at 40% 65%, currentColor 62%, #0000 65%) top right,
+        linear-gradient(to bottom left, currentColor 42%, #0000 43%) bottom left,
+        linear-gradient(to bottom right, currentColor 42%, #0000 43%) bottom right;
+      background-size: 50% 50%;
+      background-repeat: no-repeat;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      /* Behind the line */
+    }
+
+    .loader:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      opacity: 0.4;
+      animation: l3 1.5s infinite;
+    }
+
+    @keyframes l3 {
+      to {
+        transform: scale(1.8);
+        opacity: 0
+      }
+    }
+
+    .ecg-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      /* In front of the heart */
+      overflow: visible;
+    }
+
+    .ecg-path {
+      stroke: white;
+      /* White color */
+      stroke-dasharray: 190;
+      stroke-dashoffset: 190;
+      animation: draw-line 1.5s ease-in-out infinite;
+    }
+
+    @keyframes draw-line {
+      0% {
+        stroke-dashoffset: 190;
+      }
+
+      50% {
+        stroke-dashoffset: 0;
+      }
+
+      100% {
+        stroke-dashoffset: -190;
+      }
+    }
+
+    /* --- Barcode Scanner Overlay --- */
+    .scanner-container {
+      position: relative;
+      width: 100%;
+      background: black;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+
+    .focus-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 80%;
+      height: 40%;
+      border: 2px solid white;
+      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
+      transform: translate(-50%, -50%);
+      border-radius: 0.5rem;
+    }
+
+    /* --- Splash Screen Styles --- */
+    #splash-screen {
+      transition: opacity 0.5s ease-out;
+      /* Start fading out after 2.2s */
+      overflow: hidden;
+    }
+
+    #splash-title-container {
+      position: relative;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #splash-title {
+      display: flex;
+      position: relative;
+      z-index: 10;
+    }
+
+    #splash-heart {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      fill: #E8204E;
+      opacity: 0;
+      z-index: 5;
+      animation: heart-beat-behind 1.0s ease-in-out 0.8s forwards;
+    }
+
+    #splash-heart-shockwave {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      stroke: #E8204E;
+      stroke-width: 0.25px;
+      /* MODIFIED: Thinner line */
+      fill: none;
+      opacity: 0;
+      z-index: 4;
+      animation: heart-shockwave 0.6s ease-out 1s forwards;
+    }
+
+    #splash-nutri {
+      animation: slideInFromLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    #splash-quest {
+      animation: slideInFromRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes slideInFromLeft {
+      0% {
+        transform: translateX(-150%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideInFromRight {
+      0% {
+        transform: translateX(150%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes heart-beat-behind {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      25% {
+        opacity: 0.5;
+        transform: scale(1.8);
+      }
+
+      /* Bigger, faster beat */
+      35% {
+        transform: scale(1.4);
+      }
+
+      /* Settle faster */
+      100% {
+        opacity: 0;
+        transform: scale(1.4);
+      }
+
+      /* Fade out while large */
+    }
+
+    @keyframes heart-shockwave {
+      0% {
+        opacity: 0.6;
+        transform: scale(1.4);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(2.8);
+      }
+    }
+
+    #splash-ecg-line {
+      animation: fadeIn 0.1s ease-out 0.8s forwards;
+    }
+
+    .splash-ecg-path {
+      stroke-dasharray: 450;
+      stroke-dashoffset: 450;
+      animation: drawSplashLine 0.8s ease-in-out 0.8s forwards;
+    }
+
+    @keyframes drawSplashLine {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    #splash-tagline {
+      animation: fadeIn 1s ease-in 0.8s forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    #main-app-content {
+      transition: opacity 1s ease-in;
+    }
+
+    /* --- Analyse Meal Button Highlight --- */
+    .analyse-btn {
+      position: relative;
+      overflow: hidden;
+      /* Important to contain the pseudo-element */
+    }
+
+    .analyse-btn {
+      background-image: linear-gradient(to right, #3b82f6, #6366f1) !important;
+      color: #fff !important;
+    }
+
+    .analyse-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(110deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 60%);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .analyse-btn:hover::after {
+      transform: translateX(100%);
+    }
+
+    .lang-btn:not(.active):hover {
+      background-color: #d1d5db;
+    }
+
+    .lang-btn.active {
+      background-color: #4f46e5;
+      color: white;
+    }
+
+    #install-banner {
+      background: #fef3c7;
+      /* Light yellow background */
+      color: #333;
+      /* No !important rules - let JavaScript control visibility */
+    }
+
+    .custom-titlebar {
+      -webkit-app-region: drag;
+      app-region: drag;
+    }
+
+    .custom-titlebar button,
+    .custom-titlebar input {
+      -webkit-app-region: no-drag;
+      app-region: no-drag;
+    }
