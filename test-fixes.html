@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriQuest 修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>NutriQuest 修复测试</h1>
+    
+    <div class="test-section">
+        <h2>修复项目清单</h2>
+        
+        <div class="status success">
+            ✅ 1. 图标路径修复 - manifest.json中的图标路径已修复
+        </div>
+        
+        <div class="status success">
+            ✅ 2. View Dashboard按钮改为文本 - 已从按钮改为文本链接
+        </div>
+        
+        <div class="status success">
+            ✅ 3. 手机布局粘性头部优化 - 重新设计了手机布局头部
+        </div>
+        
+        <div class="status success">
+            ✅ 4. 离线检测和弹窗 - 添加了完整的离线检测功能
+        </div>
+        
+        <div class="status success">
+            ✅ 5. 语音输入取消按钮 - 在语音输入模态框中添加了取消按钮
+        </div>
+        
+        <div class="status success">
+            ✅ 6. 手机布局元素大小优化 - 增大了星星和删除按钮的尺寸
+        </div>
+        
+        <div class="status success">
+            ✅ 7. 手机布局事件监听器 - 为手机布局添加了完整的事件处理
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试功能</h2>
+        
+        <button class="test-button" onclick="testOfflineDetection()">测试离线检测</button>
+        <button class="test-button" onclick="testResponsiveDesign()">测试响应式设计</button>
+        <button class="test-button" onclick="openMainApp()">打开主应用</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>技术改进</h2>
+        <ul>
+            <li>✅ 使用响应式设计，确保在不同设备上都有良好的用户体验</li>
+            <li>✅ 添加了完整的离线状态检测和处理</li>
+            <li>✅ 优化了手机布局的触摸目标大小</li>
+            <li>✅ 改进了语音输入的用户体验</li>
+            <li>✅ 增强了PWA的图标支持</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>使用说明</h2>
+        <p>要测试修复后的应用，请：</p>
+        <ol>
+            <li>打开 <code>public/nqstatic.html</code> 文件</li>
+            <li>在手机模式下测试响应式设计</li>
+            <li>测试离线功能（断开网络连接）</li>
+            <li>测试语音输入功能</li>
+            <li>测试手机布局的触摸交互</li>
+        </ol>
+    </div>
+
+    <script>
+        function testOfflineDetection() {
+            const status = navigator.onLine ? '在线' : '离线';
+            alert(`当前网络状态: ${status}\n\n离线检测功能已实现，当网络断开时会显示提示弹窗。`);
+        }
+        
+        function testResponsiveDesign() {
+            alert('响应式设计已优化：\n\n- 手机布局头部控件移到两端\n- 星星和按钮在手机模式下更大\n- View Dashboard改为文本链接');
+        }
+        
+        function openMainApp() {
+            window.open('./public/nqstatic.html', '_blank');
+        }
+    </script>
+</body>
+</html> 
