@@ -3,6 +3,10 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    },
+    {
+      "source": "/nqstatic.html",
+      "destination": "/nqstatic.html"
     }
   ]
 }
