@@ -27,3 +27,5 @@ coverage/
 
 # Misc
 *.tgz
+
+.react-router 
