@@ -7,5 +7,6 @@ import {
 } from "@react-router/dev/routes"
 
 export default [
-  index("./app.tsx")
+  index("./app.tsx"),
+  route("testing", "app2.tsx")
 ] satisfies RouteConfig;
