@@ -1328,6 +1328,11 @@
     const identifiedFoodNameEl = document.getElementById('identified-food-name');
     const quantityInput = document.getElementById('quantity-input');
     const cancelQuantityBtn = document.getElementById('cancel-quantity-btn');
+    // Mobile Header Buttons
+    const accountMenuBtnMobile = document.getElementById('account-menu-btn-mobile');
+    const goToLoginBtnMobile = document.getElementById('go-to-login-btn-mobile');
+    const favouritesBtnMobile = document.getElementById('favourites-btn-mobile');
+    const settingsBtnMobile = document.getElementById('settings-btn-mobile');
 
     let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, cameraStream = null, barcodeReader = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
     if (typeof ZXing !== 'undefined') barcodeReader = new ZXing.BrowserMultiFormatReader();
@@ -1416,12 +1421,12 @@
     function showAppContainer(isLoggedIn) {
       authContainer.classList.add('hidden');
       appContainer.classList.remove('hidden');
+
+      // Desktop Headers
       userHeader.style.display = isLoggedIn ? 'flex' : 'none';
       guestHeader.style.display = isLoggedIn ? 'none' : 'flex';
       
-      // 更新手机布局的用户界面
-      const userHeaderMobile = document.getElementById('user-header-mobile');
-      const guestHeaderMobile = document.getElementById('guest-header-mobile');
+      // Mobile Headers
       if (userHeaderMobile) userHeaderMobile.style.display = isLoggedIn ? 'flex' : 'none';
       if (guestHeaderMobile) guestHeaderMobile.style.display = isLoggedIn ? 'none' : 'flex';
     }
@@ -2122,7 +2127,11 @@
 
     // --- APPLICATION INITIALIZATION ---
     function initializeAppEventListeners() {
+      // --- General Listeners ---
       window.addEventListener('scroll', () => { if (appHeader) appHeader.classList.toggle('shadow-md', window.scrollY > 10); });
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+
+      // --- Auth Page Listeners ---
       authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
@@ -2147,36 +2156,34 @@
           await showAlert(translations[currentLang].passwordResetSent);
         } catch (error) { authError.textContent = error.message; }
       });
-      signOutBtnDropdown.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
-      accountMenuBtn.addEventListener('click', () => accountDropdown.classList.toggle('hidden'));
-      window.addEventListener('click', (e) => { if (!accountMenuBtn.contains(e.target) && !accountDropdown.contains(e.target)) accountDropdown.classList.add('hidden'); });
-      guestModeBtn.addEventListener('click', () => {
-        loadUserGoals();
-        loadFavourites();
-        showAppContainer(false);
-        loadMealsFromStorage();
-      });
-      goToLoginBtn.addEventListener('click', showAuthContainer);
-      settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
-      closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
-      diagnosisForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const gender = document.getElementById('gender').value, age = parseInt(document.getElementById('age').value), height = parseInt(document.getElementById('height').value), weight = parseInt(document.getElementById('weight').value), activityLevel = parseFloat(document.getElementById('activity-level').value);
-        const bmr = (gender === 'male') ? (10 * weight + 6.25 * height - 5 * age + 5) : (10 * weight + 6.25 * height - 5 * age - 161);
-        const tdee = Math.round(bmr * activityLevel);
-        setAndSaveGoals(tdee);
-        settingsModal.classList.add('hidden');
-        showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', tdee));
-      });
-      manualGoalForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const manualCalories = parseInt(document.getElementById('manual-calories').value);
-        if (manualCalories > 0) {
-          setAndSaveGoals(manualCalories);
-          settingsModal.classList.add('hidden');
-          showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', manualCalories));
+      
+      // --- Header Buttons (Desktop & Mobile) ---
+      const openSettings = () => settingsModal.classList.remove('hidden');
+      const openFavourites = () => { renderFavouritesList(); favouritesModal.classList.remove('hidden'); };
+      
+      if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
+      if (settingsBtnMobile) settingsBtnMobile.addEventListener('click', openSettings);
+
+      if (favouritesBtn) favouritesBtn.addEventListener('click', openFavourites);
+      if (favouritesBtnMobile) favouritesBtnMobile.addEventListener('click', openFavourites);
+      
+      if (accountMenuBtn) accountMenuBtn.addEventListener('click', () => accountDropdown.classList.toggle('hidden'));
+      if (accountMenuBtnMobile) accountMenuBtnMobile.addEventListener('click', () => accountDropdown.classList.toggle('hidden'));
+
+      window.addEventListener('click', (e) => { 
+        if (accountDropdown && !accountMenuBtn.contains(e.target) && !accountMenuBtnMobile.contains(e.target) && !accountDropdown.contains(e.target)) {
+          accountDropdown.classList.add('hidden');
         }
       });
+      
+      if (signOutBtnDropdown) signOutBtnDropdown.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+      
+      if (guestModeBtn) guestModeBtn.addEventListener('click', () => { loadUserGoals(); loadFavourites(); showAppContainer(false); loadMealsFromStorage(); });
+      
+      if (goToLoginBtn) goToLoginBtn.addEventListener('click', showAuthContainer);
+      if (goToLoginBtnMobile) goToLoginBtnMobile.addEventListener('click', showAuthContainer);
+
+      // --- Main App Listeners ---
       analyseBtn.addEventListener('click', () => processNewMeal());
       foodInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') processNewMeal(); });
       toggleDashboardBtn.addEventListener('click', () => {
@@ -2188,12 +2195,14 @@
       document.querySelectorAll('.meal-type-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelector('.meal-type-btn.active')?.classList.remove('active'); btn.classList.add('active'); }));
       cameraScanBtn.addEventListener('click', () => cameraChoiceModal.classList.remove('hidden'));
       voiceInputBtn.addEventListener('click', startVoiceRecognition);
+
+      // --- Modals & Other Listeners ---
       closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.classList.add('hidden'));
       scanMealBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); openCamera(); });
       scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); startBarcodeScanner(); });
       captureBtn.addEventListener('click', captureImage);
       closeCameraBtn.addEventListener('click', closeCamera);
-      closeBarcodeBtn.addEventListener('click', () => { barcodeReader.reset(); barcodeModal.classList.add('hidden'); });
+      closeBarcodeBtn.addEventListener('click', () => { if (barcodeReader) barcodeReader.reset(); barcodeModal.classList.add('hidden'); });
       servingForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const servingSize = parseFloat(document.getElementById('serving-size').value);
@@ -2215,53 +2224,29 @@
         }
       });
       cancelQuantityBtn.addEventListener('click', () => quantityModal.classList.add('hidden'));
-      favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.classList.remove('hidden'); });
       closeFavouritesBtn.addEventListener('click', () => favouritesModal.classList.add('hidden'));
       closeCalendarBtn.addEventListener('click', () => calendarModal.classList.add('hidden'));
-      setupDashboardListeners();
-      document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
-      
-      // 添加离线检测事件监听器
-      window.addEventListener('online', checkOnlineStatus);
-      window.addEventListener('offline', checkOnlineStatus);
-      
-      // 添加离线弹窗关闭按钮事件监听器
-      const offlineCloseBtn = document.getElementById('offline-close-btn');
-      offlineCloseBtn.addEventListener('click', () => {
-        document.getElementById('offline-modal').classList.add('hidden');
+      closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+      diagnosisForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const gender = document.getElementById('gender').value, age = parseInt(document.getElementById('age').value), height = parseInt(document.getElementById('height').value), weight = parseInt(document.getElementById('weight').value), activityLevel = parseFloat(document.getElementById('activity-level').value);
+        const bmr = (gender === 'male') ? (10 * weight + 6.25 * height - 5 * age + 5) : (10 * weight + 6.25 * height - 5 * age - 161);
+        const tdee = Math.round(bmr * activityLevel);
+        setAndSaveGoals(tdee);
+        settingsModal.classList.add('hidden');
+        showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', tdee));
       });
-      
-      // 添加手机布局的事件监听器
-      const accountMenuBtnMobile = document.getElementById('account-menu-btn-mobile');
-      const accountDropdownMobile = document.getElementById('account-dropdown-mobile');
-      const signOutBtnDropdownMobile = document.getElementById('sign-out-btn-dropdown-mobile');
-      const goToLoginBtnMobile = document.getElementById('go-to-login-btn-mobile');
-      const favouritesBtnMobile = document.getElementById('favourites-btn-mobile');
-      const settingsBtnMobile = document.getElementById('settings-btn-mobile');
-      
-      if (accountMenuBtnMobile) {
-        accountMenuBtnMobile.addEventListener('click', () => accountDropdownMobile.classList.toggle('hidden'));
-        window.addEventListener('click', (e) => { 
-          if (!accountMenuBtnMobile.contains(e.target) && !accountDropdownMobile.contains(e.target)) 
-            accountDropdownMobile.classList.add('hidden'); 
-        });
-      }
-      
-      if (signOutBtnDropdownMobile) {
-        signOutBtnDropdownMobile.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
-      }
-      
-      if (goToLoginBtnMobile) {
-        goToLoginBtnMobile.addEventListener('click', showAuthContainer);
-      }
-      
-      if (favouritesBtnMobile) {
-        favouritesBtnMobile.addEventListener('click', () => { renderFavouritesList(); favouritesModal.classList.remove('hidden'); });
-      }
-      
-      if (settingsBtnMobile) {
-        settingsBtnMobile.addEventListener('click', () => settingsModal.classList.remove('hidden'));
-      }
+      manualGoalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const manualCalories = parseInt(document.getElementById('manual-calories').value);
+        if (manualCalories > 0) {
+          setAndSaveGoals(manualCalories);
+          settingsModal.classList.add('hidden');
+          showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', manualCalories));
+        }
+      });
+
+      setupDashboardListeners();
     }
 
     const splashScreenFinished = new Promise(resolve => {
