@@ -1471,15 +1471,27 @@
       buttonTextSpan.setAttribute('data-lang-key', isHidden ? 'viewDashboard' : 'hideDashboard');
     }
     async function processNewMeal(mealData = null) {
+      // Check for an internet connection first
+      if (!navigator.onLine) {
+        showOfflineModal();
+        return;
+      }
+
       let nutritionData;
       const query = foodInput.value.trim();
-      if (!mealData && !query) { await showAlert("Please enter a meal to analyse."); return; }
+      if (!mealData && !query) {
+        await showAlert("Please enter a meal to analyse.");
+        return;
+      }
       showLoader('analysing');
       try {
         nutritionData = mealData ? mealData : await getNutritionalInfo(query);
         if (!nutritionData) throw new Error("Could not retrieve nutritional data.");
         const mealType = document.querySelector('.meal-type-btn.active')?.dataset.type || 'Snack';
-        const newMeal = { ...nutritionData, mealType, timestamp: new Date().toISOString() };
+        const newMeal = { ...nutritionData,
+          mealType,
+          timestamp: new Date().toISOString()
+        };
         await saveMeal(newMeal);
         foodInput.value = '';
         currentDate = new Date();
@@ -1490,11 +1502,17 @@
         }
       } catch (error) {
         if (error.message === "RATE_LIMIT_EXCEEDED") showAlert(translations[localStorage.getItem('language') || 'en'].rateLimitError);
-        else { console.error('Error processing new meal:', error); await showAlert('Could not analyse meal. Please try again.'); }
+        else {
+          console.error('Error processing new meal:', error);
+          await showAlert('Could not analyse meal. Please try again.');
+        }
       } finally {
         updateDashboard(activePeriod);
         hideLoader();
-        if (!dashboard.classList.contains('hidden')) setTimeout(() => dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        if (!dashboard.classList.contains('hidden')) setTimeout(() => dashboard.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        }), 100);
       }
     }
     async function openCamera() {
