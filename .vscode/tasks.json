@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run npm dev on open",
+      "label": "update packages and run npm dev on open",
       "type": "shell",
-      "command": "npm run dev",
+      "command": "npm install && npm run dev",
       "presentation": {
         "reveal": "always",
         "panel": "new"
