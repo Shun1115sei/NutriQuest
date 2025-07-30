@@ -410,10 +410,28 @@
       background-color: #4f46e5;
       color: white;
     }
+
+    #install-banner {
+      background: #ffc;
+      color: #333;
+      display: block !important;
+      height: auto !important;
+      min-height: 56px !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
   </style>
 </head>
 
 <body class="bg-gray-100 text-gray-800">
+  <!-- PWA Install Prompt Button (hidden by default) -->
+  <div id="install-banner"
+    class="w-full flex justify-center items-center bg-yellow-50 border-b border-yellow-300 p-4 fixed top-0 left-0 z-50 shadow transition-all hidden">
+    <span class="text-gray-900 font-semibold mr-4">Install NutriQuest on your device for best experience!</span>
+    <button id="install-btn"
+      class="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-800 transition-all shadow">Install</button>
+  </div>
+  <div style="height:56px"></div> <!-- Spacer to prevent overlap, optional -->
 
   <!-- Splash Screen -->
   <div id="splash-screen" class="fixed inset-0 bg-gray-100 flex flex-col items-center justify-center z-50">
@@ -1080,7 +1098,8 @@
       </svg>
       <p id="listening-text-status" class="text-lg mt-4" data-lang-key="listeningStatus">Listening...</p>
       <!-- 添加语音输入取消按钮 -->
-      <button id="voice-cancel-btn" class="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+      <button id="voice-cancel-btn"
+        class="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
         <span data-lang-key="cancelButton">Cancel</span>
       </button>
     </div>
@@ -1090,8 +1109,10 @@
   <div id="offline-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <h3 class="text-lg font-bold text-gray-800 mb-4" data-lang-key="offlineTitle">You're Offline</h3>
-      <p class="text-gray-600 mb-6" data-lang-key="offlineMessage">Please check your internet connection and try again.</p>
-      <button id="offline-close-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+      <p class="text-gray-600 mb-6" data-lang-key="offlineMessage">Please check your internet connection and try again.
+      </p>
+      <button id="offline-close-btn"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
         <span data-lang-key="okButton">OK</span>
       </button>
     </div>
@@ -1576,7 +1597,7 @@
 
         // Display messages in a centred container.
         mealList.innerHTML = `<p id="no-meals-message" class="text-gray-500 text-center" data-lang-key="noMeals">${translations[currentLang].noMeals}</p>`;
-      
+
       } else {
         // ▼▼▼ Processing when the list has contents. ▼▼▼
         // Remove classes for centring and restore classes for stacking
@@ -1585,11 +1606,11 @@
 
         meals.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         meals.forEach(data => {
-            const mealElement = document.createElement('div');
-            const mealTypeColor = { Breakfast: 'bg-blue-100 text-blue-800', Lunch: 'bg-green-100 text-green-800', Dinner: 'bg-purple-100 text-purple-800', Snack: 'bg-yellow-100 text-yellow-800' };
-            const isFavourited = favouriteMeals.some(fav => fav.food.toLowerCase() === data.food.toLowerCase());
-            mealElement.className = 'bg-white p-4 border border-gray-200 rounded-lg';
-            mealElement.innerHTML = `
+          const mealElement = document.createElement('div');
+          const mealTypeColor = { Breakfast: 'bg-blue-100 text-blue-800', Lunch: 'bg-green-100 text-green-800', Dinner: 'bg-purple-100 text-purple-800', Snack: 'bg-yellow-100 text-yellow-800' };
+          const isFavourited = favouriteMeals.some(fav => fav.food.toLowerCase() === data.food.toLowerCase());
+          mealElement.className = 'bg-white p-4 border border-gray-200 rounded-lg';
+          mealElement.innerHTML = `
                 <div class="flex justify-between items-center">
                     <h3 class="text-lg font-semibold text-gray-800 capitalize">${data.food}</h3>
                     <div class="flex items-center gap-2">
@@ -1612,17 +1633,17 @@
                     <div><strong data-lang-key="carbs">${translations[currentLang].carbs}:</strong> ${data.carbs.toFixed(1)}g</div>
                 </div>
             `;
-            
-            mealElement.querySelector('.favourite-star').addEventListener('click', (e) => toggleFavourite(data, e.currentTarget));
-            
-            mealElement.querySelector('.delete-meal-btn').addEventListener('click', async () => {
-                const currentLang = localStorage.getItem('language') || 'en';
-                if (await showConfirm(translations[currentLang].removeMealConfirm)) {
-                    await deleteMeal(data.id);
-                }
-            });
 
-            mealList.appendChild(mealElement);
+          mealElement.querySelector('.favourite-star').addEventListener('click', (e) => toggleFavourite(data, e.currentTarget));
+
+          mealElement.querySelector('.delete-meal-btn').addEventListener('click', async () => {
+            const currentLang = localStorage.getItem('language') || 'en';
+            if (await showConfirm(translations[currentLang].removeMealConfirm)) {
+              await deleteMeal(data.id);
+            }
+          });
+
+          mealList.appendChild(mealElement);
         });
       }
     }
@@ -1981,28 +2002,28 @@
     }
     // 离线检测功能
     let isOnline = navigator.onLine;
-    
+
     function checkOnlineStatus() {
       const wasOnline = isOnline;
       isOnline = navigator.onLine;
-      
+
       if (wasOnline && !isOnline) {
         // 从在线变为离线
         showOfflineModal();
       }
     }
-    
+
     function showOfflineModal() {
       const currentLang = localStorage.getItem('language') || 'en';
       const offlineModal = document.getElementById('offline-modal');
       const offlineTitle = offlineModal.querySelector('[data-lang-key="offlineTitle"]');
       const offlineMessage = offlineModal.querySelector('[data-lang-key="offlineMessage"]');
-      
+
       offlineTitle.textContent = translations[currentLang].offlineTitle;
       offlineMessage.textContent = translations[currentLang].offlineMessage;
       offlineModal.classList.remove('hidden');
     }
-    
+
     function startVoiceRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) { showAlert('Your browser does not support voice input.'); return; }
@@ -2014,14 +2035,14 @@
       listeningTextStatus.textContent = translations[currentLang].listening;
       listeningModal.classList.remove('hidden');
       recognition.start();
-      
+
       // 添加语音输入取消按钮事件监听
       const voiceCancelBtn = document.getElementById('voice-cancel-btn');
       voiceCancelBtn.addEventListener('click', () => {
         recognition.stop();
         listeningModal.classList.add('hidden');
       });
-      
+
       recognition.onresult = async (event) => {
         listeningModal.classList.add('hidden');
         const speechResult = event.results[0][0].transcript;
@@ -2219,6 +2240,53 @@
           });
       });
     }
+  </script>
+  <script>
+    // --- PWA INSTALL LOGIC ---
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('install-banner');
+    const installBtn = document.getElementById('install-btn');
+
+    // Always hide banner on load (in case it's visible from previous session)
+    window.addEventListener('load', () => {
+      installBanner.classList.add('hidden');
+    });
+
+    // Listen for the beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); // Prevent default mini-infobar
+      deferredPrompt = e;
+      installBanner.classList.remove('hidden'); // Show banner ONLY when available
+    });
+
+    // On "Install" button click, show prompt only if available
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return; // Do nothing if not ready
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice; // Wait for user action
+        installBanner.classList.add('hidden'); // Hide after user acts
+        deferredPrompt = null;
+      });
+    }
+
+    // Hide banner if already installed
+    window.addEventListener('appinstalled', () => {
+      installBanner.classList.add('hidden');
+      deferredPrompt = null;
+    });
+
+
+    installBtn.addEventListener('click', async () => {
+      console.log('deferredPrompt value at click:', deferredPrompt);
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      installBanner.classList.add('hidden');
+      deferredPrompt = null;
+    });
+
+
   </script>
 </body>
 
