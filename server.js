@@ -9,7 +9,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 const PORT = 8000;
-const STATIC_PATH = path.join(process.cwd(), './nutriquest-webapp'); // serve ./nutriquest-webapp directory
+const STATIC_PATH = process.cwd(); // serve the root directory
 
 http.createServer(async (req, res) => {
   let filePath = path.join(STATIC_PATH, req.url.endsWith('/') ? req.url + 'index.html' : req.url);
