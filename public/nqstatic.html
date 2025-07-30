@@ -1036,7 +1036,7 @@
         <h3 class="text-lg font-semibold text-red-700" data-lang-key="dangerZone">Danger Zone</h3>
         <p class="text-sm text-gray-600 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be
           certain.</p>
-        <button id="reset-all-btn"
+        <button id="delete-all-data-btn"
           class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
           data-lang-key="deleteAllData">Delete All Data</button>
       </div>
@@ -1275,6 +1275,7 @@
     const closeSettingsBtn = document.getElementById('close-settings-btn');
     const diagnosisForm = document.getElementById('diagnosis-form');
     const manualGoalForm = document.getElementById('manual-goal-form');
+    const deleteAllDataBtn = document.getElementById('delete-all-data-btn');
     const barcodeModal = document.getElementById('barcode-modal');
     const barcodeVideo = document.getElementById('barcode-video');
     const closeBarcodeBtn = document.getElementById('close-barcode-btn');
@@ -2298,6 +2299,9 @@
       closeFavouritesBtn.addEventListener('click', () => favouritesModal.classList.add('hidden'));
       closeCalendarBtn.addEventListener('click', () => calendarModal.classList.add('hidden'));
       closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+      if (deleteAllDataBtn) {
+        deleteAllDataBtn.addEventListener('click', resetAllData);
+      }
       diagnosisForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const gender = document.getElementById('gender').value, age = parseInt(document.getElementById('age').value), height = parseInt(document.getElementById('height').value), weight = parseInt(document.getElementById('weight').value), activityLevel = parseFloat(document.getElementById('activity-level').value);
