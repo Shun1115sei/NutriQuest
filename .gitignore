@@ -22,7 +22,6 @@ coverage/
 
 # Editor directories and files
 .idea/
-.vscode/
 *.sublime-workspace
 *.sublime-project
 
