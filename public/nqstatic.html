@@ -813,8 +813,8 @@
               </div>
               <div class="mt-8 text-center">
                 <button id="reset-all-btn"
-                  class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 rounded-lg transition-all"
-                  data-lang-key="deleteAllData">Delete All Data</button>
+                  class="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-5 rounded-lg transition-all"
+                  data-lang-key="deleteTodayData">Delete Today's Data</button>
               </div>
             </div>
           </div>
@@ -933,7 +933,6 @@
       <p class="text-center text-gray-600 mb-6" data-lang-key="settingsDescription">Let us calculate your needs,
         or set your own manual goal.</p>
 
-      <!-- Diagnosis Form -->
       <form id="diagnosis-form">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -986,7 +985,6 @@
 
       <div class="my-4 text-center text-gray-500" data-lang-key="or">OR</div>
 
-      <!-- Manual Form -->
       <form id="manual-goal-form">
         <label for="manual-calories" class="block text-sm font-medium text-gray-700" data-lang-key="setManualGoal">Set
           Manual Calorie Goal</label>
@@ -996,6 +994,12 @@
           class="mt-4 w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg"
           data-lang-key="saveManualGoal">Save Manual Goal</button>
       </form>
+
+      <div class="my-6 border-t pt-6">
+        <h3 class="text-lg font-semibold text-red-700" data-lang-key="dangerZone">Danger Zone</h3>
+        <p class="text-sm text-gray-600 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be certain.</p>
+        <button id="reset-all-btn" class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="deleteAllData">Delete All Data</button>
+      </div>
       <button id="close-settings-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
         data-lang-key="closeButton">Close</button>
     </div>
@@ -1128,7 +1132,7 @@
         calculateAndSave: "Calculate & Save", or: "OR", setManualGoal: "Set Manual Calorie Goal", saveManualGoal: "Save Manual Goal",
         analysing: "Analysing...", noFavourites: "No favourite meals yet. Click the star on a meal to add it.",
         didYouMean: 'Did you mean "{foodName}"?', listening: 'Listening...', checkingSpeech: 'Checking your speech...', speechError: 'Could not recognize speech: {error}',
-        deletingData: 'Deleting all data...', signingIn: 'Signing in...', loadingData: 'Loading your data...', barcodeLookup: 'Found barcode: {barcode}. Looking up...',
+        deletingData: 'Deleting data...', signingIn: 'Signing in...', loadingData: 'Loading your data...', barcodeLookup: 'Found barcode: {barcode}. Looking up...',
         offlineTitle: "You're Offline", offlineMessage: "Please check your internet connection and try again.",
         nextMeal: "your next meal",
         goalSetMessage: "Your daily goal has been set to {calories} kcal.",
@@ -1143,6 +1147,10 @@
         hideDashboard: "Hide Dashboard",
         confirmFoodTitle: "Confirm Food & Quantity",
         quantityLabel: "Enter quantity (e.g., 1 piece, 100g)",
+        deleteTodayData: "Delete Today's Data",
+        deleteTodayConfirm: "Are you sure you want to delete all meals recorded today?",
+        dangerZone: "Danger Zone",
+        dangerZoneDesc: "This action cannot be undone. Please be certain.",
         sun: "S", mon: "M", tue: "T", wed: "W", thu: "T", fri: "F", sat: "S",
         week: "Week", periodGoal: "Period Goal", actualIntake: "Actual Intake"
       },
@@ -1156,7 +1164,7 @@
         calculateAndSave: "计算并保存", or: "要么", setManualGoal: "设置手动卡路里目标", saveManualGoal: "保存手动目标",
         analysing: "分析中...", noFavourites: "还没有喜欢的食物。点击星星添加。",
         didYouMean: '您是指“{foodName}”吗？', listening: '正在听...', checkingSpeech: '正在检查您的语音...', speechError: '无法识别语音: {error}',
-        deletingData: '正在删除所有数据...', signingIn: '登录中...', loadingData: '正在加载您的数据...', barcodeLookup: '找到条形码: {barcode}。查询中...',
+        deletingData: '正在删除数据...', signingIn: '登录中...', loadingData: '正在加载您的数据...', barcodeLookup: '找到条形码: {barcode}。查询中...',
         offlineTitle: "您已离线", offlineMessage: "请检查您的网络连接并重试。",
         nextMeal: "下一餐",
         goalSetMessage: "您的每日目标已设定为 {calories} 大卡。",
@@ -1171,6 +1179,10 @@
         hideDashboard: "隐藏仪表板",
         confirmFoodTitle: "确认食物和数量",
         quantityLabel: "输入数量（例如：1个，100克）",
+        deleteTodayData: "删除今日数据",
+        deleteTodayConfirm: "您确定要删除今天记录的所有膳食吗？",
+        dangerZone: "危险区域",
+        dangerZoneDesc: "此操作无法撤销，请谨慎操作。",
         sun: "日", mon: "一", tue: "二", wed: "三", thu: "四", fri: "五", sat: "六",
         week: "周", periodGoal: "期间目标", actualIntake: "实际摄入"
       }
@@ -1194,6 +1206,7 @@
     const dashboard = document.getElementById('dashboard');
     const mealList = document.getElementById('meal-list');
     const resetAllBtn = document.getElementById('reset-all-btn');
+    const resetTodayBtn = document.getElementById('reset-today-btn');
     const guestModeBtn = document.getElementById('guest-mode-btn');
     const userHeader = document.getElementById('user-header');
     const guestHeader = document.getElementById('guest-header');
@@ -1525,6 +1538,7 @@
     function setupDashboardListeners() {
       document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => { activePeriod = btn.dataset.period; currentDate = new Date(); updateDashboard(activePeriod); }));
       resetAllBtn.addEventListener('click', resetAllData);
+      if (resetTodayBtn) resetTodayBtn.addEventListener('click', resetTodayData);
       toggleDetailsBtn.addEventListener('click', () => { isDetailedView = !isDetailedView; updateDashboard(activePeriod); });
       prevPeriodBtn.addEventListener('click', () => navigatePeriod(-1));
       nextPeriodBtn.addEventListener('click', () => navigatePeriod(1));
@@ -1640,6 +1654,51 @@
       updateDashboard(activePeriod);
       hideLoader();
     }
+    async function resetTodayData() {
+    const currentLang = localStorage.getItem('language') || 'en';
+    if (!await showConfirm(translations[currentLang].deleteTodayConfirm)) return;
+
+    showLoader('deletingData');
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    // Separate meals to be deleted from those to be retained.
+    const mealsToDelete = allMeals.filter(meal => {
+        const mealDate = new Date(meal.timestamp);
+        return mealDate >= today && mealDate <= endOfToday;
+    });
+    const mealsToKeep = allMeals.filter(meal => {
+        const mealDate = new Date(meal.timestamp);
+        return mealDate < today || mealDate > endOfToday;
+    });
+
+    if (mealsToDelete.length === 0) {
+        hideLoader();
+        return; // No data to delete.
+    }
+
+    if (auth.currentUser) {
+        const batch = db.batch();
+        mealsToDelete.forEach(meal => {
+            const mealRef = db.collection('users').doc(auth.currentUser.uid).collection('meals').doc(meal.id);
+            batch.delete(mealRef);
+        });
+        await batch.commit();
+    }
+
+    // Update the local array and save it for guests
+    allMeals = mealsToKeep;
+    if (!auth.currentUser) {
+        saveMealsToStorage();
+    }
+
+    // Updated UI.
+    updateDashboard(activePeriod);
+    hideLoader();
+}
     function provideNutritionalAdvice(periodMeals) {
       const adviceCard = document.getElementById('advice-card'), adviceIcon = document.getElementById('advice-icon'), adviceText = document.getElementById('advice-text'), currentLang = localStorage.getItem('language') || 'en';
       if (periodMeals.length === 0) { adviceCard.classList.add('hidden'); return; }
