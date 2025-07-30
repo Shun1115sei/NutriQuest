@@ -1305,6 +1305,8 @@
     const identifiedFoodNameEl = document.getElementById('identified-food-name');
     const quantityInput = document.getElementById('quantity-input');
     const cancelQuantityBtn = document.getElementById('cancel-quantity-btn');
+    const offlineModal = document.getElementById('offline-modal');
+    const offlineCloseBtn = document.getElementById('offline-close-btn');
     // Mobile Header Buttons
     const accountMenuBtnMobile = document.getElementById('account-menu-btn-mobile');
     const goToLoginBtnMobile = document.getElementById('go-to-login-btn-mobile');
@@ -2272,6 +2274,13 @@
           showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', manualCalories));
         }
       });
+
+      // Offline Modal Listener
+      if (offlineCloseBtn) {
+        offlineCloseBtn.addEventListener('click', () => {
+          offlineModal.classList.add('hidden');
+        });
+      }
 
       setupDashboardListeners();
     }
