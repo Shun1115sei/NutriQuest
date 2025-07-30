@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,114 +11,191 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <link rel="icon" type="image/png" href="/Images/192.png">
     <!-- Barcode Scanner Library -->
     <script src="https://unpkg.com/@zxing/library@0.21.0/umd/index.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .main-container { padding: 1rem; transition: filter 0.3s; }
-        @media (min-width: 640px) {
-            .main-container { padding: 2rem; }
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        #auth-container, #app-container { transition: opacity 0.5s, visibility 0.5s; }
-        .hidden { display: none; }
-        .filter-btn.active, .meal-type-btn.active { background-color: #374151; color: white; border-color: #374151; }
-        .camera-modal-content video { width: 100%; border-radius: 0.5rem; margin-bottom: 1rem; }
-        
+
+        .main-container {
+            padding: 1rem;
+            transition: filter 0.3s;
+        }
+
+        @media (min-width: 640px) {
+            .main-container {
+                padding: 2rem;
+            }
+        }
+
+        #auth-container,
+        #app-container {
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .filter-btn.active,
+        .meal-type-btn.active {
+            background-color: #374151;
+            color: white;
+            border-color: #374151;
+        }
+
+        .camera-modal-content video {
+            width: 100%;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
         .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
         }
+
         .modal-content {
-            background: white; padding: 1.5rem; border-radius: 1rem; max-width: 400px;
-            width: 90%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
+
         @media (min-width: 640px) {
-            .modal-content { padding: 2rem; }
+            .modal-content {
+                padding: 2rem;
+            }
         }
-        .favourite-star { cursor: pointer; transition: color 0.2s; }
-        .favourite-star.favourited { color: #facc15; }
+
+        .favourite-star {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .favourite-star.favourited {
+            color: #facc15;
+        }
+
         .favourite-star:not(.favourited) svg {
             fill: none;
         }
+
         .favourite-star.favourited svg {
             fill: currentColor;
         }
+
         @keyframes pop {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.4); }
-          100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
+
         .star-pop {
-          animation: pop 0.3s ease-in-out;
+            animation: pop 0.3s ease-in-out;
         }
-        
+
         .favourite-star-container {
-          position: relative;
+            position: relative;
         }
+
         .favourite-star-container.sparkling::after {
-          content: '';
-          position: absolute;
-          top: -10px; left: -10px; right: -10px; bottom: -10px;
-          border-radius: 50%;
-          border: 2px solid #facc15;
-          transform: scale(0);
-          opacity: 0;
-          animation: sparkle-ring 0.5s ease-out;
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            border: 2px solid #facc15;
+            transform: scale(0);
+            opacity: 0;
+            animation: sparkle-ring 0.5s ease-out;
         }
 
         @keyframes sparkle-ring {
-          0% {
-            transform: scale(0.5);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(2);
-            opacity: 0;
-          }
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
         }
 
         /* --- Loading Animation Styles --- */
         .loader {
-          width: 80px;
-          aspect-ratio: 1;
-          color:#E8204E;
-          background:
-            radial-gradient(circle at 60% 65%, currentColor 62%, #0000 65%) top left,
-            radial-gradient(circle at 40% 65%, currentColor 62%, #0000 65%) top right,
-            linear-gradient(to bottom left, currentColor 42%,#0000 43%) bottom left ,
-            linear-gradient(to bottom right,currentColor 42%,#0000 43%) bottom right;
-          background-size: 50% 50%;
-          background-repeat: no-repeat;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 5; /* Behind the line */
+            width: 80px;
+            aspect-ratio: 1;
+            color: #E8204E;
+            background:
+                radial-gradient(circle at 60% 65%, currentColor 62%, #0000 65%) top left,
+                radial-gradient(circle at 40% 65%, currentColor 62%, #0000 65%) top right,
+                linear-gradient(to bottom left, currentColor 42%, #0000 43%) bottom left,
+                linear-gradient(to bottom right, currentColor 42%, #0000 43%) bottom right;
+            background-size: 50% 50%;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            /* Behind the line */
         }
+
         .loader:after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: inherit;
-          opacity: 0.4;
-          animation: l3 1.5s infinite;
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: inherit;
+            opacity: 0.4;
+            animation: l3 1.5s infinite;
         }
+
         @keyframes l3 {
-          to {transform:scale(1.8);opacity:0}
+            to {
+                transform: scale(1.8);
+                opacity: 0
+            }
         }
-        
+
         .ecg-line {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10; /* In front of the heart */
+            z-index: 10;
+            /* In front of the heart */
             overflow: visible;
         }
 
         .ecg-path {
-            stroke: white; /* White color */
+            stroke: white;
+            /* White color */
             stroke-dasharray: 190;
             stroke-dashoffset: 190;
             animation: draw-line 1.5s ease-in-out infinite;
@@ -127,14 +205,16 @@
             0% {
                 stroke-dashoffset: 190;
             }
+
             50% {
                 stroke-dashoffset: 0;
             }
+
             100% {
                 stroke-dashoffset: -190;
             }
         }
-        
+
         /* --- Barcode Scanner Overlay --- */
         .scanner-container {
             position: relative;
@@ -143,6 +223,7 @@
             border-radius: 0.5rem;
             overflow: hidden;
         }
+
         .focus-box {
             position: absolute;
             top: 50%;
@@ -150,16 +231,18 @@
             width: 80%;
             height: 40%;
             border: 2px solid white;
-            box-shadow: 0 0 0 4000px rgba(0,0,0,0.5);
+            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
             transform: translate(-50%, -50%);
             border-radius: 0.5rem;
         }
 
         /* --- Splash Screen Styles --- */
         #splash-screen {
-            transition: opacity 0.5s ease-out; /* Start fading out after 2.2s */
+            transition: opacity 0.5s ease-out;
+            /* Start fading out after 2.2s */
             overflow: hidden;
         }
+
         #splash-title-container {
             position: relative;
             height: 80px;
@@ -167,11 +250,13 @@
             align-items: center;
             justify-content: center;
         }
+
         #splash-title {
             display: flex;
             position: relative;
             z-index: 10;
         }
+
         #splash-heart {
             position: absolute;
             width: 80px;
@@ -181,12 +266,14 @@
             z-index: 5;
             animation: heart-beat-behind 1.0s ease-in-out 0.8s forwards;
         }
+
         #splash-heart-shockwave {
             position: absolute;
             width: 80px;
             height: 80px;
             stroke: #E8204E;
-            stroke-width: 0.25px; /* MODIFIED: Thinner line */
+            stroke-width: 0.25px;
+            /* MODIFIED: Thinner line */
             fill: none;
             opacity: 0;
             z-index: 4;
@@ -196,83 +283,136 @@
         #splash-nutri {
             animation: slideInFromLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
+
         #splash-quest {
             animation: slideInFromRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
+
         @keyframes slideInFromLeft {
-            0% { transform: translateX(-150%); }
-            100% { transform: translateX(0); }
+            0% {
+                transform: translateX(-150%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
         }
+
         @keyframes slideInFromRight {
-            0% { transform: translateX(150%); }
-            100% { transform: translateX(0); }
+            0% {
+                transform: translateX(150%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
         }
 
         @keyframes heart-beat-behind {
-            0%   { opacity: 0; transform: scale(0.8); }
-            25%  { opacity: 0.5; transform: scale(1.8); } /* Bigger, faster beat */
-            35%  { transform: scale(1.4); } /* Settle faster */
-            100% { opacity: 0; transform: scale(1.4); } /* Fade out while large */
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            25% {
+                opacity: 0.5;
+                transform: scale(1.8);
+            }
+
+            /* Bigger, faster beat */
+            35% {
+                transform: scale(1.4);
+            }
+
+            /* Settle faster */
+            100% {
+                opacity: 0;
+                transform: scale(1.4);
+            }
+
+            /* Fade out while large */
         }
-        
+
         @keyframes heart-shockwave {
-            0% { opacity: 0.6; transform: scale(1.4); }
-            100% { opacity: 0; transform: scale(2.8); }
+            0% {
+                opacity: 0.6;
+                transform: scale(1.4);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(2.8);
+            }
         }
 
         #splash-ecg-line {
             animation: fadeIn 0.1s ease-out 0.8s forwards;
         }
+
         .splash-ecg-path {
             stroke-dasharray: 450;
             stroke-dashoffset: 450;
             animation: drawSplashLine 0.8s ease-in-out 0.8s forwards;
         }
+
         @keyframes drawSplashLine {
-            to { stroke-dashoffset: 0; }
+            to {
+                stroke-dashoffset: 0;
+            }
         }
+
         #splash-tagline {
             animation: fadeIn 1s ease-in 0.8s forwards;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
+
         #main-app-content {
             transition: opacity 1s ease-in;
         }
 
         /* --- Analyse Meal Button Highlight --- */
         .analyse-btn {
-          position: relative;
-          overflow: hidden; /* Important to contain the pseudo-element */
+            position: relative;
+            overflow: hidden;
+            /* Important to contain the pseudo-element */
         }
 
         .analyse-btn::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(110deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 60%);
-          transform: translateX(-100%);
-          transition: transform 0.6s ease-in-out;
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(110deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 60%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease-in-out;
         }
 
         .analyse-btn:hover::after {
-          transform: translateX(100%);
+            transform: translateX(100%);
         }
-        
+
         .lang-btn:not(.active):hover {
             background-color: #d1d5db;
         }
+
         .lang-btn.active {
             background-color: #4f46e5;
             color: white;
         }
     </style>
 </head>
+
 <body class="bg-gray-100 text-gray-800">
 
     <!-- Splash Screen -->
@@ -282,18 +422,22 @@
                 <span id="splash-nutri">Nutri</span><span id="splash-quest">Quest</span>
             </h1>
             <svg id="splash-heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
             <svg id="splash-heart-shockwave" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
         </div>
         <div class="relative w-96 h-12">
-             <svg id="splash-ecg-line" class="absolute inset-0 w-full h-full opacity-0" viewBox="0 0 300 60">
-                <path class="splash-ecg-path" d="M0 30 H80 L95 10 L125 50 L145 20 L155 30 H300" stroke-width="3" stroke="#E8204E" fill="none"></path>
+            <svg id="splash-ecg-line" class="absolute inset-0 w-full h-full opacity-0" viewBox="0 0 300 60">
+                <path class="splash-ecg-path" d="M0 30 H80 L95 10 L125 50 L145 20 L155 30 H300" stroke-width="3"
+                    stroke="#E8204E" fill="none"></path>
             </svg>
         </div>
-        <p id="splash-tagline" data-lang-key="tagline" class="text-lg text-gray-500 mt-2 opacity-0">Your Journey to a Healthier You.</p>
+        <p id="splash-tagline" data-lang-key="tagline" class="text-lg text-gray-500 mt-2 opacity-0">Your Journey to a
+            Healthier You.</p>
     </div>
 
     <!-- Main Application and Auth Containers -->
@@ -304,29 +448,43 @@
                 <div class="relative max-w-md w-full bg-white p-8 rounded-xl shadow-lg">
                     <div class="absolute top-4 right-4">
                         <div class="flex items-center gap-1 bg-gray-200 rounded-full p-1">
-                            <button data-lang="en" class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors">EN</button>
-                            <button data-lang="zh" class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors"><span class="hidden sm:inline">中文</span><span class="inline sm:hidden">中</span></button>
+                            <button data-lang="en"
+                                class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors">EN</button>
+                            <button data-lang="zh"
+                                class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors"><span
+                                    class="hidden sm:inline">中文</span><span class="inline sm:hidden">中</span></button>
                         </div>
                     </div>
-                    <h2 id="auth-title" data-lang-key="loginTitle" class="text-3xl font-bold text-center text-gray-800 mb-6 pt-8">Login</h2>
+                    <h2 id="auth-title" data-lang-key="loginTitle"
+                        class="text-3xl font-bold text-center text-gray-800 mb-6 pt-8">Login</h2>
                     <p id="auth-error" class="text-red-500 text-center mb-4"></p>
                     <form id="auth-form">
                         <div class="mb-4">
-                            <label for="email" data-lang-key="emailLabel" class="block text-gray-700 font-semibold mb-2">Email</label>
-                            <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <label for="email" data-lang-key="emailLabel"
+                                class="block text-gray-700 font-semibold mb-2">Email</label>
+                            <input type="email" id="email"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required>
                         </div>
                         <div class="mb-6">
-                            <label for="password" data-lang-key="passwordLabel" class="block text-gray-700 font-semibold mb-2">Password</label>
-                            <input type="password" id="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <label for="password" data-lang-key="passwordLabel"
+                                class="block text-gray-700 font-semibold mb-2">Password</label>
+                            <input type="password" id="password"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required>
                         </div>
 
                         <!-- Link to reset password -->
-                        <p class="text-right mb-4"><a href="#" id="forgot-password-link" class="text-sm text-blue-500 hover:underline" data-lang-key="forgotPassword">Forgot Password?</a></p>
+                        <p class="text-right mb-4"><a href="#" id="forgot-password-link"
+                                class="text-sm text-blue-500 hover:underline" data-lang-key="forgotPassword">Forgot
+                                Password?</a></p>
 
-                        <button type="submit" id="auth-submit-btn" data-lang-key="loginButton" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-all">Login</button>
+                        <button type="submit" id="auth-submit-btn" data-lang-key="loginButton"
+                            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-all">Login</button>
                     </form>
                     <p class="text-center mt-6">
-                        <a href="#" id="auth-toggle-link" data-lang-key="authToggle" class="text-blue-500 hover:underline">Need an account? Sign Up</a>
+                        <a href="#" id="auth-toggle-link" data-lang-key="authToggle"
+                            class="text-blue-500 hover:underline">Need an account? Sign Up</a>
                     </p>
                     <div class="my-4 flex items-center">
                         <div class="flex-grow border-t border-gray-300"></div>
@@ -334,19 +492,30 @@
                         <div class="flex-grow border-t border-gray-300"></div>
                     </div>
 
-                    <button id="google-signin-btn" class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition-all">
+                    <button id="google-signin-btn"
+                        class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition-all">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                            <path d="M1 1h22v22H1z" fill="none"/>
+                            <path
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                fill="#4285F4" />
+                            <path
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                fill="#34A853" />
+                            <path
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                                fill="#FBBC05" />
+                            <path
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                fill="#EA4335" />
+                            <path d="M1 1h22v22H1z" fill="none" />
                         </svg>
                         <span data-lang-key="googleSignIn">Sign in with Google</span>
                     </button>
 
                     <div class="mt-6 border-t pt-6 text-center">
-                         <button id="guest-mode-btn" data-lang-key="guestButton" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg transition-all">Continue as Guest</button>
+                        <button id="guest-mode-btn" data-lang-key="guestButton"
+                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg transition-all">Continue
+                            as Guest</button>
                     </div>
                 </div>
             </div>
@@ -354,7 +523,8 @@
             <!-- Main Application Container -->
             <div id="app-container" class="hidden">
                 <!-- Header -->
-                <header id="app-header" class="w-full sticky top-0 z-50 bg-white transition-shadow duration-300 ease-in-out">
+                <header id="app-header"
+                    class="w-full sticky top-0 z-50 bg-white transition-shadow duration-300 ease-in-out">
                     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center p-4 gap-4">
                         <!-- Logo and Title Block -->
                         <div class="flex items-center gap-3">
@@ -365,43 +535,77 @@
                                         <stop offset="100%" style="stop-color:rgb(236, 72, 153)"></stop>
                                     </linearGradient>
                                 </defs>
-                                <path fill="url(#headerHeartGradient)" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                                <path fill="url(#headerHeartGradient)"
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+                                </path>
                             </svg>
                             <div class="text-center sm:text-left">
-                                <h1 data-lang-key="healthTrackerTitle" class="text-xl sm:text-3xl font-bold text-gray-700">Health Tracker</h1>
-                                <p data-lang-key="tagline" class="text-gray-500 text-sm">Your Journey to a Healthier You.</p>
+                                <h1 data-lang-key="healthTrackerTitle"
+                                    class="text-xl sm:text-3xl font-bold text-gray-700">Health Tracker</h1>
+                                <p data-lang-key="tagline" class="text-gray-500 text-sm">Your Journey to a Healthier
+                                    You.</p>
                             </div>
                         </div>
-                        
+
                         <!-- Controls Block -->
                         <div class="flex items-center gap-2 sm:gap-4">
                             <!-- Language Selector -->
                             <div id="language-selector" class="flex items-center gap-1 bg-gray-200 rounded-full p-1">
-                                <button data-lang="en" class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors">EN</button>
-                                <button data-lang="zh" class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors"><span class="hidden sm:inline">中文</span><span class="inline sm:hidden">中</span></button>
+                                <button data-lang="en"
+                                    class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors">EN</button>
+                                <button data-lang="zh"
+                                    class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors"><span
+                                        class="hidden sm:inline">中文</span><span
+                                        class="inline sm:hidden">中</span></button>
                             </div>
                             <!-- Logged In Header -->
                             <div id="user-header" class="relative">
-                                <button id="account-menu-btn" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
-                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                <button id="account-menu-btn"
+                                    class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                        </path>
+                                    </svg>
                                 </button>
-                                <div id="account-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                                    <div class="px-4 py-2 text-sm text-gray-700 border-b truncate" id="user-email-dropdown"></div>
-                                    <a href="#" id="sign-out-btn-dropdown" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang-key="signOutButton">Sign Out</a>
+                                <div id="account-dropdown"
+                                    class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                    <div class="px-4 py-2 text-sm text-gray-700 border-b truncate"
+                                        id="user-email-dropdown"></div>
+                                    <a href="#" id="sign-out-btn-dropdown"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        data-lang-key="signOutButton">Sign Out</a>
                                 </div>
                             </div>
                             <!-- Guest Header -->
                             <div id="guest-header">
-                                 <button id="go-to-login-btn" class="bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all text-sm">
-                                     <span class="sm:hidden" data-lang-key="loginButton">Login</span>
-                                     <span class="hidden sm:inline" data-lang-key="loginToSyncButton">Login to Sync Data</span>
-                                  </button>
+                                <button id="go-to-login-btn"
+                                    class="bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all text-sm">
+                                    <span class="sm:hidden" data-lang-key="loginButton">Login</span>
+                                    <span class="hidden sm:inline" data-lang-key="loginToSyncButton">Login to Sync
+                                        Data</span>
+                                </button>
                             </div>
-                            <button id="favourites-btn" class="text-gray-500 hover:text-yellow-500" data-lang-key-title="favouritesTitle" title="Favourites">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                            <button id="favourites-btn" class="text-gray-500 hover:text-yellow-500"
+                                data-lang-key-title="favouritesTitle" title="Favourites">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
+                                    </path>
+                                </svg>
                             </button>
-                            <button id="settings-btn" class="text-gray-500 hover:text-blue-500" data-lang-key-title="setGoalsTitle" title="Set Your Daily Goals">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <button id="settings-btn" class="text-gray-500 hover:text-blue-500"
+                                data-lang-key-title="setGoalsTitle" title="Set Your Daily Goals">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                    </path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -412,84 +616,167 @@
                         <!-- Logo Placeholder -->
                         <div class="text-center mb-4 sm:mb-8">
                             <!-- ▼▼▼ Original logo image ▼▼▼ -->
-                            <img src="./Images/NutriQuest_Logo.png" alt="NutriQuest Logo" class="mx-auto h-16 md:h-20 w-auto">
+                            <img src="./Images/NutriQuest_Logo.png" alt="NutriQuest Logo"
+                                class="mx-auto h-16 md:h-20 w-auto">
                             <!-- ▲▲▲ Original logo image ▲▲▲ -->
                         </div>
 
                         <div class="search-container max-w-xl mx-auto text-center">
-                             <div class="relative flex items-center bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg focus-within:shadow-lg">
-                                 <div class="pl-5"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
-                                 <input type="text" id="food-input" class="w-full bg-transparent p-4 pl-2 text-lg rounded-full focus:outline-none" data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken">
-                                 <button id="voice-input-btn" class="p-3 text-gray-500 hover:text-blue-500" data-lang-key-title="voiceInputTitle" title="Voice Input">
-                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
-                                 </button>
-                                 <button id="camera-scan-btn" class="p-3 pr-5 text-gray-500 hover:text-blue-500" data-lang-key-title="scanWithCameraTitle" title="Scan with Camera">
-                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                 </button>
-                             </div>
-                             
-                             <!-- Meal Type Selector -->
-                             <div id="meal-type-selector" class="flex flex-wrap justify-center gap-2 mt-4">
-                                 <button data-type="Breakfast" class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all" data-lang-key="breakfast">Breakfast</button>
-                                 <button data-type="Lunch" class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all" data-lang-key="lunch">Lunch</button>
-                                 <button data-type="Dinner" class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all" data-lang-key="dinner">Dinner</button>
-                                 <button data-type="Snack" class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all" data-lang-key="snack">Snack</button>
-                             </div>
+                            <div
+                                class="relative flex items-center bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg focus-within:shadow-lg">
+                                <div class="pl-5"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg></div>
+                                <input type="text" id="food-input"
+                                    class="w-full bg-transparent p-4 pl-2 text-lg rounded-full focus:outline-none"
+                                    data-lang-key-placeholder="foodInputPlaceholder"
+                                    placeholder="e.g., 1 cup of rice and grilled chicken">
+                                <button id="voice-input-btn" class="p-3 text-gray-500 hover:text-blue-500"
+                                    data-lang-key-title="voiceInputTitle" title="Voice Input">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <button id="camera-scan-btn" class="p-3 pr-5 text-gray-500 hover:text-blue-500"
+                                    data-lang-key-title="scanWithCameraTitle" title="Scan with Camera">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                             <div class="mt-6">
-                                 <button id="analyse-btn" class="analyse-btn bg-gradient-to-r from-[#c7ff41] to-[#5A8F41] text-white font-semibold py-3 px-8 text-lg rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-px transition-all">
-                                     <span class="relative z-10" data-lang-key="analyseMealButton">Analyse Meal</span>
-                                 </button>
-                             </div>
-                             
-                             <!-- Quick Access Section -->
-                             <div id="quick-access" class="mt-8 text-center">
-                                 <h3 class="text-lg font-semibold text-gray-600 mb-3" data-lang-key="quickAccess">Quick Access</h3>
-                                 <div class="flex flex-wrap justify-center gap-2">
-                                     <button class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all" data-lang-key="hainaneseChickenRice">Hainanese Chicken Rice</button>
-                                     <button class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all" data-lang-key="laksa">Laksa</button>
-                                     <button class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all" data-lang-key="kayaToast">Kaya Toast</button>
-                                     <button class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all" data-lang-key="bakKutTeh">Bak Kut Teh</button>
-                                 </div>
-                             </div>
+                            <!-- Meal Type Selector -->
+                            <div id="meal-type-selector" class="flex flex-wrap justify-center gap-2 mt-4">
+                                <button data-type="Breakfast"
+                                    class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
+                                    data-lang-key="breakfast">Breakfast</button>
+                                <button data-type="Lunch"
+                                    class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
+                                    data-lang-key="lunch">Lunch</button>
+                                <button data-type="Dinner"
+                                    class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
+                                    data-lang-key="dinner">Dinner</button>
+                                <button data-type="Snack"
+                                    class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
+                                    data-lang-key="snack">Snack</button>
+                            </div>
+
+                            <div class="mt-6">
+                                <button id="analyse-btn"
+                                    class="analyse-btn bg-gradient-to-r from-[#c7ff41] to-[#5A8F41] text-white font-semibold py-3 px-8 text-lg rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-px transition-all">
+                                    <span class="relative z-10" data-lang-key="analyseMealButton">Analyse Meal</span>
+                                </button>
+                            </div>
+
+                            <!-- Quick Access Section -->
+                            <div id="quick-access" class="mt-8 text-center">
+                                <h3 class="text-lg font-semibold text-gray-600 mb-3" data-lang-key="quickAccess">Quick
+                                    Access</h3>
+                                <div class="flex flex-wrap justify-center gap-2">
+                                    <button
+                                        class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
+                                        data-lang-key="hainaneseChickenRice">Hainanese Chicken Rice</button>
+                                    <button
+                                        class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
+                                        data-lang-key="laksa">Laksa</button>
+                                    <button
+                                        class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
+                                        data-lang-key="kayaToast">Kaya Toast</button>
+                                    <button
+                                        class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
+                                        data-lang-key="bakKutTeh">Bak Kut Teh</button>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-8 text-center">
-                            <button id="toggle-dashboard-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 text-lg rounded-lg shadow-md transition-all w-full sm:w-auto">
+                            <button id="toggle-dashboard-btn"
+                                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 text-lg rounded-lg shadow-md transition-all w-full sm:w-auto">
                                 <span data-lang-key="viewDashboard">View Dashboard</span>
                             </button>
                         </div>
 
                         <div id="dashboard" class="mt-10 w-full max-w-6xl mx-auto hidden">
                             <div class="flex justify-center space-x-2 mb-6">
-                                <button data-period="day" class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all" data-lang-key="today">Today</button>
-                                <button data-period="week" class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all" data-lang-key="thisWeek">This Week</button>
-                                <button data-period="month" class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all" data-lang-key="thisMonth">This Month</button>
+                                <button data-period="day"
+                                    class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
+                                    data-lang-key="today">Today</button>
+                                <button data-period="week"
+                                    class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
+                                    data-lang-key="thisWeek">This Week</button>
+                                <button data-period="month"
+                                    class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
+                                    data-lang-key="thisMonth">This Month</button>
                             </div>
 
                             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
                                 <div class="lg:col-span-2 space-y-6">
-                                    <div id="period-totals-card" class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                                    <div id="period-totals-card"
+                                        class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
                                         <div class="flex justify-between items-center mb-4">
-                                            <button id="prev-period-btn" class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" title="Previous Period">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                            <button id="prev-period-btn"
+                                                class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                title="Previous Period">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                                </svg>
                                             </button>
-                                            <div id="period-title-container" class="flex items-center justify-center cursor-pointer hover:text-blue-600 transition-colors group">
-                                                <h2 id="period-title" class="text-xl sm:text-2xl font-bold text-gray-800 text-center px-2 group-hover:text-blue-600 transition-colors"></h2>
-                                                <svg class="w-5 h-5 ml-1 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                            <div id="period-title-container"
+                                                class="flex items-center justify-center cursor-pointer hover:text-blue-600 transition-colors group">
+                                                <h2 id="period-title"
+                                                    class="text-xl sm:text-2xl font-bold text-gray-800 text-center px-2 group-hover:text-blue-600 transition-colors">
+                                                </h2>
+                                                <svg class="w-5 h-5 ml-1 text-gray-500 group-hover:text-blue-600 transition-colors"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
                                             </div>
-                                            <button id="next-period-btn" class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" title="Next Period">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                            <button id="next-period-btn"
+                                                class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                title="Next Period">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                </svg>
                                             </button>
                                         </div>
                                         <div id="period-totals" class="grid grid-cols-2 gap-4 text-center">
-                                            <div><p class="text-sm text-gray-600" data-lang-key="calories">Calories</p><p id="total-calories" class="text-2xl font-semibold text-blue-600">0</p></div>
-                                            <div><p class="text-sm text-gray-600" data-lang-key="protein">Protein</p><p id="total-protein" class="text-2xl font-semibold text-green-600">0 g</p></div>
-                                            <div><p class="text-sm text-gray-600" data-lang-key="fat">Fat</p><p id="total-fat" class="text-2xl font-semibold text-orange-500">0 g</p></div>
-                                            <div><p class="text-sm text-gray-600" data-lang-key="carbs">Carbs</p><p id="total-carbs" class="text-2xl font-semibold text-red-500">0 g</p></div>
+                                            <div>
+                                                <p class="text-sm text-gray-600" data-lang-key="calories">Calories</p>
+                                                <p id="total-calories" class="text-2xl font-semibold text-blue-600">0
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600" data-lang-key="protein">Protein</p>
+                                                <p id="total-protein" class="text-2xl font-semibold text-green-600">0 g
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600" data-lang-key="fat">Fat</p>
+                                                <p id="total-fat" class="text-2xl font-semibold text-orange-500">0 g</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600" data-lang-key="carbs">Carbs</p>
+                                                <p id="total-carbs" class="text-2xl font-semibold text-red-500">0 g</p>
+                                            </div>
                                         </div>
                                         <div class="text-center mt-6">
-                                            <button id="toggle-details-btn" class="text-blue-500 hover:underline" data-lang-key="showDetails">Show Details</button>
+                                            <button id="toggle-details-btn" class="text-blue-500 hover:underline"
+                                                data-lang-key="showDetails">Show Details</button>
                                         </div>
                                     </div>
                                     <!-- Detailed Dashboard View (Initially Hidden) -->
@@ -497,31 +784,38 @@
                                         <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
                                             <div id="charts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div id="main-chart-wrapper">
-                                                    <h3 id="dynamic-chart-title" class="text-lg font-bold text-center text-gray-800 mb-2"></h3>
-                                                    <p id="period-goal-text" class="text-center text-gray-500 text-sm mb-1 hidden"></p>
-                                                    <p id="period-actual-text" class="text-center font-semibold text-sm mb-2 hidden"></p>
+                                                    <h3 id="dynamic-chart-title"
+                                                        class="text-lg font-bold text-center text-gray-800 mb-2"></h3>
+                                                    <p id="period-goal-text"
+                                                        class="text-center text-gray-500 text-sm mb-1 hidden"></p>
+                                                    <p id="period-actual-text"
+                                                        class="text-center font-semibold text-sm mb-2 hidden"></p>
                                                     <canvas id="calorie-gauge-chart"></canvas>
                                                     <div id="bar-chart-container" class="relative h-80 hidden">
                                                         <canvas id="period-bar-chart"></canvas>
                                                     </div>
                                                 </div>
                                                 <div id="nutrition-balance-wrapper">
-                                                    <h3 class="text-lg font-bold text-center text-gray-800 mb-2" data-lang-key="nutritionBalance">Nutrition Balance</h3>
+                                                    <h3 class="text-lg font-bold text-center text-gray-800 mb-2"
+                                                        data-lang-key="nutritionBalance">Nutrition Balance</h3>
                                                     <canvas id="nutrition-chart"></canvas>
                                                     <div id="nutrition-balance-text" class="hidden text-left"></div>
                                                 </div>
                                             </div>
                                             <div id="small-gauges-container" class="grid grid-cols-3 gap-4 mt-6">
                                                 <div>
-                                                    <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="protein">Protein</h3>
+                                                    <h3 class="text-md font-bold text-center text-gray-800 mb-1"
+                                                        data-lang-key="protein">Protein</h3>
                                                     <canvas id="protein-gauge-chart"></canvas>
                                                 </div>
                                                 <div>
-                                                    <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="fat">Fat</h3>
+                                                    <h3 class="text-md font-bold text-center text-gray-800 mb-1"
+                                                        data-lang-key="fat">Fat</h3>
                                                     <canvas id="fat-gauge-chart"></canvas>
                                                 </div>
                                                 <div>
-                                                    <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="carbs">Carbs</h3>
+                                                    <h3 class="text-md font-bold text-center text-gray-800 mb-1"
+                                                        data-lang-key="carbs">Carbs</h3>
                                                     <canvas id="carbs-gauge-chart"></canvas>
                                                 </div>
                                             </div>
@@ -529,7 +823,8 @@
                                     </div>
                                     <!-- Nutrition Advice Card -->
                                     <div id="advice-card" class="p-6 rounded-xl shadow-sm hidden">
-                                        <h2 class="text-2xl font-bold text-gray-800 mb-4" data-lang-key="nutritionAdvice">Nutrition Advice</h2>
+                                        <h2 class="text-2xl font-bold text-gray-800 mb-4"
+                                            data-lang-key="nutritionAdvice">Nutrition Advice</h2>
                                         <div id="advice-content" class="flex items-start space-x-4">
                                             <span id="advice-icon" class="text-3xl"></span>
                                             <p id="advice-text" class="text-gray-700"></p>
@@ -539,15 +834,19 @@
 
                                 <div class="lg:col-span-3">
                                     <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm min-h-full">
-                                        <h2 class="text-2xl font-bold text-gray-800 mb-4" data-lang-key="mealList">Meal List</h2>
+                                        <h2 class="text-2xl font-bold text-gray-800 mb-4" data-lang-key="mealList">Meal
+                                            List</h2>
                                         <div id="meal-list" class="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                                           <p id="no-meals-message" class="text-gray-500" data-lang-key="noMeals">No meals recorded for this period.</p>
+                                            <p id="no-meals-message" class="text-gray-500" data-lang-key="noMeals">No
+                                                meals recorded for this period.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-8 text-center">
-                                <button id="reset-all-btn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 rounded-lg transition-all" data-lang-key="deleteAllData">Delete All Data</button>
+                                <button id="reset-all-btn"
+                                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 rounded-lg transition-all"
+                                    data-lang-key="deleteAllData">Delete All Data</button>
                             </div>
                         </div>
                     </div>
@@ -555,15 +854,20 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Camera Choice Modal -->
     <div id="camera-choice-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera</h2>
             <div class="space-y-4">
-                <button id="scan-meal-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg" data-lang-key="scanMealButton">Scan Meal with Camera</button>
-                <button id="scan-barcode-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg" data-lang-key="scanBarcodeButton">Scan Barcode</button>
-                <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline" data-lang-key="closeButton">Close</button>
+                <button id="scan-meal-btn"
+                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
+                    data-lang-key="scanMealButton">Scan Meal with Camera</button>
+                <button id="scan-barcode-btn"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
+                    data-lang-key="scanBarcodeButton">Scan Barcode</button>
+                <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
+                    data-lang-key="closeButton">Close</button>
             </div>
         </div>
     </div>
@@ -571,12 +875,17 @@
     <!-- Camera Modal -->
     <div id="camera-modal" class="modal-overlay hidden">
         <div class="modal-content camera-modal-content">
-            <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="positionMeal">Position your meal in the camera</h2>
+            <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="positionMeal">Position your meal in the
+                camera</h2>
             <video id="camera-view" autoplay playsinline></video>
             <canvas id="camera-canvas" class="hidden"></canvas>
             <div class="flex justify-center space-x-4 mt-4">
-                <button id="capture-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full" data-lang-key="captureButton">Capture</button>
-                <button id="close-camera-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-full" data-lang-key="closeButton">Close</button>
+                <button id="capture-btn"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full"
+                    data-lang-key="captureButton">Capture</button>
+                <button id="close-camera-btn"
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-full"
+                    data-lang-key="closeButton">Close</button>
             </div>
         </div>
     </div>
@@ -590,12 +899,15 @@
                 <div class="focus-box"></div>
             </div>
             <div id="zoom-controls" class="mt-4 hidden">
-                <label for="zoom-slider" class="block text-sm font-medium text-gray-700" data-lang-key="zoom">Zoom</label>
+                <label for="zoom-slider" class="block text-sm font-medium text-gray-700"
+                    data-lang-key="zoom">Zoom</label>
                 <input type="range" id="zoom-slider" class="w-full">
             </div>
             <p id="barcode-result" class="mt-2 text-gray-600"></p>
             <div class="flex justify-center space-x-4 mt-4">
-                <button id="close-barcode-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-full" data-lang-key="closeButton">Close</button>
+                <button id="close-barcode-btn"
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-full"
+                    data-lang-key="closeButton">Close</button>
             </div>
         </div>
     </div>
@@ -606,11 +918,17 @@
             <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="servingSizeTitle">Enter Serving Size</h2>
             <p id="serving-product-name" class="text-center text-gray-600 mb-4"></p>
             <form id="serving-form">
-                <label for="serving-size" class="block text-sm font-medium text-gray-700" data-lang-key="servingSizeLabel">Serving Size (grams)</label>
-                <input type="number" id="serving-size" value="100" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+                <label for="serving-size" class="block text-sm font-medium text-gray-700"
+                    data-lang-key="servingSizeLabel">Serving Size (grams)</label>
+                <input type="number" id="serving-size" value="100"
+                    class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
                 <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" id="cancel-serving-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg" data-lang-key="cancelButton">Cancel</button>
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="addMealButton">Add Meal</button>
+                    <button type="button" id="cancel-serving-btn"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
+                        data-lang-key="cancelButton">Cancel</button>
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+                        data-lang-key="addMealButton">Add Meal</button>
                 </div>
             </form>
         </div>
@@ -623,18 +941,25 @@
             <div id="favourites-list" class="space-y-2 max-h-96 overflow-y-auto">
                 <!-- Favourites will be rendered here -->
             </div>
-            <button id="close-favourites-btn" class="mt-4 w-full text-center text-gray-500 hover:underline" data-lang-key="closeButton">Close</button>
+            <button id="close-favourites-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
+                data-lang-key="closeButton">Close</button>
         </div>
     </div>
-    
+
     <!-- Custom Alert/Confirm Modal -->
     <div id="alert-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <p id="alert-message" class="text-lg mb-6"></p>
             <div id="alert-buttons" class="flex justify-center space-x-4">
-                <button id="alert-ok-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-8 rounded-lg" data-lang-key="okButton">OK</button>
-                <button id="alert-confirm-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-8 rounded-lg" data-lang-key="confirmButton">Confirm</button>
-                <button id="alert-cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-8 rounded-lg" data-lang-key="cancelButton">Cancel</button>
+                <button id="alert-ok-btn"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-8 rounded-lg"
+                    data-lang-key="okButton">OK</button>
+                <button id="alert-confirm-btn"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-8 rounded-lg"
+                    data-lang-key="confirmButton">Confirm</button>
+                <button id="alert-cancel-btn"
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-8 rounded-lg"
+                    data-lang-key="cancelButton">Cancel</button>
             </div>
         </div>
     </div>
@@ -643,69 +968,96 @@
     <div id="settings-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-lg w-full text-left max-h-[80vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="setGoalsTitle">Set Your Daily Goals</h2>
-            <p class="text-center text-gray-600 mb-6" data-lang-key="settingsDescription">Let us calculate your needs, or set your own manual goal.</p>
-            
+            <p class="text-center text-gray-600 mb-6" data-lang-key="settingsDescription">Let us calculate your needs,
+                or set your own manual goal.</p>
+
             <!-- Diagnosis Form -->
             <form id="diagnosis-form">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700" data-lang-key="gender">Gender</label>
-                        <select id="gender" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <select id="gender"
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="male" data-lang-key="male">Male</option>
                             <option value="female" data-lang-key="female">Female</option>
                         </select>
                     </div>
                     <div>
                         <label for="age" class="block text-sm font-medium text-gray-700" data-lang-key="age">Age</label>
-                        <input type="number" id="age" value="30" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+                        <input type="number" id="age" value="30"
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
                     </div>
                     <div>
-                        <label for="height" class="block text-sm font-medium text-gray-700" data-lang-key="height">Height (cm)</label>
-                        <input type="number" id="height" value="170" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+                        <label for="height" class="block text-sm font-medium text-gray-700"
+                            data-lang-key="height">Height (cm)</label>
+                        <input type="number" id="height" value="170"
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
                     </div>
                     <div>
-                        <label for="weight" class="block text-sm font-medium text-gray-700" data-lang-key="weight">Weight (kg)</label>
-                        <input type="number" id="weight" value="70" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+                        <label for="weight" class="block text-sm font-medium text-gray-700"
+                            data-lang-key="weight">Weight (kg)</label>
+                        <input type="number" id="weight" value="70"
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
                     </div>
                 </div>
                 <div class="mt-4">
-                    <label for="activity-level" class="block text-sm font-medium text-gray-700" data-lang-key="activityLevel">Activity Level</label>
-                    <select id="activity-level" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm">
-                        <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no exercise)</option>
-                        <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light exercise/walks 1-2 times a week)</option>
-                        <option value="1.55" data-lang-key="activityLevel3">Moderately Active (regular exercise 3-5 times a week)</option>
-                        <option value="1.725" data-lang-key="activityLevel4">Very Active (vigorous exercise 6-7 times a week)</option>
-                        <option value="1.9" data-lang-key="activityLevel5">Extremely Active (strenuous exercise daily or physical job)</option>
+                    <label for="activity-level" class="block text-sm font-medium text-gray-700"
+                        data-lang-key="activityLevel">Activity Level</label>
+                    <select id="activity-level"
+                        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm">
+                        <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no
+                            exercise)</option>
+                        <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light
+                            exercise/walks 1-2 times a week)</option>
+                        <option value="1.55" data-lang-key="activityLevel3">Moderately Active (regular exercise 3-5
+                            times a week)</option>
+                        <option value="1.725" data-lang-key="activityLevel4">Very Active (vigorous exercise 6-7 times a
+                            week)</option>
+                        <option value="1.9" data-lang-key="activityLevel5">Extremely Active (strenuous exercise daily or
+                            physical job)</option>
                     </select>
                 </div>
-                <button type="submit" class="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="calculateAndSave">Calculate & Save</button>
+                <button type="submit"
+                    class="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+                    data-lang-key="calculateAndSave">Calculate & Save</button>
             </form>
 
             <div class="my-4 text-center text-gray-500" data-lang-key="or">OR</div>
 
             <!-- Manual Form -->
             <form id="manual-goal-form">
-                <label for="manual-calories" class="block text-sm font-medium text-gray-700" data-lang-key="setManualGoal">Set Manual Calorie Goal</label>
-                <input type="number" id="manual-calories" value="2000" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
-                <button type="submit" class="mt-4 w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="saveManualGoal">Save Manual Goal</button>
+                <label for="manual-calories" class="block text-sm font-medium text-gray-700"
+                    data-lang-key="setManualGoal">Set Manual Calorie Goal</label>
+                <input type="number" id="manual-calories" value="2000"
+                    class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+                <button type="submit"
+                    class="mt-4 w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg"
+                    data-lang-key="saveManualGoal">Save Manual Goal</button>
             </form>
-            <button id="close-settings-btn" class="mt-4 w-full text-center text-gray-500 hover:underline" data-lang-key="closeButton">Close</button>
+            <button id="close-settings-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
+                data-lang-key="closeButton">Close</button>
         </div>
     </div>
-    
+
     <!-- Calendar Modal -->
     <div id="calendar-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-xs w-full bg-white p-4 rounded-lg shadow-lg">
             <div id="calendar-header" class="flex justify-between items-center mb-4">
                 <button id="calendar-prev-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
+                    </svg>
                 </button>
                 <h3 id="calendar-month-year" class="font-bold text-lg"></h3>
                 <button id="calendar-next-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
                 </button>
             </div>
-            <div id="calendar-weekdays" class="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 font-semibold mb-2">
+            <div id="calendar-weekdays"
+                class="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 font-semibold mb-2">
                 <!-- Day names (S, M, T, etc.) will be generated here -->
             </div>
             <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center">
@@ -714,21 +1066,30 @@
             <div id="calendar-month-grid" class="hidden grid grid-cols-3 gap-2 text-center mt-4">
                 <!-- Months will be generated here -->
             </div>
-            <button id="close-calendar-btn" class="mt-4 w-full text-center text-gray-500 hover:underline" data-lang-key="closeButton">Close</button>
+            <button id="close-calendar-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
+                data-lang-key="closeButton">Close</button>
         </div>
     </div>
 
     <!-- Quantity Confirmation Modal -->
     <div id="quantity-modal" class="modal-overlay hidden">
         <div class="modal-content text-left">
-            <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="confirmFoodTitle">Confirm Food & Quantity</h2>
-            <p class="text-center mb-4">We identified this as: <strong id="identified-food-name" class="capitalize"></strong>. Is this correct?</p>
+            <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="confirmFoodTitle">Confirm Food & Quantity
+            </h2>
+            <p class="text-center mb-4">We identified this as: <strong id="identified-food-name"
+                    class="capitalize"></strong>. Is this correct?</p>
             <form id="quantity-form">
-                <label for="quantity-input" class="block text-sm font-medium text-gray-700" data-lang-key="quantityLabel">Enter quantity (e.g., 1 piece, 100g)</label>
-                <input type="text" id="quantity-input" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+                <label for="quantity-input" class="block text-sm font-medium text-gray-700"
+                    data-lang-key="quantityLabel">Enter quantity (e.g., 1 piece, 100g)</label>
+                <input type="text" id="quantity-input"
+                    class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
                 <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" id="cancel-quantity-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg" data-lang-key="cancelButton">Cancel</button>
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="confirmButton">Confirm</button>
+                    <button type="button" id="cancel-quantity-btn"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
+                        data-lang-key="cancelButton">Cancel</button>
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+                        data-lang-key="confirmButton">Confirm</button>
                 </div>
             </form>
         </div>
@@ -740,7 +1101,8 @@
             <div class="relative w-24 h-24 flex items-center justify-center">
                 <div class="loader"></div>
                 <svg class="ecg-line" width="120" height="80" viewBox="0 0 120 80">
-                    <path class="ecg-path" d="M0 40 H30 L35 20 L45 60 L50 35 L55 40 H120" stroke-width="3" fill="none"></path>
+                    <path class="ecg-path" d="M0 40 H30 L35 20 L45 60 L50 35 L55 40 H120" stroke-width="3" fill="none">
+                    </path>
                 </svg>
             </div>
             <p id="loading-text" class="mt-8 text-lg font-semibold" data-lang-key="analyzing">Analyzing...</p>
@@ -750,7 +1112,12 @@
     <!-- Voice Listening Modal -->
     <div id="listening-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <svg class="w-16 h-16 text-blue-500 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+            <svg class="w-16 h-16 text-blue-500 mx-auto animate-pulse" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                </path>
+            </svg>
             <p id="listening-text-status" class="text-lg mt-4" data-lang-key="listeningStatus">Listening...</p>
         </div>
     </div>
@@ -759,7 +1126,7 @@
     <script>
         // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
         const GEMINI_API_KEY = "AIzaSyCldW53rqjHejtKvuGyxyQM8R9kuEtgZN0";
-        
+
         const firebaseConfig = {
             apiKey: "AIzaSyB2uJs32bmnoOgHcB6GTZuu0eBanfZWLWE",
             authDomain: "nutriquest-6c40d.firebaseapp.com",
@@ -773,17 +1140,17 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        
+
         // --- Language Translation Data ---
         const translations = {
             en: {
-                loginTitle: "Login", emailLabel: "Email", passwordLabel: "Password", loginButton: "Login", authToggle: "Need an account? Sign Up", guestButton: "Continue as Guest", forgotPassword: "Forgot Password?", enterEmailForReset: "Please enter your email address in the email field to reset your password.", passwordResetSent: "A password reset link has been sent to your email address. Please check your inbox.", healthTrackerTitle: "Health Tracker", tagline: "Your Journey to a Healthier You.", signOutButton: "Sign Out", loginToSyncButton: "Login to Sync Data", favouritesTitle: "Favourites", setGoalsTitle: "Set Your Daily Goals", googleSignIn: "Sign in with Google", foodInputPlaceholder: "e.g., 1 cup of rice and grilled chicken", voiceInputTitle: "Voice Input", scanWithCameraTitle: "Scan with Camera", breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", analyseMealButton: "Analyse Meal", quickAccess: "Quick Access", hainaneseChickenRice: "Hainanese Chicken Rice", laksa: "Laksa", kayaToast: "Kaya Toast", bakKutTeh: "Bak Kut Teh", today: "Today", thisWeek: "This Week", thisMonth: "This Month", todaysTotals: "Today's Totals", thisWeeksTotals: "This Week's Total Calories", thisMonthsTotals: "This Month's Total Calories", calories: "Calories", protein: "Protein", fat: "Fat", carbs: "Carbs", showDetails: "Show Details", closeDetails: "Close", nutritionAdvice: "Nutrition Advice", todaysCalories: "Today's Calories", nutritionBalance: "Nutrition Balance", mealList: "Meal List", noMeals: "No meals recorded for this period.", deleteAllData: "Delete All Data", scanMealButton: "Scan Meal with Camera", scanBarcodeButton: "Scan Barcode", closeButton: "Close", positionMeal: "Position your meal in the camera", captureButton: "Capture", scanBarcodeTitle: "Scan a Barcode", zoom: "Zoom", servingSizeTitle: "Enter Serving Size", servingSizeLabel: "Serving Size (grams)", cancelButton: "Cancel", addMealButton: "Add Meal", okButton: "OK", confirmButton: "Confirm", settingsDescription: "Let us calculate your needs, or set your own manual goal.", gender: "Gender", male: "Male", female: "Female", age: "Age", height: "Height (cm)", weight: "Weight (kg)", activityLevel: "Activity Level", 
+                loginTitle: "Login", emailLabel: "Email", passwordLabel: "Password", loginButton: "Login", authToggle: "Need an account? Sign Up", guestButton: "Continue as Guest", forgotPassword: "Forgot Password?", enterEmailForReset: "Please enter your email address in the email field to reset your password.", passwordResetSent: "A password reset link has been sent to your email address. Please check your inbox.", healthTrackerTitle: "Health Tracker", tagline: "Your Journey to a Healthier You.", signOutButton: "Sign Out", loginToSyncButton: "Login to Sync Data", favouritesTitle: "Favourites", setGoalsTitle: "Set Your Daily Goals", googleSignIn: "Sign in with Google", foodInputPlaceholder: "e.g., 1 cup of rice and grilled chicken", voiceInputTitle: "Voice Input", scanWithCameraTitle: "Scan with Camera", breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", analyseMealButton: "Analyse Meal", quickAccess: "Quick Access", hainaneseChickenRice: "Hainanese Chicken Rice", laksa: "Laksa", kayaToast: "Kaya Toast", bakKutTeh: "Bak Kut Teh", today: "Today", thisWeek: "This Week", thisMonth: "This Month", todaysTotals: "Today's Totals", thisWeeksTotals: "This Week's Total Calories", thisMonthsTotals: "This Month's Total Calories", calories: "Calories", protein: "Protein", fat: "Fat", carbs: "Carbs", showDetails: "Show Details", closeDetails: "Close", nutritionAdvice: "Nutrition Advice", todaysCalories: "Today's Calories", nutritionBalance: "Nutrition Balance", mealList: "Meal List", noMeals: "No meals recorded for this period.", deleteAllData: "Delete All Data", scanMealButton: "Scan Meal with Camera", scanBarcodeButton: "Scan Barcode", closeButton: "Close", positionMeal: "Position your meal in the camera", captureButton: "Capture", scanBarcodeTitle: "Scan a Barcode", zoom: "Zoom", servingSizeTitle: "Enter Serving Size", servingSizeLabel: "Serving Size (grams)", cancelButton: "Cancel", addMealButton: "Add Meal", okButton: "OK", confirmButton: "Confirm", settingsDescription: "Let us calculate your needs, or set your own manual goal.", gender: "Gender", male: "Male", female: "Female", age: "Age", height: "Height (cm)", weight: "Weight (kg)", activityLevel: "Activity Level",
                 activityLevel1: "Sedentary (mostly sitting, little to no exercise)",
                 activityLevel2: "Lightly Active (light exercise/walks 1-2 times a week)",
                 activityLevel3: "Moderately Active (regular exercise 3-5 times a week)",
                 activityLevel4: "Very Active (vigorous exercise 6-7 times a week)",
                 activityLevel5: "Extremely Active (strenuous exercise daily or physical job)",
-                calculateAndSave: "Calculate & Save", or: "OR", setManualGoal: "Set Manual Calorie Goal", saveManualGoal: "Save Manual Goal", 
+                calculateAndSave: "Calculate & Save", or: "OR", setManualGoal: "Set Manual Calorie Goal", saveManualGoal: "Save Manual Goal",
                 analysing: "Analysing...", noFavourites: "No favourite meals yet. Click the star on a meal to add it.",
                 didYouMean: 'Did you mean "{foodName}"?', listening: 'Listening...', checkingSpeech: 'Checking your speech...', speechError: 'Could not recognize speech: {error}',
                 deletingData: 'Deleting all data...', signingIn: 'Signing in...', loadingData: 'Loading your data...', barcodeLookup: 'Found barcode: {barcode}. Looking up...',
@@ -809,7 +1176,7 @@
                 activityLevel3: "中度活跃 (每周进行3-5次定期运动)",
                 activityLevel4: "非常活跃 (每周进行6-7次剧烈运动)",
                 activityLevel5: "极度活跃 (每天进行剧烈运动或从事体力劳动)",
-                calculateAndSave: "计算并保存", or: "要么", setManualGoal: "设置手动卡路里目标", saveManualGoal: "保存手动目标", 
+                calculateAndSave: "计算并保存", or: "要么", setManualGoal: "设置手动卡路里目标", saveManualGoal: "保存手动目标",
                 analysing: "分析中...", noFavourites: "还没有喜欢的食物。点击星星添加。",
                 didYouMean: '您是指“{foodName}”吗？', listening: '正在听...', checkingSpeech: '正在检查您的语音...', speechError: '无法识别语音: {error}',
                 deletingData: '正在删除所有数据...', signingIn: '登录中...', loadingData: '正在加载您的数据...', barcodeLookup: '找到条形码: {barcode}。查询中...',
@@ -923,7 +1290,7 @@
         const identifiedFoodNameEl = document.getElementById('identified-food-name');
         const quantityInput = document.getElementById('quantity-input');
         const cancelQuantityBtn = document.getElementById('cancel-quantity-btn');
-        
+
         let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, cameraStream = null, barcodeReader = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
         if (typeof ZXing !== 'undefined') barcodeReader = new ZXing.BrowserMultiFormatReader();
 
@@ -1005,7 +1372,7 @@
         }
         async function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            try { await auth.signInWithPopup(provider); } 
+            try { await auth.signInWithPopup(provider); }
             catch (error) { authError.textContent = error.message; }
         }
         function showAppContainer(isLoggedIn) {
@@ -1642,7 +2009,7 @@
                 try {
                     if (isLoginMode) await auth.signInWithEmailAndPassword(email, password);
                     else await auth.createUserWithEmailAndPassword(email, password);
-                } catch (error) { authError.textContent = error.message; } 
+                } catch (error) { authError.textContent = error.message; }
                 finally { hideLoader(); }
             });
             googleSignInBtn.addEventListener('click', signInWithGoogle);
@@ -1764,16 +2131,17 @@
         });
     </script>
     <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then((registration) => {
-          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }, (err) => {
-          console.log('ServiceWorker registration failed: ', err);
-        });
-    });
-  }
-</script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then((registration) => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, (err) => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </body>
+
 </html>
