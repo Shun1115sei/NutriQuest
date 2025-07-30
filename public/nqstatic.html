@@ -418,20 +418,20 @@
       /* No !important rules - let JavaScript control visibility */
     }
 
-    #custom-titlebar {
+    .custom-titlebar {
       -webkit-app-region: drag;
       app-region: drag;
     }
 
-    #custom-titlebar button,
-    #custom-titlebar input {
+    .custom-titlebar button,
+    .custom-titlebar input {
       -webkit-app-region: no-drag;
       app-region: no-drag;
     }
   </style>
 </head>
 
-<body class="bg-gray-100 text-gray-800 custom-titlebar">
+<body class="bg-gray-100 text-gray-800">
   <!-- PWA Install Prompt Button (hidden by default) -->
   <div id="install-banner"
     class="height:56px w-full flex justify-center items-center bg-yellow-50 border-b border-yellow-300 p-4 fixed top-0 left-0 z-50 shadow transition-all hidden">
@@ -549,7 +549,7 @@
       <div id="app-container" class="hidden h-screen flex flex-col">
         <!-- Header -->
         <header id="app-header custom-titlebar"
-          class="w-full sticky top-0 z-50 bg-white transition-shadow duration-300 ease-in-out h-16 sm:h-auto">
+          class="w-full sticky top-0 z-50 bg-white transition-shadow duration-300 ease-in-out h-16 sm:h-auto custom-titlebar">
           <div class="max-w-6xl mx-auto flex justify-between items-center px-2 sm:px-4 py-3">
 
             <div class="flex items-center gap-2 sm:gap-3">
