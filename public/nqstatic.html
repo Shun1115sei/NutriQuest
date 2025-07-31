@@ -18,6 +18,25 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    html { overflow-y: scroll; }
+    html.modal-open {
+      overflow: hidden; /* 背景のスクロールを禁止 */
+      padding-right: var(--scrollbar-width); /* スクロールバーの幅だけ右に余白を追加 */
+    }
+    /* 位置が固定されているヘッダーにも同じ余白を適用してズレを防ぎます */
+    html.modal-open #app-header {
+      padding-right: var(--scrollbar-width);
+    }
+
+    input[type='number']::-webkit-inner-spin-button,
+    input[type='number']::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type='number'] {
+      -moz-appearance: textfield; /* for FireFox */
+    }
+
     body {
       font-family: 'Inter', sans-serif;
     }
@@ -1103,96 +1122,87 @@
 
   <!-- Settings Modal (DaisyUI) -->
   <dialog id="settings-modal" class="modal">
-    <div class="modal-box max-w-lg w-full max-h-[80vh] overflow-y-auto text-base-content bg-base-100">
-      <form method="dialog">
-        <button
-          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 !text-gray-700 hover:!bg-gray-200">✕</button>
-      </form>
-      <h2 class="text-2xl font-bold mb-4 text-center !text-gray-800" data-lang-key="setGoalsTitle">Set Your Daily Goals
-      </h2>
-      <p class="text-center !text-gray-700 mb-6" data-lang-key="settingsDescription">Let us calculate your needs,
-        or set your own manual goal.</p>
+    <div class="modal-box max-w-lg w-full max-h-[90vh] flex flex-col p-0">
+      
+      <div class="p-6 pb-4 border-b border-gray-200">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 !text-gray-700 hover:!bg-gray-200">✕</button>
+        </form>
+        <h2 class="text-2xl font-bold text-center !text-gray-800" data-lang-key="setGoalsTitle">Set Your Daily Goals</h2>
+      </div>
 
-      <form id="diagnosis-form">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium !text-gray-800" data-lang-key="gender">Gender</label>
-            <select id="gender"
-              class="select select-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
-              <option value="male" data-lang-key="male">Male</option>
-              <option value="female" data-lang-key="female">Female</option>
+      <div class="overflow-y-auto p-6">
+        <p class="text-center !text-gray-700 mb-6" data-lang-key="settingsDescription">Let us calculate your needs, or set your own manual goal.</p>
+        
+        <form id="diagnosis-form">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+            <div>
+              <label class="block text-sm font-medium !text-gray-800 mb-1 text-center" data-lang-key="gender">Gender</label>
+              <select id="gender" class="select select-bordered w-3/4 mx-auto text-center !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+                <option value="male" data-lang-key="male">Male</option>
+                <option value="female" data-lang-key="female">Female</option>
+              </select>
+            </div>
+            <div>
+              <label for="age" class="block text-sm font-medium !text-gray-800 mb-1 text-center" data-lang-key="age">Age</label>
+              <div class="relative stepper-container w-3/4 mx-auto">
+                <input type="number" id="age" value="30" class="input input-bordered w-full text-center !pr-8 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+                <div class="absolute inset-y-0 right-0 flex flex-col justify-center">
+                  <button type="button" data-stepper-increment="age" class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 4.5l6 6H4l6-6z"/></svg></button>
+                  <button type="button" data-stepper-decrement="age" class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.5l-6-6h12l-6 6z"/></svg></button>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label for="height" class="block text-sm font-medium !text-gray-800 mb-1 text-center" data-lang-key="height">Height (cm)</label>
+              <div class="relative stepper-container w-3/4 mx-auto">
+                <input type="number" id="height" value="170" class="input input-bordered w-full text-center !pr-8 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+                <div class="absolute inset-y-0 right-0 flex flex-col justify-center">
+                  <button type="button" data-stepper-increment="height" class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 4.5l6 6H4l6-6z"/></svg></button>
+                  <button type="button" data-stepper-decrement="height" class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.5l-6-6h12l-6 6z"/></svg></button>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label for="weight" class="block text-sm font-medium !text-gray-800 mb-1 text-center" data-lang-key="weight">Weight (kg)</label>
+              <div class="relative stepper-container w-3/4 mx-auto">
+                <input type="number" id="weight" value="70" class="input input-bordered w-full text-center !pr-8 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+                <div class="absolute inset-y-0 right-0 flex flex-col justify-center">
+                  <button type="button" data-stepper-increment="weight" class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 4.5l6 6H4l6-6z"/></svg></button>
+                  <button type="button" data-stepper-decrement="weight" class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.5l-6-6h12l-6 6z"/></svg></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <label for="activity-level" class="block text-sm font-medium !text-gray-800 mb-1" data-lang-key="activityLevel">Activity Level</label>
+            <select id="activity-level" class="select select-bordered w-full text-center !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+              <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no exercise)</option>
+              <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light exercise/walks 1-2 times a week)</option>
+              <option value="1.55" data-lang-key="activityLevel3">Moderately Active (regular exercise 3-5 times a week)</option>
+              <option value="1.725" data-lang-key="activityLevel4">Very Active (vigorous exercise 6-7 times a week)</option>
+              <option value="1.9" data-lang-key="activityLevel5">Extremely Active (strenuous exercise daily or physical job)</option>
             </select>
           </div>
-          <div>
-            <label for="age" class="block text-sm font-medium !text-gray-800" data-lang-key="age">Age</label>
-            <input type="number" id="age" value="30"
-              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
-          </div>
-          <div>
-            <label for="height" class="block text-sm font-medium !text-gray-800" data-lang-key="height">Height
-              (cm)</label>
-            <input type="number" id="height" value="170"
-              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
-          </div>
-          <div>
-            <label for="weight" class="block text-sm font-medium !text-gray-800" data-lang-key="weight">Weight
-              (kg)</label>
-            <input type="number" id="weight" value="70"
-              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
-          </div>
+          <button type="submit" class="btn btn-primary w-full mt-6 !bg-blue-600 !text-white hover:!bg-blue-700 !border-blue-600" data-lang-key="calculateAndSave">Calculate & Save</button>
+        </form>
+
+        <div class="divider !text-gray-700" data-lang-key="or">OR</div>
+        <form id="manual-goal-form">
+          <label for="manual-calories" class="block text-sm font-medium !text-gray-800" data-lang-key="setManualGoal">Set Manual Calorie Goal</label>
+          <input type="number" id="manual-calories" value="2000" class="input input-bordered w-full mt-1 text-center !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+          <button type="submit" class="btn btn-neutral w-full mt-4 !bg-gray-600 !text-white hover:!bg-gray-700 !border-gray-600" data-lang-key="saveManualGoal">Save Manual Goal</button>
+        </form>
+
+        <div class="my-6 border-t pt-6">
+          <h3 class="text-lg font-semibold !text-red-600" data-lang-key="dangerZone">Danger Zone</h3>
+          <p class="text-sm !text-gray-700 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be certain.</p>
+          <button id="delete-all-data-btn" class="btn btn-error w-full mt-4 !bg-red-600 !text-white hover:!bg-red-700 !border-red-600" data-lang-key="deleteAllData">Delete All Data</button>
         </div>
-        <div class="mt-4">
-          <label for="activity-level" class="block text-sm font-medium !text-gray-800"
-            data-lang-key="activityLevel">Activity Level</label>
-          <select id="activity-level"
-            class="select select-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
-            <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no
-              exercise)</option>
-            <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light
-              exercise/walks 1-2 times a week)</option>
-            <option value="1.55" data-lang-key="activityLevel3">Moderately Active (regular exercise 3-5
-              times a week)</option>
-            <option value="1.725" data-lang-key="activityLevel4">Very Active (vigorous exercise 6-7 times a
-              week)</option>
-            <option value="1.9" data-lang-key="activityLevel5">Extremely Active (strenuous exercise daily or
-              physical job)</option>
-          </select>
+        <div class="mt-6 border-t pt-4 text-center">
+          <button type="button" id="settings-modal-close-bottom-btn" class="btn btn-ghost !text-gray-700 hover:!bg-gray-200" data-lang-key="closeButton">Close</button>
         </div>
-        <button type="submit"
-          class="btn btn-primary w-full mt-6 !bg-blue-600 !text-white hover:!bg-blue-700 !border-blue-600"
-          data-lang-key="calculateAndSave">Calculate &
-          Save</button>
-      </form>
-
-      <div class="divider !text-gray-700" data-lang-key="or">OR</div>
-
-      <form id="manual-goal-form">
-        <label for="manual-calories" class="block text-sm font-medium !text-gray-800" data-lang-key="setManualGoal">Set
-          Manual Calorie Goal</label>
-        <input type="number" id="manual-calories" value="2000"
-          class="input input-bordered w-full mt-1 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
-        <button type="submit"
-          class="btn btn-neutral w-full mt-4 !bg-gray-600 !text-white hover:!bg-gray-700 !border-gray-600"
-          data-lang-key="saveManualGoal">Save Manual
-          Goal</button>
-      </form>
-
-      <div class="my-6 border-t pt-6">
-        <h3 class="text-lg font-semibold !text-red-600" data-lang-key="dangerZone">Danger Zone</h3>
-        <p class="text-sm !text-gray-700 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be
-          certain.</p>
-        <button id="delete-all-data-btn"
-          class="btn btn-error w-full mt-4 !bg-red-600 !text-white hover:!bg-red-700 !border-red-600"
-          data-lang-key="deleteAllData">Delete All
-          Data</button>
-      </div>
-
-      <div class="modal-action">
-        <button id="close-settings-btn" class="btn btn-ghost !text-gray-700 hover:!bg-gray-200"
-          data-lang-key="closeButton">Close</button>
-      </div>
-    </div>
-    <form method="dialog" class="modal-backdrop">
+      </div> </div> <form method="dialog" class="modal-backdrop">
       <button>close</button>
     </form>
   </dialog>
@@ -1319,6 +1329,8 @@
 
 
   <script>
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
     // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
     const GEMINI_API_KEY = "AIzaSyCldW53rqjHejtKvuGyxyQM8R9kuEtgZN0";
 
@@ -1463,6 +1475,7 @@
     const settingsModal = document.getElementById('settings-modal');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
     const diagnosisForm = document.getElementById('diagnosis-form');
+    const settingsModalCloseBottomBtn = document.getElementById('settings-modal-close-bottom-btn');
     const manualGoalForm = document.getElementById('manual-goal-form');
     const deleteAllDataBtn = document.getElementById('delete-all-data-btn');
     const imageUploadInput = document.getElementById('image-upload-input');
@@ -1549,15 +1562,38 @@
 
     // --- ALL FUNCTIONS (Keep all existing function definitions here) ---
 
+    function setupStepper(inputId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      const container = input.closest('.stepper-container');
+      if (!container) return;
+
+      const decrementBtn = container.querySelector(`[data-stepper-decrement="${inputId}"]`);
+      const incrementBtn = container.querySelector(`[data-stepper-increment="${inputId}"]`);
+
+      if (decrementBtn) {
+        decrementBtn.addEventListener('click', () => {
+          input.stepDown();
+        });
+      }
+      if (incrementBtn) {
+        incrementBtn.addEventListener('click', () => {
+          input.stepUp();
+        });
+      }
+    }
+
     let foodKeyReverseMap = {};
 
     function buildFoodKeyReverseMap() {
-      foodKeyReverseMap = Object.entries(translations.en).reduce((acc, [key, value]) => {
-        if (typeof value === 'string') {
-          acc[value.toLowerCase()] = key;
-        }
-        return acc;
-      }, {});
+        foodKeyReverseMap = Object.entries(translations.en).reduce((acc, [key, value]) => {
+            // valueが文字列の場合のみ、処理を実行するように修正
+            if (typeof value === 'string') {
+                acc[value.toLowerCase()] = key;
+            }
+            return acc;
+        }, {});
     }
 
     function getTranslatedFoodName(originalFoodName) {
@@ -2534,6 +2570,7 @@
       // --- General Listeners ---
       window.addEventListener('scroll', () => { if (appHeader) appHeader.classList.toggle('shadow-md', window.scrollY > 10); });
       document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+      
       const infoIcon = document.getElementById('info-tooltip-icon');
       if (infoIcon) {
         infoIcon.addEventListener('click', () => {
@@ -2545,135 +2582,149 @@
         });
       }
 
-      // --- Auth Page Listeners ---
-      authForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        authError.textContent = '';
-        showLoader('signingIn');
-        try {
-          if (isLoginMode) await auth.signInWithEmailAndPassword(email, password);
-          else await auth.createUserWithEmailAndPassword(email, password);
-        } catch (error) { authError.textContent = error.message; }
-        finally { hideLoader(); }
-      });
-      googleSignInBtn.addEventListener('click', signInWithGoogle);
-      authToggleLink.addEventListener('click', (e) => { e.preventDefault(); isLoginMode = !isLoginMode; setLanguage(localStorage.getItem('language') || 'en'); });
-      forgotPasswordLink.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const currentLang = localStorage.getItem('language') || 'en';
-        if (!email) { await showAlert(translations[currentLang].enterEmailForReset); return; }
-        try {
-          await auth.sendPasswordResetEmail(email);
-          await showAlert(translations[currentLang].passwordResetSent);
-        } catch (error) { authError.textContent = error.message; }
-      });
-      guestModeBtn.addEventListener('click', () => {
-        loadUserGoals();
-        loadFavourites();
-        showAppContainer(false);
-        loadMealsFromStorage();
-      });
+      // --- Auth Page Listeners (安全チェックを追加) ---
+      if (authForm) {
+        authForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          authError.textContent = '';
+          showLoader('signingIn');
+          try {
+            if (isLoginMode) await auth.signInWithEmailAndPassword(email, password);
+            else await auth.createUserWithEmailAndPassword(email, password);
+          } catch (error) { authError.textContent = error.message; }
+          finally { hideLoader(); }
+        });
+      }
+      if (googleSignInBtn) googleSignInBtn.addEventListener('click', signInWithGoogle);
+      if (authToggleLink) authToggleLink.addEventListener('click', (e) => { e.preventDefault(); isLoginMode = !isLoginMode; setLanguage(localStorage.getItem('language') || 'en'); });
+      if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('email').value;
+          const currentLang = localStorage.getItem('language') || 'en';
+          if (!email) { await showAlert(translations[currentLang].enterEmailForReset); return; }
+          try {
+            await auth.sendPasswordResetEmail(email);
+            await showAlert(translations[currentLang].passwordResetSent);
+          } catch (error) { authError.textContent = error.message; }
+        });
+      }
+      if (guestModeBtn) {
+        guestModeBtn.addEventListener('click', () => {
+          loadUserGoals();
+          loadFavourites();
+          showAppContainer(false);
+          loadMealsFromStorage();
+        });
+      }
 
       // --- Header Buttons ---
-      signOutBtnDropdown.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
-      accountMenuBtn.addEventListener('click', () => accountDropdown.classList.toggle('hidden'));
-      window.addEventListener('click', (e) => {
-        if (!accountMenuBtn.contains(e.target) && !accountDropdown.contains(e.target)) {
-          accountDropdown.classList.add('hidden');
-        }
-      });
-      goToLoginBtn.addEventListener('click', showAuthContainer);
-      settingsBtn.addEventListener('click', () => settingsModal.showModal());
-      favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.classList.remove('hidden'); });
+      if (signOutBtnDropdown) signOutBtnDropdown.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+      if (accountMenuBtn) {
+        accountMenuBtn.addEventListener('click', () => accountDropdown.classList.toggle('hidden'));
+        window.addEventListener('click', (e) => {
+          if (accountMenuBtn && !accountMenuBtn.contains(e.target) && accountDropdown && !accountDropdown.contains(e.target)) {
+            accountDropdown.classList.add('hidden');
+          }
+        });
+      }
+      if (goToLoginBtn) goToLoginBtn.addEventListener('click', showAuthContainer);
+      if (settingsBtn) settingsBtn.addEventListener('click', () => settingsModal.showModal());
+      if (favouritesBtn) favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.classList.remove('hidden'); });
 
       // --- Main App Listeners ---
-      analyseBtn.addEventListener('click', () => processNewMeal());
-      foodInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') processNewMeal(); });
-      toggleDashboardBtn.addEventListener('click', () => {
-        dashboard.classList.toggle('hidden');
-        syncToggleDashboardButton();
-        if (!dashboard.classList.contains('hidden')) setTimeout(() => dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-      });
+      if (analyseBtn) analyseBtn.addEventListener('click', () => processNewMeal());
+      if (foodInput) foodInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') processNewMeal(); });
+      if (toggleDashboardBtn) {
+        toggleDashboardBtn.addEventListener('click', () => {
+          dashboard.classList.toggle('hidden');
+          syncToggleDashboardButton();
+          if (!dashboard.classList.contains('hidden')) setTimeout(() => dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        });
+      }
       document.querySelectorAll('.quick-food-btn').forEach(btn => btn.addEventListener('click', () => { foodInput.value = btn.textContent; processNewMeal(); }));
       document.querySelectorAll('.meal-type-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelector('.meal-type-btn.active')?.classList.remove('active'); btn.classList.add('active'); }));
-      cameraScanBtn.addEventListener('click', () => cameraChoiceModal.classList.remove('hidden'));
-      voiceInputBtn.addEventListener('click', startVoiceRecognition);
+      if (cameraScanBtn) cameraScanBtn.addEventListener('click', () => cameraChoiceModal.classList.remove('hidden'));
+      if (voiceInputBtn) voiceInputBtn.addEventListener('click', startVoiceRecognition);
 
       // --- Modals & Other Listeners ---
-      closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.classList.add('hidden'));
-      scanMealBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); openCamera(); });
-      scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); startBarcodeScanner(); });
+      if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.classList.add('hidden'));
+      if (scanMealBtn) scanMealBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); openCamera(); });
+      if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); startBarcodeScanner(); });
       if (uploadImageBtn) {
         uploadImageBtn.addEventListener('click', () => {
           cameraChoiceModal.classList.add('hidden');
-          imageUploadInput.click(); // 紫色のボタンが押されたら、隠れたファイル入力をクリックする
+          if (imageUploadInput) imageUploadInput.click();
         });
       }
-      if (imageUploadInput) {
-        imageUploadInput.addEventListener('change', handleImageUpload); // ファイルが選択されたら分析処理を呼ぶ
+      if (imageUploadInput) imageUploadInput.addEventListener('change', handleImageUpload);
+      if (captureBtn) captureBtn.addEventListener('click', captureImage);
+      if (closeCameraBtn) closeCameraBtn.addEventListener('click', closeCamera);
+      if (closeBarcodeBtn) {
+        closeBarcodeBtn.addEventListener('click', () => {
+          if (html5QrCodeInstance && html5QrCodeInstance.isScanning) {
+            html5QrCodeInstance.stop().then(() => {
+              if (html5QrCodeInstance) html5QrCodeInstance.clear();
+              html5QrCodeInstance = null;
+            });
+          }
+          const barcodeModal = document.getElementById('barcode-modal');
+          if (barcodeModal) barcodeModal.close();
+        });
+      }
+      if (servingForm) {
+        servingForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const servingSize = parseFloat(document.getElementById('serving-size').value);
+          if (servingSize > 0 && currentScannedProduct) {
+            const multiplier = servingSize / 100;
+            processNewMeal({ food: currentScannedProduct.food, calories: currentScannedProduct.calories_100g * multiplier, protein: currentScannedProduct.protein_100g * multiplier, fat: currentScannedProduct.fat_100g * multiplier, carbs: currentScannedProduct.carbs_100g * multiplier });
+            servingModal.classList.add('hidden');
+            currentScannedProduct = null;
+          }
+        });
+      }
+      if (cancelServingBtn) cancelServingBtn.addEventListener('click', () => servingModal.classList.add('hidden'));
+      if (quantityForm) {
+        quantityForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const quantity = quantityInput.value.trim();
+          if (quantity && identifiedFoodName) {
+            foodInput.value = `${quantity} ${identifiedFoodName}`;
+            quantityModal.classList.add('hidden');
+            processNewMeal();
+          }
+        });
+      }
+      if (cancelQuantityBtn) cancelQuantityBtn.addEventListener('click', () => quantityModal.classList.add('hidden'));
+      if (closeFavouritesBtn) closeFavouritesBtn.addEventListener('click', () => favouritesModal.classList.add('hidden'));
+      if (closeCalendarBtn) closeCalendarBtn.addEventListener('click', () => calendarModal.classList.add('hidden'));
+      if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => settingsModal.close());
+      
+      // ★★★★★ ここが修正された重要な箇所です ★★★★★
+      if (settingsModalCloseBottomBtn) {
+        settingsModalCloseBottomBtn.addEventListener('click', () => settingsModal.close());
       }
 
-      captureBtn.addEventListener('click', captureImage);
-      captureBtn.addEventListener('click', captureImage);
-      closeCameraBtn.addEventListener('click', closeCamera);
-      closeBarcodeBtn.addEventListener('click', () => {
-        if (html5QrCodeInstance) {
-          html5QrCodeInstance.stop().then(() => {
-            html5QrCodeInstance.clear();
-            html5QrCodeInstance = null;
-          });
-        }
-        const barcodeModal = document.getElementById('barcode-modal');
-        barcodeModal.close();
-      });
-      servingForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const servingSize = parseFloat(document.getElementById('serving-size').value);
-        if (servingSize > 0 && currentScannedProduct) {
-          const multiplier = servingSize / 100;
-          processNewMeal({ food: currentScannedProduct.food, calories: currentScannedProduct.calories_100g * multiplier, protein: currentScannedProduct.protein_100g * multiplier, fat: currentScannedProduct.fat_100g * multiplier, carbs: currentScannedProduct.carbs_100g * multiplier });
-          servingModal.classList.add('hidden');
-          currentScannedProduct = null;
-        }
-      });
-      cancelServingBtn.addEventListener('click', () => servingModal.classList.add('hidden'));
-      quantityForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const quantity = quantityInput.value.trim();
-        if (quantity && identifiedFoodName) {
-          foodInput.value = `${quantity} ${identifiedFoodName}`;
-          quantityModal.classList.add('hidden');
-          processNewMeal();
-        }
-      });
-      cancelQuantityBtn.addEventListener('click', () => quantityModal.classList.add('hidden'));
-      closeFavouritesBtn.addEventListener('click', () => favouritesModal.classList.add('hidden'));
-      closeCalendarBtn.addEventListener('click', () => calendarModal.classList.add('hidden'));
-      closeSettingsBtn.addEventListener('click', () => settingsModal.close());
-      if (deleteAllDataBtn) {
-        deleteAllDataBtn.addEventListener('click', resetAllData);
-      }
+      if (deleteAllDataBtn) deleteAllDataBtn.addEventListener('click', resetAllData);
+      
+      setupStepper('age');
+      setupStepper('height');
+      setupStepper('weight');
+
       if (calendarPrevMonth) {
         calendarPrevMonth.addEventListener('click', () => {
-          if (calendarMode === 'month') {
-            calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() - 1);
-          } else {
-            calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() - 1);
-          }
+          if (calendarMode === 'month') calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() - 1);
+          else calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() - 1);
           renderCalendar(calendarDisplayDate);
         });
       }
-
       if (calendarNextMonth) {
         calendarNextMonth.addEventListener('click', () => {
-          if (calendarMode === 'month') {
-            calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() + 1);
-          } else {
-            calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() + 1);
-          }
+          if (calendarMode === 'month') calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() + 1);
+          else calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() + 1);
           renderCalendar(calendarDisplayDate);
         });
       }
@@ -2684,62 +2735,51 @@
           sliderLabel.textContent = labels[quantitySlider.value];
           quantitySpecText.value = "";
         });
-
         quantitySpecText.addEventListener('input', () => {
           const currentLang = localStorage.getItem('language') || 'en';
           const labels = translations[currentLang].sliderLabels;
           quantitySlider.value = 2;
           sliderLabel.textContent = labels[2];
         });
-
-        cancelQuantitySpecBtn.addEventListener('click', () => {
-          quantitySpecModal.classList.add('hidden');
-        });
-
+        cancelQuantitySpecBtn.addEventListener('click', () => quantitySpecModal.classList.add('hidden'));
         confirmQuantitySpecBtn.addEventListener('click', () => {
           let finalQuery = '';
           const specifiedText = quantitySpecText.value.trim();
           const currentLang = localStorage.getItem('language') || 'en';
           const prefixes = translations[currentLang].sliderPrefixes;
-
-          if (specifiedText) {
-            finalQuery = `${specifiedText} ${foodNameForQuantitySpec}`;
-          } else {
+          if (specifiedText) finalQuery = `${specifiedText} ${foodNameForQuantitySpec}`;
+          else {
             const prefix = prefixes[quantitySlider.value];
             finalQuery = `${prefix} ${foodNameForQuantitySpec}`.trim();
           }
-
           foodInput.value = finalQuery;
           quantitySpecModal.classList.add('hidden');
           processNewMeal(null, true);
         });
       }
-      diagnosisForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const gender = document.getElementById('gender').value, age = parseInt(document.getElementById('age').value), height = parseInt(document.getElementById('height').value), weight = parseInt(document.getElementById('weight').value), activityLevel = parseFloat(document.getElementById('activity-level').value);
-        const bmr = (gender === 'male') ? (10 * weight + 6.25 * height - 5 * age + 5) : (10 * weight + 6.25 * height - 5 * age - 161);
-        const tdee = Math.round(bmr * activityLevel);
-        setAndSaveGoals(tdee);
-        settingsModal.close();
-        showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', tdee));
-      });
-      manualGoalForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const manualCalories = parseInt(document.getElementById('manual-calories').value);
-        if (manualCalories > 0) {
-          setAndSaveGoals(manualCalories);
+      if (diagnosisForm) {
+        diagnosisForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const gender = document.getElementById('gender').value, age = parseInt(document.getElementById('age').value), height = parseInt(document.getElementById('height').value), weight = parseInt(document.getElementById('weight').value), activityLevel = parseFloat(document.getElementById('activity-level').value);
+          const bmr = (gender === 'male') ? (10 * weight + 6.25 * height - 5 * age + 5) : (10 * weight + 6.25 * height - 5 * age - 161);
+          const tdee = Math.round(bmr * activityLevel);
+          setAndSaveGoals(tdee);
           settingsModal.close();
-          showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', manualCalories));
-        }
-      });
-
-      // Offline Modal Listener
-      if (offlineCloseBtn) {
-        offlineCloseBtn.addEventListener('click', () => {
-          offlineModal.classList.add('hidden');
+          showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', tdee));
         });
       }
-
+      if (manualGoalForm) {
+        manualGoalForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const manualCalories = parseInt(document.getElementById('manual-calories').value);
+          if (manualCalories > 0) {
+            setAndSaveGoals(manualCalories);
+            settingsModal.close();
+            showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', manualCalories));
+          }
+        });
+      }
+      if (offlineCloseBtn) offlineCloseBtn.addEventListener('click', () => offlineModal.classList.add('hidden'));
       setupDashboardListeners();
     }
 
@@ -2838,8 +2878,45 @@
     });
 
     window.addEventListener('load', () => {
-      hideInstallUI();
-      deferredPrompt = null;
+      try {
+        console.log("Step 1: buildFoodKeyReverseMap() を実行中...");
+        buildFoodKeyReverseMap();
+        console.log("Step 1: 正常に完了");
+      } catch (e) {
+        console.error("--- エラー発生: buildFoodKeyReverseMap ---", e);
+      }
+
+      try {
+        console.log("Step 2: setDefaultMealType() を実行中...");
+        setDefaultMealType();
+        console.log("Step 2: 正常に完了");
+      } catch (e) {
+        console.error("--- エラー発生: setDefaultMealType ---", e);
+      }
+      
+      try {
+        console.log("Step 3: setLanguage() を実行中...");
+        setLanguage(localStorage.getItem('language') || 'en');
+        console.log("Step 3: 正常に完了");
+      } catch (e) {
+        console.error("--- エラー発生: setLanguage ---", e);
+      }
+
+      try {
+        console.log("Step 4: initializeAppEventListeners() を実行中...");
+        initializeAppEventListeners();
+        console.log("Step 4: 正常に完了");
+      } catch (e) {
+        console.error("--- エラー発生: initializeAppEventListeners ---", e);
+      }
+      
+      try {
+        console.log("Step 5: updateHeaderDate() を実行中...");
+        updateHeaderDate();
+        console.log("Step 5: 正常に完了");
+      } catch (e) {
+        console.error("--- エラー発生: updateHeaderDate ---", e);
+      }
     });
 
   </script>
