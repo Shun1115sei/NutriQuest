@@ -421,6 +421,104 @@
       -webkit-app-region: no-drag;
       app-region: no-drag;
     }
+
+
+    /* Settings Modal Critical Fixes */
+    #settings-modal .modal-box {
+      background-color: #ffffff !important;
+      color: #1f2937 !important;
+    }
+
+    #settings-modal .modal-box * {
+      color: inherit;
+    }
+
+    #settings-modal .modal-box label {
+      color: #374151 !important;
+      font-weight: 500;
+    }
+
+    #settings-modal .modal-box .btn {
+      border: 1px solid;
+    }
+
+    #settings-modal .modal-box .btn-primary {
+      background-color: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #2563eb !important;
+    }
+
+    #settings-modal .modal-box .btn-primary:hover {
+      background-color: #1d4ed8 !important;
+      border-color: #1d4ed8 !important;
+    }
+
+    #settings-modal .modal-box .btn-neutral {
+      background-color: #4b5563 !important;
+      color: #ffffff !important;
+      border-color: #4b5563 !important;
+    }
+
+    #settings-modal .modal-box .btn-neutral:hover {
+      background-color: #374151 !important;
+      border-color: #374151 !important;
+    }
+
+    #settings-modal .modal-box .btn-error {
+      background-color: #dc2626 !important;
+      color: #ffffff !important;
+      border-color: #dc2626 !important;
+    }
+
+    #settings-modal .modal-box .btn-error:hover {
+      background-color: #b91c1c !important;
+      border-color: #b91c1c !important;
+    }
+
+    #settings-modal .modal-box .btn-ghost {
+      background-color: transparent !important;
+      color: #374151 !important;
+      border-color: transparent !important;
+    }
+
+    #settings-modal .modal-box .btn-ghost:hover {
+      background-color: #f3f4f6 !important;
+    }
+
+    #settings-modal .modal-box .input,
+    #settings-modal .modal-box .select {
+      background-color: #ffffff !important;
+      color: #1f2937 !important;
+      border-color: #d1d5db !important;
+    }
+
+    #settings-modal .modal-box .input:focus,
+    #settings-modal .modal-box .select:focus {
+      border-color: #3b82f6 !important;
+      outline: 2px solid #3b82f6 !important;
+      outline-offset: 2px;
+    }
+
+    #settings-modal .modal-box h2 {
+      color: #1f2937 !important;
+    }
+
+    #settings-modal .modal-box h3 {
+      color: #dc2626 !important;
+    }
+
+    #settings-modal .modal-box p {
+      color: #4b5563 !important;
+    }
+
+    #settings-modal .modal-box .divider {
+      color: #6b7280 !important;
+    }
+
+    #settings-modal .modal-box .divider::before,
+    #settings-modal .modal-box .divider::after {
+      border-color: #d1d5db;
+    }
   </style>
 </head>
 
@@ -907,7 +1005,8 @@
   <dialog id="barcode-modal" class="modal">
     <div class="modal-box max-w-md">
       <form method="dialog">
-        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        <button
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 !text-gray-700 hover:!bg-gray-200">✕</button>
       </form>
       <h3 class="text-2xl font-bold mb-4 text-center" data-lang-key="scanBarcodeTitle">Scan a Barcode</h3>
       <div class="scanner-container">
@@ -929,7 +1028,7 @@
       <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="servingSizeTitle">Enter Serving Size</h2>
       <p id="serving-product-name" class="text-center text-gray-600 mb-4"></p>
       <form id="serving-form">
-        <label for="serving-size" class="block text-sm font-medium text-gray-700"
+        <label for="serving-size" class="block text-sm font-medium !text-gray-800"
           data-lang-key="servingSizeLabel">Serving Size (grams)</label>
         <input type="number" id="serving-size" value="100"
           class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
@@ -971,46 +1070,51 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
-  <div id="settings-modal" class="modal-overlay hidden">
-    <div class="modal-content max-w-lg w-full text-left max-h-[80vh] overflow-y-auto">
-      <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="setGoalsTitle">Set Your Daily Goals</h2>
-      <p class="text-center text-gray-600 mb-6" data-lang-key="settingsDescription">Let us calculate your needs,
+  <!-- Settings Modal (DaisyUI) -->
+  <dialog id="settings-modal" class="modal">
+    <div class="modal-box max-w-lg w-full max-h-[80vh] overflow-y-auto text-base-content bg-base-100">
+      <form method="dialog">
+        <button
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 !text-gray-700 hover:!bg-gray-200">✕</button>
+      </form>
+      <h2 class="text-2xl font-bold mb-4 text-center !text-gray-800" data-lang-key="setGoalsTitle">Set Your Daily Goals
+      </h2>
+      <p class="text-center !text-gray-700 mb-6" data-lang-key="settingsDescription">Let us calculate your needs,
         or set your own manual goal.</p>
 
       <form id="diagnosis-form">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700" data-lang-key="gender">Gender</label>
+            <label class="block text-sm font-medium !text-gray-800" data-lang-key="gender">Gender</label>
             <select id="gender"
-              class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+              class="select select-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
               <option value="male" data-lang-key="male">Male</option>
               <option value="female" data-lang-key="female">Female</option>
             </select>
           </div>
           <div>
-            <label for="age" class="block text-sm font-medium text-gray-700" data-lang-key="age">Age</label>
+            <label for="age" class="block text-sm font-medium !text-gray-800" data-lang-key="age">Age</label>
             <input type="number" id="age" value="30"
-              class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
           </div>
           <div>
-            <label for="height" class="block text-sm font-medium text-gray-700" data-lang-key="height">Height
+            <label for="height" class="block text-sm font-medium !text-gray-800" data-lang-key="height">Height
               (cm)</label>
             <input type="number" id="height" value="170"
-              class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
           </div>
           <div>
-            <label for="weight" class="block text-sm font-medium text-gray-700" data-lang-key="weight">Weight
+            <label for="weight" class="block text-sm font-medium !text-gray-800" data-lang-key="weight">Weight
               (kg)</label>
             <input type="number" id="weight" value="70"
-              class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
           </div>
         </div>
         <div class="mt-4">
-          <label for="activity-level" class="block text-sm font-medium text-gray-700"
+          <label for="activity-level" class="block text-sm font-medium !text-gray-800"
             data-lang-key="activityLevel">Activity Level</label>
           <select id="activity-level"
-            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm">
+            class="select select-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
             <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no
               exercise)</option>
             <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light
@@ -1024,34 +1128,43 @@
           </select>
         </div>
         <button type="submit"
-          class="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
-          data-lang-key="calculateAndSave">Calculate & Save</button>
+          class="btn btn-primary w-full mt-6 !bg-blue-600 !text-white hover:!bg-blue-700 !border-blue-600"
+          data-lang-key="calculateAndSave">Calculate &
+          Save</button>
       </form>
 
-      <div class="my-4 text-center text-gray-500" data-lang-key="or">OR</div>
+      <div class="divider !text-gray-700" data-lang-key="or">OR</div>
 
       <form id="manual-goal-form">
-        <label for="manual-calories" class="block text-sm font-medium text-gray-700" data-lang-key="setManualGoal">Set
+        <label for="manual-calories" class="block text-sm font-medium !text-gray-800" data-lang-key="setManualGoal">Set
           Manual Calorie Goal</label>
         <input type="number" id="manual-calories" value="2000"
-          class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
+          class="input input-bordered w-full mt-1 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
         <button type="submit"
-          class="mt-4 w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg"
-          data-lang-key="saveManualGoal">Save Manual Goal</button>
+          class="btn btn-neutral w-full mt-4 !bg-gray-600 !text-white hover:!bg-gray-700 !border-gray-600"
+          data-lang-key="saveManualGoal">Save Manual
+          Goal</button>
       </form>
 
       <div class="my-6 border-t pt-6">
-        <h3 class="text-lg font-semibold text-red-700" data-lang-key="dangerZone">Danger Zone</h3>
-        <p class="text-sm text-gray-600 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be
+        <h3 class="text-lg font-semibold !text-red-600" data-lang-key="dangerZone">Danger Zone</h3>
+        <p class="text-sm !text-gray-700 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be
           certain.</p>
         <button id="delete-all-data-btn"
-          class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
-          data-lang-key="deleteAllData">Delete All Data</button>
+          class="btn btn-error w-full mt-4 !bg-red-600 !text-white hover:!bg-red-700 !border-red-600"
+          data-lang-key="deleteAllData">Delete All
+          Data</button>
       </div>
-      <button id="close-settings-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
-        data-lang-key="closeButton">Close</button>
+
+      <div class="modal-action">
+        <button id="close-settings-btn" class="btn btn-ghost !text-gray-700 hover:!bg-gray-200"
+          data-lang-key="closeButton">Close</button>
+      </div>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
   <!-- Calendar Modal -->
   <div id="calendar-modal" class="modal-overlay hidden">
@@ -1092,7 +1205,7 @@
       <p class="text-center mb-4">We identified this as: <strong id="identified-food-name" class="capitalize"></strong>.
         Is this correct?</p>
       <form id="quantity-form">
-        <label for="quantity-input" class="block text-sm font-medium text-gray-700" data-lang-key="quantityLabel">Enter
+        <label for="quantity-input" class="block text-sm font-medium !text-gray-800" data-lang-key="quantityLabel">Enter
           quantity (e.g., 1 piece, 100g)</label>
         <input type="text" id="quantity-input"
           class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
@@ -1145,7 +1258,7 @@
       <p class="text-center text-gray-600 mb-6">For: <strong id="quantity-spec-food-name"></strong></p>
 
       <div>
-        <label for="quantity-slider" class="block text-sm font-medium text-gray-700"
+        <label for="quantity-slider" class="block text-sm font-medium !text-gray-800"
           data-lang-key="intuitiveQuantity">Intuitive Quantity</label>
         <input type="range" id="quantity-slider" min="0" max="4" value="2" step="1"
           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2">
@@ -1155,7 +1268,7 @@
       <div class="my-4 text-center text-gray-500" data-lang-key="or">OR</div>
 
       <div>
-        <label for="quantity-spec-text" class="block text-sm font-medium text-gray-700"
+        <label for="quantity-spec-text" class="block text-sm font-medium !text-gray-800"
           data-lang-key="specificQuantity">Specific Quantity</label>
         <input type="text" id="quantity-spec-text"
           class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm"
@@ -1392,7 +1505,7 @@
     function openQuantitySpecModal(foodName) {
       foodNameForQuantitySpec = foodName;
       quantitySpecFoodName.textContent = foodName;
-      
+
       const currentLang = localStorage.getItem('language') || 'en';
       const labels = translations[currentLang].sliderLabels;
 
@@ -1408,12 +1521,12 @@
     let foodKeyReverseMap = {};
 
     function buildFoodKeyReverseMap() {
-        foodKeyReverseMap = Object.entries(translations.en).reduce((acc, [key, value]) => {
-            if (typeof value === 'string') {
-                acc[value.toLowerCase()] = key;
-            }
-            return acc;
-        }, {});
+      foodKeyReverseMap = Object.entries(translations.en).reduce((acc, [key, value]) => {
+        if (typeof value === 'string') {
+          acc[value.toLowerCase()] = key;
+        }
+        return acc;
+      }, {});
     }
 
     function getTranslatedFoodName(originalFoodName) {
@@ -1557,7 +1670,7 @@
         if (storedGoals) loadedGoals = JSON.parse(storedGoals);
       }
       if (loadedGoals) userGoals = loadedGoals;
-      else settingsModal.classList.remove('hidden');
+      else settingsModal.showModal();
     }
     async function saveMeal(newMeal) {
       if (auth.currentUser) {
@@ -1861,7 +1974,7 @@
       }
     }
     async function resetAllData() {
-      settingsModal.classList.add('hidden');
+      settingsModal.close();
 
       const currentLang = localStorage.getItem('language') || 'en';
       if (!await showConfirm(translations[currentLang].deleteAllDataConfirm)) return;
@@ -2442,7 +2555,7 @@
         }
       });
       goToLoginBtn.addEventListener('click', showAuthContainer);
-      settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+      settingsBtn.addEventListener('click', () => settingsModal.showModal());
       favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.classList.remove('hidden'); });
 
       // --- Main App Listeners ---
@@ -2508,7 +2621,7 @@
       cancelQuantityBtn.addEventListener('click', () => quantityModal.classList.add('hidden'));
       closeFavouritesBtn.addEventListener('click', () => favouritesModal.classList.add('hidden'));
       closeCalendarBtn.addEventListener('click', () => calendarModal.classList.add('hidden'));
-      closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+      closeSettingsBtn.addEventListener('click', () => settingsModal.close());
       if (deleteAllDataBtn) {
         deleteAllDataBtn.addEventListener('click', resetAllData);
       }
@@ -2567,7 +2680,7 @@
 
           foodInput.value = finalQuery;
           quantitySpecModal.classList.add('hidden');
-          processNewMeal(null, true); 
+          processNewMeal(null, true);
         });
       }
       diagnosisForm.addEventListener('submit', (e) => {
@@ -2576,7 +2689,7 @@
         const bmr = (gender === 'male') ? (10 * weight + 6.25 * height - 5 * age + 5) : (10 * weight + 6.25 * height - 5 * age - 161);
         const tdee = Math.round(bmr * activityLevel);
         setAndSaveGoals(tdee);
-        settingsModal.classList.add('hidden');
+        settingsModal.close();
         showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', tdee));
       });
       manualGoalForm.addEventListener('submit', (e) => {
@@ -2584,7 +2697,7 @@
         const manualCalories = parseInt(document.getElementById('manual-calories').value);
         if (manualCalories > 0) {
           setAndSaveGoals(manualCalories);
-          settingsModal.classList.add('hidden');
+          settingsModal.close();
           showAlert(translations[localStorage.getItem('language') || 'en'].goalSetMessage.replace('{calories}', manualCalories));
         }
       });
