@@ -7,13 +7,15 @@
   <title>Health Tracker</title>
   <link rel="manifest" href="manifest.json">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
   <link rel="icon" type="image/png" href="./icons/192.png">
   <!-- Barcode Scanner Library -->
-  <script src="https://unpkg.com/@zxing/library@0.21.0/umd/index.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -215,24 +217,15 @@
       }
     }
 
-    /* --- Barcode Scanner Overlay --- */
+    /* --- Barcode Scanner Container --- */
     .scanner-container {
       position: relative;
       width: 100%;
-      background: black;
       border-radius: 0.5rem;
       overflow: hidden;
     }
 
-    .focus-box {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 80%;
-      height: 40%;
-      border: 2px solid white;
-      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
-      transform: translate(-50%, -50%);
+    #html5-qrcode-barcode {
       border-radius: 0.5rem;
     }
 
@@ -626,265 +619,266 @@
 
             <div class="flex items-center justify-center gap-2 mt-2">
               <p data-lang-key="tagline" class="text-gray-500 text-lg">Your Journey to a Healthier You.</p>
-              
+
               <span id="info-tooltip-icon" class="cursor-pointer text-gray-400 hover:text-blue-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </span>
             </div>
 
           </div>
 
-            <div class="search-container max-w-xl mx-auto text-center">
-              <div
-                class="relative flex items-center bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg focus-within:shadow-lg">
-                <div class="pl-5"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg></div>
-                <input type="text" id="food-input"
-                  class="w-full bg-transparent p-4 pl-2 text-lg rounded-full focus:outline-none"
-                  data-lang-key-placeholder="foodInputPlaceholder"
-                  placeholder="e.g., 1 cup of rice and grilled chicken">
-                <button id="voice-input-btn" class="p-3 text-gray-500 hover:text-blue-500"
-                  data-lang-key-title="voiceInputTitle" title="Voice Input">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
-                    </path>
-                  </svg>
-                </button>
-                <button id="camera-scan-btn" class="p-3 pr-5 text-gray-500 hover:text-blue-500"
-                  data-lang-key-title="scanWithCameraTitle" title="Scan with Camera">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </button>
+          <div class="search-container max-w-xl mx-auto text-center">
+            <div
+              class="relative flex items-center bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg focus-within:shadow-lg">
+              <div class="pl-5"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg></div>
+              <input type="text" id="food-input"
+                class="w-full bg-transparent p-4 pl-2 text-lg rounded-full focus:outline-none"
+                data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken">
+              <button id="voice-input-btn" class="p-3 text-gray-500 hover:text-blue-500"
+                data-lang-key-title="voiceInputTitle" title="Voice Input">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                  </path>
+                </svg>
+              </button>
+              <button id="camera-scan-btn" class="p-3 pr-5 text-gray-500 hover:text-blue-500"
+                data-lang-key-title="scanWithCameraTitle" title="Scan with Camera">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Meal Type Selector -->
+            <div id="meal-type-selector" class="flex flex-wrap justify-center gap-2 mt-4">
+              <button data-type="Breakfast"
+                class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
+                data-lang-key="breakfast">Breakfast</button>
+              <button data-type="Lunch"
+                class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
+                data-lang-key="lunch">Lunch</button>
+              <button data-type="Dinner"
+                class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
+                data-lang-key="dinner">Dinner</button>
+              <button data-type="Snack"
+                class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
+                data-lang-key="snack">Snack</button>
+            </div>
+
+            <div class="mt-6">
+              <button id="analyse-btn"
+                class="analyse-btn bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-8 text-lg rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-px transition-all">
+                <span class="relative z-10" data-lang-key="analyseMealButton">Analyse Meal</span>
+              </button>
+            </div>
+
+            <!-- Quick Access Section -->
+            <div id="quick-access" class="mt-8 text-center">
+              <h3 class="text-lg font-semibold text-gray-600 mb-3" data-lang-key="quickAccess">Quick
+                Access</h3>
+              <div class="flex flex-wrap justify-center gap-2">
+                <button
+                  class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
+                  data-lang-key="hainaneseChickenRice">Hainanese Chicken Rice</button>
+                <button
+                  class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
+                  data-lang-key="laksa">Laksa</button>
+                <button
+                  class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
+                  data-lang-key="kayaToast">Kaya Toast</button>
+                <button
+                  class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
+                  data-lang-key="bakKutTeh">Bak Kut Teh</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 text-center">
+            <span id="toggle-dashboard-btn"
+              class="text-blue-600 hover:text-blue-800 font-semibold text-lg cursor-pointer underline transition-colors">
+              <span data-lang-key="viewDashboard">View Dashboard</span>
+            </span>
+          </div>
+
+          <div id="dashboard" class="mt-10 w-full max-w-6xl mx-auto hidden">
+            <div class="flex justify-center space-x-2 mb-6">
+              <button data-period="day"
+                class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
+                data-lang-key="today">Today</button>
+              <button data-period="week"
+                class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
+                data-lang-key="thisWeek">This Week</button>
+              <button data-period="month"
+                class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
+                data-lang-key="thisMonth">This Month</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              <div class="lg:col-span-2 space-y-6">
+                <div id="period-totals-card" class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                  <div class="flex justify-between items-center mb-4">
+                    <button id="prev-period-btn"
+                      class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Previous Period">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
+                      </svg>
+                    </button>
+                    <div id="period-title-container"
+                      class="flex items-center justify-center cursor-pointer hover:text-blue-600 transition-colors group">
+                      <h2 id="period-title"
+                        class="text-xl sm:text-2xl font-bold text-gray-800 text-center px-2 group-hover:text-blue-600 transition-colors">
+                      </h2>
+                      <svg class="w-5 h-5 ml-1 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                        </path>
+                      </svg>
+                    </div>
+                    <button id="next-period-btn"
+                      class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Next Period">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div id="period-totals" class="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                      <p class="text-sm text-gray-600" data-lang-key="calories">Calories</p>
+                      <p id="total-calories" class="text-2xl font-semibold text-blue-600">0
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600" data-lang-key="protein">Protein</p>
+                      <p id="total-protein" class="text-2xl font-semibold text-green-600">0 g
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600" data-lang-key="fat">Fat</p>
+                      <p id="total-fat" class="text-2xl font-semibold text-orange-500">0 g</p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600" data-lang-key="carbs">Carbs</p>
+                      <p id="total-carbs" class="text-2xl font-semibold text-red-500">0 g</p>
+                    </div>
+                  </div>
+                  <div class="text-center mt-6">
+                    <button id="toggle-details-btn" class="text-blue-500 hover:underline"
+                      data-lang-key="showDetails">Show Details</button>
+                  </div>
+                </div>
+                <!-- Detailed Dashboard View (Initially Hidden) -->
+                <div id="detailed-dashboard-view" class="hidden space-y-6">
+                  <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                    <div id="charts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div id="main-chart-wrapper">
+                        <h3 id="dynamic-chart-title" class="text-lg font-bold text-center text-gray-800 mb-2"></h3>
+                        <p id="period-goal-text" class="text-center text-gray-500 text-sm mb-1 hidden"></p>
+                        <p id="period-actual-text" class="text-center font-semibold text-sm mb-2 hidden"></p>
+                        <canvas id="calorie-gauge-chart"></canvas>
+                        <div id="bar-chart-container" class="relative h-80 hidden">
+                          <canvas id="period-bar-chart"></canvas>
+                        </div>
+                      </div>
+                      <div id="nutrition-balance-wrapper">
+                        <h3 class="text-lg font-bold text-center text-gray-800 mb-2" data-lang-key="nutritionBalance">
+                          Nutrition Balance</h3>
+                        <canvas id="nutrition-chart"></canvas>
+                        <div id="nutrition-balance-text" class="hidden text-left"></div>
+                      </div>
+                    </div>
+                    <div id="small-gauges-container" class="grid grid-cols-3 gap-4 mt-6">
+                      <div>
+                        <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="protein">Protein
+                        </h3>
+                        <canvas id="protein-gauge-chart"></canvas>
+                      </div>
+                      <div>
+                        <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="fat">Fat</h3>
+                        <canvas id="fat-gauge-chart"></canvas>
+                      </div>
+                      <div>
+                        <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="carbs">Carbs</h3>
+                        <canvas id="carbs-gauge-chart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Nutrition Advice Card -->
+                <div id="advice-card" class="p-6 rounded-xl shadow-sm hidden">
+                  <h2 class="text-2xl font-bold text-gray-800 mb-4" data-lang-key="nutritionAdvice">Nutrition Advice
+                  </h2>
+                  <div id="advice-content" class="flex items-start space-x-4">
+                    <span id="advice-icon" class="text-3xl"></span>
+                    <p id="advice-text" class="text-gray-700"></p>
+                  </div>
+                </div>
               </div>
 
-              <!-- Meal Type Selector -->
-              <div id="meal-type-selector" class="flex flex-wrap justify-center gap-2 mt-4">
-                <button data-type="Breakfast"
-                  class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
-                  data-lang-key="breakfast">Breakfast</button>
-                <button data-type="Lunch"
-                  class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
-                  data-lang-key="lunch">Lunch</button>
-                <button data-type="Dinner"
-                  class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
-                  data-lang-key="dinner">Dinner</button>
-                <button data-type="Snack"
-                  class="meal-type-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-2 text-sm sm:py-3 sm:px-6 sm:text-base rounded-full border border-gray-300 transition-all"
-                  data-lang-key="snack">Snack</button>
-              </div>
-
-              <div class="mt-6">
-                <button id="analyse-btn"
-                  class="analyse-btn bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-8 text-lg rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-px transition-all">
-                  <span class="relative z-10" data-lang-key="analyseMealButton">Analyse Meal</span>
-                </button>
-              </div>
-
-              <!-- Quick Access Section -->
-              <div id="quick-access" class="mt-8 text-center">
-                <h3 class="text-lg font-semibold text-gray-600 mb-3" data-lang-key="quickAccess">Quick
-                  Access</h3>
-                <div class="flex flex-wrap justify-center gap-2">
-                  <button
-                    class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
-                    data-lang-key="hainaneseChickenRice">Hainanese Chicken Rice</button>
-                  <button
-                    class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
-                    data-lang-key="laksa">Laksa</button>
-                  <button
-                    class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
-                    data-lang-key="kayaToast">Kaya Toast</button>
-                  <button
-                    class="quick-food-btn bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition-all"
-                    data-lang-key="bakKutTeh">Bak Kut Teh</button>
+              <div class="lg:col-span-3">
+                <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm min-h-full flex flex-col">
+                  <h2 class="text-2xl font-bold text-gray-800 mb-4" data-lang-key="mealList">Meal
+                    List</h2>
+                  <div id="meal-list" class="flex-grow space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                    <p id="no-meals-message" class="text-gray-500" data-lang-key="noMeals">No
+                      meals recorded for this period.</p>
+                  </div>
                 </div>
               </div>
             </div>
-
             <div class="mt-8 text-center">
-              <span id="toggle-dashboard-btn"
-                class="text-blue-600 hover:text-blue-800 font-semibold text-lg cursor-pointer underline transition-colors">
-                <span data-lang-key="viewDashboard">View Dashboard</span>
-              </span>
-            </div>
-
-            <div id="dashboard" class="mt-10 w-full max-w-6xl mx-auto hidden">
-              <div class="flex justify-center space-x-2 mb-6">
-                <button data-period="day"
-                  class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
-                  data-lang-key="today">Today</button>
-                <button data-period="week"
-                  class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
-                  data-lang-key="thisWeek">This Week</button>
-                <button data-period="month"
-                  class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
-                  data-lang-key="thisMonth">This Month</button>
-              </div>
-
-              <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                <div class="lg:col-span-2 space-y-6">
-                  <div id="period-totals-card" class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
-                      <button id="prev-period-btn"
-                        class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="Previous Period">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                          </path>
-                        </svg>
-                      </button>
-                      <div id="period-title-container"
-                        class="flex items-center justify-center cursor-pointer hover:text-blue-600 transition-colors group">
-                        <h2 id="period-title"
-                          class="text-xl sm:text-2xl font-bold text-gray-800 text-center px-2 group-hover:text-blue-600 transition-colors">
-                        </h2>
-                        <svg class="w-5 h-5 ml-1 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none"
-                          stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                          </path>
-                        </svg>
-                      </div>
-                      <button id="next-period-btn"
-                        class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="Next Period">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                      </button>
-                    </div>
-                    <div id="period-totals" class="grid grid-cols-2 gap-4 text-center">
-                      <div>
-                        <p class="text-sm text-gray-600" data-lang-key="calories">Calories</p>
-                        <p id="total-calories" class="text-2xl font-semibold text-blue-600">0
-                        </p>
-                      </div>
-                      <div>
-                        <p class="text-sm text-gray-600" data-lang-key="protein">Protein</p>
-                        <p id="total-protein" class="text-2xl font-semibold text-green-600">0 g
-                        </p>
-                      </div>
-                      <div>
-                        <p class="text-sm text-gray-600" data-lang-key="fat">Fat</p>
-                        <p id="total-fat" class="text-2xl font-semibold text-orange-500">0 g</p>
-                      </div>
-                      <div>
-                        <p class="text-sm text-gray-600" data-lang-key="carbs">Carbs</p>
-                        <p id="total-carbs" class="text-2xl font-semibold text-red-500">0 g</p>
-                      </div>
-                    </div>
-                    <div class="text-center mt-6">
-                      <button id="toggle-details-btn" class="text-blue-500 hover:underline"
-                        data-lang-key="showDetails">Show Details</button>
-                    </div>
-                  </div>
-                  <!-- Detailed Dashboard View (Initially Hidden) -->
-                  <div id="detailed-dashboard-view" class="hidden space-y-6">
-                    <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-                      <div id="charts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div id="main-chart-wrapper">
-                          <h3 id="dynamic-chart-title" class="text-lg font-bold text-center text-gray-800 mb-2"></h3>
-                          <p id="period-goal-text" class="text-center text-gray-500 text-sm mb-1 hidden"></p>
-                          <p id="period-actual-text" class="text-center font-semibold text-sm mb-2 hidden"></p>
-                          <canvas id="calorie-gauge-chart"></canvas>
-                          <div id="bar-chart-container" class="relative h-80 hidden">
-                            <canvas id="period-bar-chart"></canvas>
-                          </div>
-                        </div>
-                        <div id="nutrition-balance-wrapper">
-                          <h3 class="text-lg font-bold text-center text-gray-800 mb-2" data-lang-key="nutritionBalance">
-                            Nutrition Balance</h3>
-                          <canvas id="nutrition-chart"></canvas>
-                          <div id="nutrition-balance-text" class="hidden text-left"></div>
-                        </div>
-                      </div>
-                      <div id="small-gauges-container" class="grid grid-cols-3 gap-4 mt-6">
-                        <div>
-                          <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="protein">Protein
-                          </h3>
-                          <canvas id="protein-gauge-chart"></canvas>
-                        </div>
-                        <div>
-                          <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="fat">Fat</h3>
-                          <canvas id="fat-gauge-chart"></canvas>
-                        </div>
-                        <div>
-                          <h3 class="text-md font-bold text-center text-gray-800 mb-1" data-lang-key="carbs">Carbs</h3>
-                          <canvas id="carbs-gauge-chart"></canvas>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Nutrition Advice Card -->
-                  <div id="advice-card" class="p-6 rounded-xl shadow-sm hidden">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-lang-key="nutritionAdvice">Nutrition Advice
-                    </h2>
-                    <div id="advice-content" class="flex items-start space-x-4">
-                      <span id="advice-icon" class="text-3xl"></span>
-                      <p id="advice-text" class="text-gray-700"></p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="lg:col-span-3">
-                  <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm min-h-full flex flex-col">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4" data-lang-key="mealList">Meal
-                      List</h2>
-                    <div id="meal-list" class="flex-grow space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                      <p id="no-meals-message" class="text-gray-500" data-lang-key="noMeals">No
-                        meals recorded for this period.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-8 text-center">
-                <button id="reset-all-btn"
-                  class="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-5 rounded-lg transition-all"
-                  data-lang-key="deleteTodayData">Delete Today's Data</button>
-              </div>
+              <button id="reset-all-btn"
+                class="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-5 rounded-lg transition-all"
+                data-lang-key="deleteTodayData">Delete Today's Data</button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  </div>
 
   <!-- Camera Choice Modal -->
   <div id="camera-choice-modal" class="modal-overlay hidden">
-  <div class="modal-content">
-    <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera</h2>
-    
-    <div class="space-y-4">
+    <div class="modal-content">
+      <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera</h2>
 
-      <button id="scan-meal-btn"
-        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
-        data-lang-key="scanMealButton">Scan Meal with Camera</button>
-      
-      <button id="scan-barcode-btn"
-        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
-        data-lang-key="scanBarcodeButton">Scan Barcode</button>
-      
-      <button id="upload-image-btn"
-        class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg"
-        data-lang-key="uploadFromLibrary">Upload from Library</button>
-      
-      <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
-        data-lang-key="closeButton">Close</button>
-        
+      <div class="space-y-4">
+
+        <button id="scan-meal-btn"
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
+          data-lang-key="scanMealButton">Scan Meal with Camera</button>
+
+        <button id="scan-barcode-btn"
+          class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
+          data-lang-key="scanBarcodeButton">Scan Barcode</button>
+
+        <button id="upload-image-btn"
+          class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg"
+          data-lang-key="uploadFromLibrary">Upload from Library</button>
+
+        <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
+          data-lang-key="closeButton">Close</button>
+
+      </div>
     </div>
   </div>
-</div>
 
   <!-- Camera Modal -->
   <div id="camera-modal" class="modal-overlay hidden">
@@ -903,26 +897,25 @@
     </div>
   </div>
 
-  <!-- Barcode Scanner Modal -->
-  <div id="barcode-modal" class="modal-overlay hidden">
-    <div class="modal-content camera-modal-content">
-      <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="scanBarcodeTitle">Scan a Barcode</h2>
+  <!-- Barcode Scanner Modal (DaisyUI) -->
+  <dialog id="barcode-modal" class="modal">
+    <div class="modal-box max-w-md">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="text-2xl font-bold mb-4 text-center" data-lang-key="scanBarcodeTitle">Scan a Barcode</h3>
       <div class="scanner-container">
-        <video id="barcode-video" class="w-full"></video>
-        <div class="focus-box"></div>
+        <div id="html5-qrcode-barcode" style="width: 100%; border-radius: 0.5rem;"></div>
       </div>
-      <div id="zoom-controls" class="mt-4 hidden">
-        <label for="zoom-slider" class="block text-sm font-medium text-gray-700" data-lang-key="zoom">Zoom</label>
-        <input type="range" id="zoom-slider" class="w-full">
-      </div>
-      <p id="barcode-result" class="mt-2 text-gray-600"></p>
-      <div class="flex justify-center space-x-4 mt-4">
-        <button id="close-barcode-btn"
-          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-full"
-          data-lang-key="closeButton">Close</button>
+      <p id="barcode-result" class="mt-2 text-gray-600 text-center"></p>
+      <div class="modal-action">
+        <button id="close-barcode-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
       </div>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
   <!-- Serving Size Modal -->
   <div id="serving-modal" class="modal-overlay hidden">
@@ -1315,8 +1308,7 @@
     const deleteAllDataBtn = document.getElementById('delete-all-data-btn');
     const imageUploadInput = document.getElementById('image-upload-input');
     const uploadImageBtn = document.getElementById('upload-image-btn');
-    const barcodeModal = document.getElementById('barcode-modal');
-    const barcodeVideo = document.getElementById('barcode-video');
+    // barcodeModal is now accessed directly in functions using getElementById
     const closeBarcodeBtn = document.getElementById('close-barcode-btn');
     const barcodeResultEl = document.getElementById('barcode-result');
     const servingModal = document.getElementById('serving-modal');
@@ -1329,8 +1321,6 @@
     const favouritesList = document.getElementById('favourites-list');
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
-    const zoomControls = document.getElementById('zoom-controls');
-    const zoomSlider = document.getElementById('zoom-slider');
     const mainAppContent = document.getElementById('main-app-content');
     const splashScreen = document.getElementById('splash-screen');
     const appHeader = document.getElementById('app-header');
@@ -1380,7 +1370,7 @@
     const favouritesBtnMobile = document.getElementById('favourites-btn-mobile');
     const settingsBtnMobile = document.getElementById('settings-btn-mobile');
 
-    let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, cameraStream = null, barcodeReader = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
+    let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, cameraStream = null, html5QrCodeInstance = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
     
     let foodNameForQuantitySpec = '';
     
@@ -1397,7 +1387,6 @@
       quantitySpecModal.classList.remove('hidden');
     }
 
-    if (typeof ZXing !== 'undefined') barcodeReader = new ZXing.BrowserMultiFormatReader();
 
     // --- ALL FUNCTIONS (Keep all existing function definitions here) ---
 
@@ -1430,11 +1419,11 @@
     function updateHeaderDate() {
       const dateEl = document.getElementById('header-date-display');
       if (dateEl) {
-          const today = new Date();
-          const options = { year: 'numeric', month: 'long', day: 'numeric' };
-          const lang = localStorage.getItem('language') || 'en';
-          const locale = lang === 'zh' ? 'zh-CN' : 'en-SG';
-          dateEl.textContent = today.toLocaleDateString(locale, options);
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const lang = localStorage.getItem('language') || 'en';
+        const locale = lang === 'zh' ? 'zh-CN' : 'en-SG';
+        dateEl.textContent = today.toLocaleDateString(locale, options);
       }
     }
     function setLanguage(lang) {
@@ -1572,38 +1561,38 @@
       updateDashboard(activePeriod);
     }
     async function handleImageUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        event.target.value = null; // 同じファイルを連続で選択できるようにするため
+      const file = event.target.files[0];
+      if (!file) return;
+      event.target.value = null; // 同じファイルを連続で選択できるようにするため
 
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const imageDataUrl = e.target.result;
-            showLoader('analysing');
-            try {
-                const base64String = imageDataUrl.split(',')[1];
-                identifiedFoodName = await identifyFoodFromImage(base64String);
-                hideLoader();
-                if (identifiedFoodName) {
-                    identifiedFoodNameEl.textContent = identifiedFoodName;
-                    quantityInput.value = '';
-                    quantityModal.classList.remove('hidden');
-                    quantityInput.focus();
-                } else {
-                    throw new Error("Could not identify the food from the uploaded image.");
-                }
-            } catch (error) {
-                hideLoader();
-                console.error("Image upload identification error:", error);
-                const currentLang = localStorage.getItem('language') || 'en';
-                if (error.message === "RATE_LIMIT_EXCEEDED") {
-                    showAlert(translations[currentLang].rateLimitError);
-                } else {
-                    showAlert("Sorry, we couldn't identify the food in the image.");
-                }
-            }
-        };
-        reader.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const imageDataUrl = e.target.result;
+        showLoader('analysing');
+        try {
+          const base64String = imageDataUrl.split(',')[1];
+          identifiedFoodName = await identifyFoodFromImage(base64String);
+          hideLoader();
+          if (identifiedFoodName) {
+            identifiedFoodNameEl.textContent = identifiedFoodName;
+            quantityInput.value = '';
+            quantityModal.classList.remove('hidden');
+            quantityInput.focus();
+          } else {
+            throw new Error("Could not identify the food from the uploaded image.");
+          }
+        } catch (error) {
+          hideLoader();
+          console.error("Image upload identification error:", error);
+          const currentLang = localStorage.getItem('language') || 'en';
+          if (error.message === "RATE_LIMIT_EXCEEDED") {
+            showAlert(translations[currentLang].rateLimitError);
+          } else {
+            showAlert("Sorry, we couldn't identify the food in the image.");
+          }
+        }
+      };
+      reader.readAsDataURL(file);
     }
     async function loadMealsFromFirestore() {
       if (!auth.currentUser) return;
@@ -1661,8 +1650,11 @@
         if (!nutritionData) throw new Error("Could not retrieve nutritional data.");
         
         const mealType = document.querySelector('.meal-type-btn.active')?.dataset.type || 'Snack';
-        const newMeal = { ...nutritionData, mealType, timestamp: new Date().toISOString() };
-        
+        const newMeal = {
+          ...nutritionData,
+          mealType,
+          timestamp: new Date().toISOString()
+        };
         await saveMeal(newMeal);
         foodInput.value = '';
         currentDate = new Date();
@@ -2164,12 +2156,54 @@
       }
     }
     function startBarcodeScanner() {
-      if (!barcodeReader) { showAlert('Barcode reader is not ready yet.'); return; }
-      barcodeModal.classList.remove('hidden');
-      barcodeReader.listVideoInputDevices().then((videoInputDevices) => {
-        const selectedDeviceId = videoInputDevices[0].deviceId;
-        barcodeReader.decodeFromVideoDevice(selectedDeviceId, 'barcode-video', (result, err) => { if (result) { barcodeReader.reset(); barcodeModal.classList.add('hidden'); processBarcode(result.getText()); } });
-      }).catch((err) => { console.error(err); showAlert('Could not start camera.'); });
+      const barcodeModal = document.getElementById('barcode-modal');
+      barcodeModal.showModal();
+
+      const qrRegionId = "html5-qrcode-barcode";
+
+      if (html5QrCodeInstance) {
+        html5QrCodeInstance.stop().then(() => {
+          html5QrCodeInstance.clear();
+          html5QrCodeInstance = null;
+          startBarcodeScanner();
+        });
+        return;
+      }
+
+      html5QrCodeInstance = new Html5Qrcode(qrRegionId);
+      Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+          html5QrCodeInstance.start(
+            { facingMode: "environment" },
+            {
+              fps: 10,
+              qrbox: { width: 300, height: 150 },
+              aspectRatio: 1.0
+            },
+            (decodedText, decodedResult) => {
+              // Barcode scanned successfully
+              html5QrCodeInstance.stop().then(() => {
+                barcodeModal.close();
+                html5QrCodeInstance.clear();
+                html5QrCodeInstance = null;
+                processBarcode(decodedText);
+              });
+            },
+            (errorMessage) => {
+              // Ignore scan errors (typical with QR/barcode libs)
+            }
+          ).catch(err => {
+            showAlert('Could not start camera: ' + err);
+            barcodeModal.close();
+          });
+        } else {
+          showAlert('No camera found.');
+          barcodeModal.close();
+        }
+      }).catch(err => {
+        showAlert('Camera initialization error: ' + err);
+        barcodeModal.close();
+      });
     }
     async function processBarcode(barcode) {
       const currentLang = localStorage.getItem('language') || 'en';
@@ -2414,19 +2448,28 @@
       scanMealBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); openCamera(); });
       scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); startBarcodeScanner(); });
       if (uploadImageBtn) {
-          uploadImageBtn.addEventListener('click', () => {
-              cameraChoiceModal.classList.add('hidden');
-              imageUploadInput.click(); // 紫色のボタンが押されたら、隠れたファイル入力をクリックする
-          });
+        uploadImageBtn.addEventListener('click', () => {
+          cameraChoiceModal.classList.add('hidden');
+          imageUploadInput.click(); // 紫色のボタンが押されたら、隠れたファイル入力をクリックする
+        });
       }
       if (imageUploadInput) {
-          imageUploadInput.addEventListener('change', handleImageUpload); // ファイルが選択されたら分析処理を呼ぶ
+        imageUploadInput.addEventListener('change', handleImageUpload); // ファイルが選択されたら分析処理を呼ぶ
       }
 
-captureBtn.addEventListener('click', captureImage);
+      captureBtn.addEventListener('click', captureImage);
       captureBtn.addEventListener('click', captureImage);
       closeCameraBtn.addEventListener('click', closeCamera);
-      closeBarcodeBtn.addEventListener('click', () => { if (barcodeReader) barcodeReader.reset(); barcodeModal.classList.add('hidden'); });
+      closeBarcodeBtn.addEventListener('click', () => {
+        if (html5QrCodeInstance) {
+          html5QrCodeInstance.stop().then(() => {
+            html5QrCodeInstance.clear();
+            html5QrCodeInstance = null;
+          });
+        }
+        const barcodeModal = document.getElementById('barcode-modal');
+        barcodeModal.close();
+      });
       servingForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const servingSize = parseFloat(document.getElementById('serving-size').value);
@@ -2643,17 +2686,17 @@ captureBtn.addEventListener('click', captureImage);
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const dateEl = document.getElementById('header-date-display');
-        if (dateEl) {
-            const today = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const lang = localStorage.getItem('language') || 'en';
-            
-            // 言語が 'zh' なら中国語、それ以外（'en'など）ならシンガポール英語を適用
-            const locale = lang === 'zh' ? 'zh-CN' : 'en-SG';
-            
-            dateEl.textContent = today.toLocaleDateString(locale, options);
-        }
+      const dateEl = document.getElementById('header-date-display');
+      if (dateEl) {
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const lang = localStorage.getItem('language') || 'en';
+
+        // 言語が 'zh' なら中国語、それ以外（'en'など）ならシンガポール英語を適用
+        const locale = lang === 'zh' ? 'zh-CN' : 'en-SG';
+
+        dateEl.textContent = today.toLocaleDateString(locale, options);
+      }
     });
   </script>
 </body>
