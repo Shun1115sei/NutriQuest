@@ -862,20 +862,29 @@
 
   <!-- Camera Choice Modal -->
   <div id="camera-choice-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera</h2>
-      <div class="space-y-4">
-        <button id="scan-meal-btn"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
-          data-lang-key="scanMealButton">Scan Meal with Camera</button>
-        <button id="scan-barcode-btn"
-          class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
-          data-lang-key="scanBarcodeButton">Scan Barcode</button>
-        <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
-          data-lang-key="closeButton">Close</button>
-      </div>
+  <div class="modal-content">
+    <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera</h2>
+    
+    <div class="space-y-4">
+
+      <button id="scan-meal-btn"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
+        data-lang-key="scanMealButton">Scan Meal with Camera</button>
+      
+      <button id="scan-barcode-btn"
+        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
+        data-lang-key="scanBarcodeButton">Scan Barcode</button>
+      
+      <button id="upload-image-btn"
+        class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg"
+        data-lang-key="uploadFromLibrary">Upload from Library</button>
+      
+      <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
+        data-lang-key="closeButton">Close</button>
+        
     </div>
   </div>
+</div>
 
   <!-- Camera Modal -->
   <div id="camera-modal" class="modal-overlay hidden">
@@ -1131,6 +1140,8 @@
     </div>
   </div>
 
+  <input type="file" id="image-upload-input" class="hidden" accept="image/*">
+
   <!-- Offline Modal -->
   <div id="offline-modal" class="modal-overlay hidden">
     <div class="modal-content">
@@ -1195,6 +1206,7 @@
         dangerZone: "Danger Zone",
         dangerZoneDesc: "This action cannot be undone. Please be certain.",
         deleteAllDataConfirm: "Are you sure you want to delete all your data? This action cannot be undone.",
+        uploadFromLibrary: "Upload from Library",
         sun: "S", mon: "M", tue: "T", wed: "W", thu: "T", fri: "F", sat: "S",
         week: "Week", periodGoal: "Period Goal", actualIntake: "Actual Intake"
       },
@@ -1228,6 +1240,7 @@
         dangerZone: "危险区域",
         dangerZoneDesc: "此操作无法撤销，请谨慎操作。",
         deleteAllDataConfirm: "您确定要删除所有数据吗？此操作无法撤销。",
+        uploadFromLibrary: "从相册上传",
         sun: "日", mon: "一", tue: "二", wed: "三", thu: "四", fri: "五", sat: "六",
         week: "周", periodGoal: "期间目标", actualIntake: "实际摄入"
       }
@@ -1278,6 +1291,8 @@
     const diagnosisForm = document.getElementById('diagnosis-form');
     const manualGoalForm = document.getElementById('manual-goal-form');
     const deleteAllDataBtn = document.getElementById('delete-all-data-btn');
+    const imageUploadInput = document.getElementById('image-upload-input');
+    const uploadImageBtn = document.getElementById('upload-image-btn');
     const barcodeModal = document.getElementById('barcode-modal');
     const barcodeVideo = document.getElementById('barcode-video');
     const closeBarcodeBtn = document.getElementById('close-barcode-btn');
@@ -1340,6 +1355,7 @@
     if (typeof ZXing !== 'undefined') barcodeReader = new ZXing.BrowserMultiFormatReader();
 
     // --- ALL FUNCTIONS (Keep all existing function definitions here) ---
+    
     function updateHeaderDate() {
       const dateEl = document.getElementById('header-date-display');
       if (dateEl) {
@@ -1483,6 +1499,40 @@
       allMeals = allMeals.filter(m => m.id.toString() !== mealId.toString());
       if (!auth.currentUser) saveMealsToStorage();
       updateDashboard(activePeriod);
+    }
+    async function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        event.target.value = null; // 同じファイルを連続で選択できるようにするため
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const imageDataUrl = e.target.result;
+            showLoader('analysing');
+            try {
+                const base64String = imageDataUrl.split(',')[1];
+                identifiedFoodName = await identifyFoodFromImage(base64String);
+                hideLoader();
+                if (identifiedFoodName) {
+                    identifiedFoodNameEl.textContent = identifiedFoodName;
+                    quantityInput.value = '';
+                    quantityModal.classList.remove('hidden');
+                    quantityInput.focus();
+                } else {
+                    throw new Error("Could not identify the food from the uploaded image.");
+                }
+            } catch (error) {
+                hideLoader();
+                console.error("Image upload identification error:", error);
+                const currentLang = localStorage.getItem('language') || 'en';
+                if (error.message === "RATE_LIMIT_EXCEEDED") {
+                    showAlert(translations[currentLang].rateLimitError);
+                } else {
+                    showAlert("Sorry, we couldn't identify the food in the image.");
+                }
+            }
+        };
+        reader.readAsDataURL(file);
     }
     async function loadMealsFromFirestore() {
       if (!auth.currentUser) return;
@@ -2278,6 +2328,17 @@
       closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.classList.add('hidden'));
       scanMealBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); openCamera(); });
       scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); startBarcodeScanner(); });
+      if (uploadImageBtn) {
+          uploadImageBtn.addEventListener('click', () => {
+              cameraChoiceModal.classList.add('hidden');
+              imageUploadInput.click(); // 紫色のボタンが押されたら、隠れたファイル入力をクリックする
+          });
+      }
+      if (imageUploadInput) {
+          imageUploadInput.addEventListener('change', handleImageUpload); // ファイルが選択されたら分析処理を呼ぶ
+      }
+
+captureBtn.addEventListener('click', captureImage);
       captureBtn.addEventListener('click', captureImage);
       closeCameraBtn.addEventListener('click', closeCamera);
       closeBarcodeBtn.addEventListener('click', () => { if (barcodeReader) barcodeReader.reset(); barcodeModal.classList.add('hidden'); });
