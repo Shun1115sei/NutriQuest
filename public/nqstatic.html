@@ -3392,9 +3392,16 @@
       if (foodInput) foodInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') processNewMeal(); });
       if (toggleDashboardBtn) {
         toggleDashboardBtn.addEventListener('click', () => {
-          dashboard.classList.toggle('hidden');
-          syncToggleDashboardButton();
-          if (!dashboard.classList.contains('hidden')) setTimeout(() => dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+          const dashboardEl = document.getElementById('dashboard');
+          if (dashboardEl) {
+            dashboardEl.classList.toggle('hidden');
+            syncToggleDashboardButton();
+            if (!dashboardEl.classList.contains('hidden')) {
+              setTimeout(() => dashboardEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+            }
+          } else {
+            console.error("Dashboard element with id 'dashboard' not found!");
+          }
         });
       }
       document.querySelectorAll('.quick-food-btn').forEach(btn => btn.addEventListener('click', () => { foodInput.value = btn.textContent; processNewMeal(); }));
