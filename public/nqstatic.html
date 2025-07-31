@@ -1140,6 +1140,31 @@
     </div>
   </div>
 
+  <div id="quantity-spec-modal" class="modal-overlay hidden">
+    <div class="modal-content text-left">
+      <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="specifyQuantityTitle">Specify Quantity</h2>
+      <p class="text-center text-gray-600 mb-6">For: <strong id="quantity-spec-food-name"></strong></p>
+      
+      <div>
+        <label for="quantity-slider" class="block text-sm font-medium text-gray-700" data-lang-key="intuitiveQuantity">Intuitive Quantity</label>
+        <input type="range" id="quantity-slider" min="0" max="4" value="2" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2">
+        <div id="slider-label" class="text-center font-semibold text-blue-600 mt-2">Regular Portion</div>
+      </div>
+      
+      <div class="my-4 text-center text-gray-500" data-lang-key="or">OR</div>
+
+      <div>
+        <label for="quantity-spec-text" class="block text-sm font-medium text-gray-700" data-lang-key="specificQuantity">Specific Quantity</label>
+        <input type="text" id="quantity-spec-text" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm" data-lang-key-placeholder="quantityPlaceholder" placeholder="e.g., 1 bowl, 200g, half">
+      </div>
+      
+      <div class="flex justify-end gap-2 mt-6">
+        <button type="button" id="cancel-quantity-spec-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg" data-lang-key="cancelButton">Cancel</button>
+        <button type="button" id="confirm-quantity-spec-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="confirmButton">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <input type="file" id="image-upload-input" class="hidden" accept="image/*">
 
   <!-- Offline Modal -->
@@ -1188,6 +1213,10 @@
         didYouMean: 'Did you mean "{foodName}"?', listening: 'Listening...', checkingSpeech: 'Checking your speech...', speechError: 'Could not recognize speech: {error}',
         deletingData: 'Deleting data...', signingIn: 'Signing in...', loadingData: 'Loading your data...', barcodeLookup: 'Found barcode: {barcode}. Looking up...',
         offlineTitle: "You're Offline", offlineMessage: "Please check your internet connection and try again.",
+        specifyQuantityTitle: "Specify Quantity",
+        intuitiveQuantity: "Intuitive Quantity",
+        specificQuantity: "Specific Quantity",
+        quantityPlaceholder: "e.g., 1 bowl, 200g, half",
         nextMeal: "your next meal",
         goalSetMessage: "Your daily goal has been set to {calories} kcal.",
         adviceLowProtein: "For {nextMeal}, focus on a protein-rich food like grilled chicken, fish, or tofu to improve your balance.",
@@ -1222,6 +1251,10 @@
         didYouMean: '您是指“{foodName}”吗？', listening: '正在听...', checkingSpeech: '正在检查您的语音...', speechError: '无法识别语音: {error}',
         deletingData: '正在删除数据...', signingIn: '登录中...', loadingData: '正在加载您的数据...', barcodeLookup: '找到条形码: {barcode}。查询中...',
         offlineTitle: "您已离线", offlineMessage: "请检查您的网络连接并重试。",
+        specifyQuantityTitle: "指定份量",
+        intuitiveQuantity: "直观份量",
+        specificQuantity: "具体份量",
+        quantityPlaceholder: "例如：1碗，200克，一半",
         nextMeal: "下一餐",
         goalSetMessage: "您的每日目标已设定为 {calories} 大卡。",
         adviceLowProtein: "对于{nextMeal}，多吃一些富含蛋白质的食物，如烤鸡、鱼或豆腐，以改善您的平衡。",
@@ -1345,6 +1378,13 @@
     const cancelQuantityBtn = document.getElementById('cancel-quantity-btn');
     const offlineModal = document.getElementById('offline-modal');
     const offlineCloseBtn = document.getElementById('offline-close-btn');
+    const quantitySpecModal = document.getElementById('quantity-spec-modal');
+    const quantitySpecFoodName = document.getElementById('quantity-spec-food-name');
+    const quantitySlider = document.getElementById('quantity-slider');
+    const sliderLabel = document.getElementById('slider-label');
+    const quantitySpecText = document.getElementById('quantity-spec-text');
+    const cancelQuantitySpecBtn = document.getElementById('cancel-quantity-spec-btn');
+    const confirmQuantitySpecBtn = document.getElementById('confirm-quantity-spec-btn');
     // Mobile Header Buttons
     const accountMenuBtnMobile = document.getElementById('account-menu-btn-mobile');
     const goToLoginBtnMobile = document.getElementById('go-to-login-btn-mobile');
@@ -1352,9 +1392,45 @@
     const settingsBtnMobile = document.getElementById('settings-btn-mobile');
 
     let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, cameraStream = null, barcodeReader = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
+    
+    let foodNameForQuantitySpec = '';
+    
+    function openQuantitySpecModal(foodName) {
+      foodNameForQuantitySpec = foodName;
+      quantitySpecFoodName.textContent = foodName;
+      quantitySlider.value = 2;
+      sliderLabel.textContent = "Regular Portion";
+      quantitySpecText.value = "";
+      quantitySpecModal.classList.remove('hidden');
+    }
+
     if (typeof ZXing !== 'undefined') barcodeReader = new ZXing.BrowserMultiFormatReader();
 
     // --- ALL FUNCTIONS (Keep all existing function definitions here) ---
+
+    let foodKeyReverseMap = {};
+
+    function buildFoodKeyReverseMap() {
+        foodKeyReverseMap = Object.entries(translations.en).reduce((acc, [key, value]) => {
+            acc[value.toLowerCase()] = key;
+            return acc;
+        }, {});
+    }
+
+    function getTranslatedFoodName(originalFoodName) {
+        const currentLang = localStorage.getItem('language') || 'en';
+        if (currentLang === 'en') {
+            return originalFoodName;
+        }
+        
+        const foodKey = foodKeyReverseMap[originalFoodName.toLowerCase()];
+        
+        if (foodKey && translations[currentLang][foodKey]) {
+            return translations[currentLang][foodKey];
+        }
+        
+        return originalFoodName;
+    }
     
     function updateHeaderDate() {
       const dateEl = document.getElementById('header-date-display');
@@ -1557,49 +1633,63 @@
       buttonTextSpan.textContent = isHidden ? translations[currentLang].viewDashboard : translations[currentLang].hideDashboard;
       buttonTextSpan.setAttribute('data-lang-key', isHidden ? 'viewDashboard' : 'hideDashboard');
     }
-    async function processNewMeal(mealData = null) {
-      // Check for an internet connection first
+    async function processNewMeal(mealData = null, bypassQuantityCheck = false) {
+      console.log("Analyse Meal process started. Bypass check:", bypassQuantityCheck);
+
       if (!navigator.onLine) {
         showOfflineModal();
         return;
       }
 
-      let nutritionData;
-      const query = foodInput.value.trim();
-      if (!mealData && !query) {
+      let query = foodInput.value.trim();
+
+      if (mealData) {
+        query = getTranslatedFoodName(mealData.food);
+      }
+
+      if (!query) {
         await showAlert("Please enter a meal to analyse.");
         return;
       }
+      
+      const hasNumber = /\d/.test(query);
+      const isKnownFood = foodKeyReverseMap[query.toLowerCase()] !== undefined;
+
+      if (!bypassQuantityCheck && !mealData && !hasNumber && !isKnownFood) {
+        openQuantitySpecModal(query);
+        return; 
+      }
+
       showLoader('analysing');
       try {
-        nutritionData = mealData ? mealData : await getNutritionalInfo(query);
+        const nutritionData = mealData ? mealData : await getNutritionalInfo(query);
         if (!nutritionData) throw new Error("Could not retrieve nutritional data.");
+        
         const mealType = document.querySelector('.meal-type-btn.active')?.dataset.type || 'Snack';
-        const newMeal = { ...nutritionData,
-          mealType,
-          timestamp: new Date().toISOString()
-        };
+        const newMeal = { ...nutritionData, mealType, timestamp: new Date().toISOString() };
+        
         await saveMeal(newMeal);
         foodInput.value = '';
         currentDate = new Date();
         activePeriod = 'day';
+        
         if (dashboard.classList.contains('hidden')) {
           dashboard.classList.remove('hidden');
           syncToggleDashboardButton();
         }
       } catch (error) {
-        if (error.message === "RATE_LIMIT_EXCEEDED") showAlert(translations[localStorage.getItem('language') || 'en'].rateLimitError);
-        else {
+        if (error.message === "RATE_LIMIT_EXCEEDED") {
+          showAlert(translations[localStorage.getItem('language') || 'en'].rateLimitError);
+        } else {
           console.error('Error processing new meal:', error);
           await showAlert('Could not analyse meal. Please try again.');
         }
       } finally {
         updateDashboard(activePeriod);
         hideLoader();
-        if (!dashboard.classList.contains('hidden')) setTimeout(() => dashboard.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        }), 100);
+        if (!dashboard.classList.contains('hidden')) {
+          setTimeout(() => dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        }
       }
     }
     async function openCamera() {
@@ -1733,7 +1823,7 @@
           mealElement.className = 'bg-white p-4 border border-gray-200 rounded-lg';
           mealElement.innerHTML = `
                 <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-800 capitalize">${data.food}</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 capitalize">${getTranslatedFoodName(data.food)}</h3>
                     <div class="flex items-center gap-2">
                         <div class="favourite-star-container">
                             <span class="favourite-star ${isFavourited ? 'favourited' : 'text-gray-400 hover:text-yellow-400'}" title="Add to favourites">
@@ -2369,6 +2459,42 @@ captureBtn.addEventListener('click', captureImage);
       if (deleteAllDataBtn) {
         deleteAllDataBtn.addEventListener('click', resetAllData);
       }
+      if (quantitySpecModal) {
+        const sliderLabels = ["Very Small (0.5x)", "A Little Less (0.8x)", "Regular Portion (1x)", "A Little More (1.2x)", "Very Large (1.5x)"];
+        const sliderPrefixes = ["Very Small portion of", "A little less than a regular portion of", "", "A little more than a regular portion of", "Very large portion of"];
+
+        quantitySlider.addEventListener('input', () => {
+          sliderLabel.textContent = sliderLabels[quantitySlider.value];
+          quantitySpecText.value = "";
+        });
+
+        quantitySpecText.addEventListener('input', () => {
+          quantitySlider.value = 2;
+          sliderLabel.textContent = sliderLabels[2];
+        });
+
+        cancelQuantitySpecBtn.addEventListener('click', () => {
+          quantitySpecModal.classList.add('hidden');
+        });
+
+        confirmQuantitySpecBtn.addEventListener('click', () => {
+          let finalQuery = '';
+          const specifiedText = quantitySpecText.value.trim();
+          const sliderPrefixes = ["Very Small portion of", "A little less than a regular portion of", "", "A little more than a regular portion of", "Very large portion of"];
+
+          if (specifiedText) {
+            finalQuery = `${specifiedText} ${foodNameForQuantitySpec}`;
+          } else {
+            const prefix = sliderPrefixes[quantitySlider.value];
+            finalQuery = `${prefix} ${foodNameForQuantitySpec}`.trim();
+          }
+          
+          foodInput.value = finalQuery;
+          quantitySpecModal.classList.add('hidden');
+          
+          processNewMeal(null, true); 
+        });
+      }
       diagnosisForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const gender = document.getElementById('gender').value, age = parseInt(document.getElementById('age').value), height = parseInt(document.getElementById('height').value), weight = parseInt(document.getElementById('weight').value), activityLevel = parseFloat(document.getElementById('activity-level').value);
@@ -2425,10 +2551,10 @@ captureBtn.addEventListener('click', captureImage);
     });
 
     window.addEventListener('load', () => {
+      buildFoodKeyReverseMap();
       setDefaultMealType();
       setLanguage(localStorage.getItem('language') || 'en');
       initializeAppEventListeners();
-
       updateHeaderDate();
     });
   </script>
