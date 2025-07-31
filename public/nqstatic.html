@@ -490,6 +490,9 @@
       background-color: #ffffff !important;
       color: #1f2937 !important;
       border-color: #d1d5db !important;
+
+      border-width: 1px !important;
+      border-style: solid !important;
     }
 
     #settings-modal .modal-box .input:focus,
@@ -518,6 +521,34 @@
     #settings-modal .modal-box .divider::before,
     #settings-modal .modal-box .divider::after {
       border-color: #d1d5db;
+    }
+
+
+    /* Enhanced form styling for settings modal */
+    #settings-modal .modal-box .form-control {
+      margin-bottom: 1rem;
+    }
+
+    #settings-modal .modal-box .input,
+    #settings-modal .modal-box .select,
+    #settings-modal .modal-box .textarea {
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+    }
+
+    #settings-modal .modal-box .input::placeholder {
+      color: #9ca3af !important;
+    }
+
+    #settings-modal .modal-box .select option {
+      background-color: #ffffff !important;
+      color: #1f2937 !important;
+    }
+
+    /* Ensure all form elements have proper spacing */
+    #settings-modal .modal-box .grid>div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
   </style>
 </head>
@@ -1087,7 +1118,7 @@
           <div>
             <label class="block text-sm font-medium !text-gray-800" data-lang-key="gender">Gender</label>
             <select id="gender"
-              class="select select-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
+              class="select select-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
               <option value="male" data-lang-key="male">Male</option>
               <option value="female" data-lang-key="female">Female</option>
             </select>
@@ -1095,26 +1126,26 @@
           <div>
             <label for="age" class="block text-sm font-medium !text-gray-800" data-lang-key="age">Age</label>
             <input type="number" id="age" value="30"
-              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
+              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
           </div>
           <div>
             <label for="height" class="block text-sm font-medium !text-gray-800" data-lang-key="height">Height
               (cm)</label>
             <input type="number" id="height" value="170"
-              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
+              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
           </div>
           <div>
             <label for="weight" class="block text-sm font-medium !text-gray-800" data-lang-key="weight">Weight
               (kg)</label>
             <input type="number" id="weight" value="70"
-              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
+              class="input input-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
           </div>
         </div>
         <div class="mt-4">
           <label for="activity-level" class="block text-sm font-medium !text-gray-800"
             data-lang-key="activityLevel">Activity Level</label>
           <select id="activity-level"
-            class="select select-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
+            class="select select-bordered w-full !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
             <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no
               exercise)</option>
             <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light
@@ -1139,7 +1170,7 @@
         <label for="manual-calories" class="block text-sm font-medium !text-gray-800" data-lang-key="setManualGoal">Set
           Manual Calorie Goal</label>
         <input type="number" id="manual-calories" value="2000"
-          class="input input-bordered w-full mt-1 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500">
+          class="input input-bordered w-full mt-1 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
         <button type="submit"
           class="btn btn-neutral w-full mt-4 !bg-gray-600 !text-white hover:!bg-gray-700 !border-gray-600"
           data-lang-key="saveManualGoal">Save Manual
