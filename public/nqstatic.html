@@ -2459,6 +2459,27 @@ captureBtn.addEventListener('click', captureImage);
       if (deleteAllDataBtn) {
         deleteAllDataBtn.addEventListener('click', resetAllData);
       }
+      if (calendarPrevMonth) {
+        calendarPrevMonth.addEventListener('click', () => {
+          if (calendarMode === 'month') {
+            calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() - 1);
+          } else {
+            calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() - 1);
+          }
+          renderCalendar(calendarDisplayDate);
+        });
+      }
+
+      if (calendarNextMonth) {
+        calendarNextMonth.addEventListener('click', () => {
+          if (calendarMode === 'month') {
+            calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() + 1);
+          } else {
+            calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() + 1);
+          }
+          renderCalendar(calendarDisplayDate);
+        });
+      }
       if (quantitySpecModal) {
         const sliderLabels = ["Very Small (0.5x)", "A Little Less (0.8x)", "Regular Portion (1x)", "A Little More (1.2x)", "Very Large (1.5x)"];
         const sliderPrefixes = ["Very Small portion of", "A little less than a regular portion of", "", "A little more than a regular portion of", "Very large portion of"];
