@@ -2810,12 +2810,22 @@
     });
 
     window.addEventListener('load', () => {
+      // 1. 翻訳用の対応表を作成
       buildFoodKeyReverseMap();
+      
+      // 2. 現在時刻に合わせてデフォルトの食事タイプを設定
       setDefaultMealType();
+      
+      // 3. 保存されている言語設定を適用
       setLanguage(localStorage.getItem('language') || 'en');
+      
+      // 4. すべてのボタンやフォームに機能を設定
       initializeAppEventListeners();
+      
+      // 5. ヘッダーの日付を更新
       updateHeaderDate();
     });
+
   </script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -2875,48 +2885,6 @@
     window.addEventListener('appinstalled', () => {
       hideInstallUI();
       deferredPrompt = null;
-    });
-
-    window.addEventListener('load', () => {
-      try {
-        console.log("Step 1: buildFoodKeyReverseMap() を実行中...");
-        buildFoodKeyReverseMap();
-        console.log("Step 1: 正常に完了");
-      } catch (e) {
-        console.error("--- エラー発生: buildFoodKeyReverseMap ---", e);
-      }
-
-      try {
-        console.log("Step 2: setDefaultMealType() を実行中...");
-        setDefaultMealType();
-        console.log("Step 2: 正常に完了");
-      } catch (e) {
-        console.error("--- エラー発生: setDefaultMealType ---", e);
-      }
-      
-      try {
-        console.log("Step 3: setLanguage() を実行中...");
-        setLanguage(localStorage.getItem('language') || 'en');
-        console.log("Step 3: 正常に完了");
-      } catch (e) {
-        console.error("--- エラー発生: setLanguage ---", e);
-      }
-
-      try {
-        console.log("Step 4: initializeAppEventListeners() を実行中...");
-        initializeAppEventListeners();
-        console.log("Step 4: 正常に完了");
-      } catch (e) {
-        console.error("--- エラー発生: initializeAppEventListeners ---", e);
-      }
-      
-      try {
-        console.log("Step 5: updateHeaderDate() を実行中...");
-        updateHeaderDate();
-        console.log("Step 5: 正常に完了");
-      } catch (e) {
-        console.error("--- エラー発生: updateHeaderDate ---", e);
-      }
     });
 
   </script>
