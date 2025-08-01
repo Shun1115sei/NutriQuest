@@ -39,7 +39,6 @@
 
     input[type='number'] {
       -moz-appearance: textfield;
-      /* for FireFox */
     }
 
     body {
@@ -173,7 +172,6 @@
       }
     }
 
-    /* --- Loading Animation Styles --- */
     .loader {
       width: 80px;
       aspect-ratio: 1;
@@ -190,7 +188,6 @@
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 5;
-      /* Behind the line */
     }
 
     .loader:after {
@@ -215,13 +212,11 @@
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 10;
-      /* In front of the heart */
       overflow: visible;
     }
 
     .ecg-path {
       stroke: white;
-      /* White color */
       stroke-dasharray: 190;
       stroke-dashoffset: 190;
       animation: draw-line 1.5s ease-in-out infinite;
@@ -241,7 +236,6 @@
       }
     }
 
-    /* --- Barcode Scanner Container --- */
     .scanner-container {
       position: relative;
       width: 100%;
@@ -253,10 +247,8 @@
       border-radius: 0.5rem;
     }
 
-    /* --- Splash Screen Styles --- */
     #splash-screen {
       transition: opacity 0.5s ease-out;
-      /* Start fading out after 2.2s */
       overflow: hidden;
     }
 
@@ -290,7 +282,6 @@
       height: 80px;
       stroke: #E8204E;
       stroke-width: 0.25px;
-      /* MODIFIED: Thinner line */
       fill: none;
       opacity: 0;
       z-index: 4;
@@ -336,18 +327,14 @@
         transform: scale(1.8);
       }
 
-      /* Bigger, faster beat */
       35% {
         transform: scale(1.4);
       }
 
-      /* Settle faster */
       100% {
         opacity: 0;
         transform: scale(1.4);
       }
-
-      /* Fade out while large */
     }
 
     @keyframes heart-shockwave {
@@ -396,11 +383,9 @@
       transition: opacity 1s ease-in;
     }
 
-    /* --- Analyse Meal Button Highlight --- */
     .analyse-btn {
       position: relative;
       overflow: hidden;
-      /* Important to contain the pseudo-element */
     }
 
     .analyse-btn::after {
@@ -430,9 +415,7 @@
 
     #install-banner {
       background: #fef3c7;
-      /* Light yellow background */
       color: #333;
-      /* No !important rules - let JavaScript control visibility */
     }
 
     .custom-titlebar {
@@ -446,130 +429,135 @@
       app-region: no-drag;
     }
 
-
-    /* Settings Modal Critical Fixes */
-    #settings-modal .modal-box {
-      background-color: #ffffff !important;
-      color: #1f2937 !important;
+    /* Custom Settings Modal Classes - NO DaisyUI modifications */
+    .settings-modal-box {
+      background-color: #ffffff;
+      color: #1f2937;
     }
 
-    #settings-modal .modal-box * {
+    .settings-modal-box * {
       color: inherit;
     }
 
-    #settings-modal .modal-box label {
-      color: #374151 !important;
+    .settings-modal-label {
+      color: #374151;
       font-weight: 500;
     }
 
-    #settings-modal .modal-box .btn {
+    .settings-modal-btn-base {
       border: 1px solid;
     }
 
-    #settings-modal .modal-box .btn-primary {
-      background-color: #2563eb !important;
-      color: #ffffff !important;
-      border-color: #2563eb !important;
+    .settings-modal-btn-primary {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
     }
 
-    #settings-modal .modal-box .btn-primary:hover {
-      background-color: #1d4ed8 !important;
-      border-color: #1d4ed8 !important;
+    .settings-modal-btn-primary:hover {
+      background-color: #1d4ed8;
+      border-color: #1d4ed8;
     }
 
-    #settings-modal .modal-box .btn-neutral {
-      background-color: #4b5563 !important;
-      color: #ffffff !important;
-      border-color: #4b5563 !important;
+    .settings-modal-btn-neutral {
+      background-color: #4b5563;
+      color: #ffffff;
+      border-color: #4b5563;
     }
 
-    #settings-modal .modal-box .btn-neutral:hover {
-      background-color: #374151 !important;
-      border-color: #374151 !important;
+    .settings-modal-btn-neutral:hover {
+      background-color: #374151;
+      border-color: #374151;
     }
 
-    #settings-modal .modal-box .btn-error {
-      background-color: #dc2626 !important;
-      color: #ffffff !important;
-      border-color: #dc2626 !important;
+    .settings-modal-btn-error {
+      background-color: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
     }
 
-    #settings-modal .modal-box .btn-error:hover {
-      background-color: #b91c1c !important;
-      border-color: #b91c1c !important;
+    .settings-modal-btn-error:hover {
+      background-color: #b91c1c;
+      border-color: #b91c1c;
     }
 
-    #settings-modal .modal-box .btn-ghost {
-      background-color: transparent !important;
-      color: #374151 !important;
-      border-color: transparent !important;
+    .settings-modal-btn-ghost {
+      background-color: transparent;
+      color: #374151;
+      border-color: transparent;
     }
 
-    #settings-modal .modal-box .btn-ghost:hover {
-      background-color: #f3f4f6 !important;
+    .settings-modal-btn-ghost:hover {
+      background-color: #f3f4f6;
     }
 
-    #settings-modal .modal-box .input,
-    #settings-modal .modal-box .select {
-      background-color: #ffffff !important;
-      color: #1f2937 !important;
-      border-color: #d1d5db !important;
-
-      border-width: 1px !important;
-      border-style: solid !important;
+    .settings-modal-input,
+    .settings-modal-select {
+      background-color: #ffffff;
+      color: #1f2937;
+      border-color: #d1d5db;
+      border-width: 1px;
+      border-style: solid;
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
-    #settings-modal .modal-box .input:focus,
-    #settings-modal .modal-box .select:focus {
-      border-color: #3b82f6 !important;
-      outline: 2px solid #3b82f6 !important;
+    .settings-modal-input:focus,
+    .settings-modal-select:focus {
+      border-color: #3b82f6;
+      outline: 2px solid #3b82f6;
       outline-offset: 2px;
     }
 
-    #settings-modal .modal-box h2 {
-      color: #1f2937 !important;
+    .settings-modal-input::placeholder {
+      color: #9ca3af;
     }
 
-    #settings-modal .modal-box h3 {
-      color: #dc2626 !important;
+    .settings-modal-select option {
+      background-color: #ffffff;
+      color: #1f2937;
     }
 
-    #settings-modal .modal-box p {
-      color: #4b5563 !important;
+    .settings-modal-heading-2 {
+      color: #1f2937;
     }
 
-    #settings-modal .modal-box .divider {
-      color: #6b7280 !important;
+    .settings-modal-heading-3 {
+      color: #dc2626;
     }
 
-    #settings-modal .modal-box .divider::before,
-    #settings-modal .modal-box .divider::after {
+    .settings-modal-text {
+      color: #4b5563;
+    }
+
+    .settings-modal-divider {
+      color: #6b7280;
+    }
+
+    .settings-modal-divider::before,
+    .settings-modal-divider::after {
       border-color: #d1d5db;
     }
 
-
-    /* Enhanced form styling for settings modal */
-    #settings-modal .modal-box .form-control {
+    .settings-modal-form-control {
       margin-bottom: 1rem;
     }
 
-    #settings-modal .modal-box .input,
-    #settings-modal .modal-box .select,
-    #settings-modal .modal-box .textarea {
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+    .settings-modal-textarea {
+      background-color: #ffffff;
+      color: #1f2937;
+      border-color: #d1d5db;
+      border-width: 1px;
+      border-style: solid;
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
-    #settings-modal .modal-box .input::placeholder {
-      color: #9ca3af !important;
+    .settings-modal-textarea:focus {
+      border-color: #3b82f6;
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
     }
 
-    #settings-modal .modal-box .select option {
-      background-color: #ffffff !important;
-      color: #1f2937 !important;
-    }
-
-    /* Ensure all form elements have proper spacing */
-    #settings-modal .modal-box .grid>div {
+    .settings-modal-grid>div {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -1064,7 +1052,7 @@
     <div class="modal-box max-w-md">
       <form method="dialog">
         <button
-          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 !text-gray-700 hover:!bg-gray-200">✕</button>
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-gray-700 hover:bg-gray-200">✕</button>
       </form>
       <h3 class="text-2xl font-bold mb-4 text-center" data-lang-key="scanBarcodeTitle">Scan a Barcode</h3>
       <div class="scanner-container">
@@ -1086,7 +1074,7 @@
       <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="servingSizeTitle">Enter Serving Size</h2>
       <p id="serving-product-name" class="text-center text-gray-600 mb-4"></p>
       <form id="serving-form">
-        <label for="serving-size" class="block text-sm font-medium !text-gray-800"
+        <label for="serving-size" class="block text-sm font-medium text-gray-800"
           data-lang-key="servingSizeLabel">Serving Size (grams)</label>
         <input type="number" id="serving-size" value="100"
           class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
@@ -1130,38 +1118,38 @@
 
   <!-- Settings Modal (DaisyUI) -->
   <dialog id="settings-modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box max-w-lg w-full max-h-[90vh] flex flex-col p-0">
+    <div class="modal-box settings-modal-box max-w-lg w-full max-h-[90vh] flex flex-col p-0">
 
       <div class="p-6 pb-4 border-b border-gray-200">
         <form method="dialog">
-          <button
-            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 !text-gray-700 hover:!bg-gray-200">✕</button>
+          <button class="btn btn-sm btn-circle settings-modal-btn-ghost absolute right-2 top-2">✕</button>
         </form>
-        <h2 class="text-2xl font-bold text-center !text-gray-800" data-lang-key="setGoalsTitle">Set Your Daily Goals
+        <h2 class="text-2xl font-bold text-center settings-modal-heading-2" data-lang-key="setGoalsTitle">Set Your Daily
+          Goals
         </h2>
       </div>
 
       <div class="overflow-y-auto p-6">
-        <p class="text-center !text-gray-700 mb-6" data-lang-key="settingsDescription">Let us calculate your needs, or
+        <p class="text-center settings-modal-text mb-6" data-lang-key="settingsDescription">Let us calculate your needs,
+          or
           set your own manual goal.</p>
 
         <form id="diagnosis-form">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 settings-modal-grid">
             <div>
-              <label class="block text-sm font-medium !text-gray-800 mb-1 text-center"
+              <label class="block text-sm font-medium settings-modal-label mb-1 text-center"
                 data-lang-key="gender">Gender</label>
-              <select id="gender"
-                class="select select-bordered w-3/4 mx-auto text-center !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+              <select id="gender" class="select select-bordered settings-modal-select w-3/4 mx-auto text-center">
                 <option value="male" data-lang-key="male">Male</option>
                 <option value="female" data-lang-key="female">Female</option>
               </select>
             </div>
             <div>
-              <label for="age" class="block text-sm font-medium !text-gray-800 mb-1 text-center"
+              <label for="age" class="block text-sm font-medium settings-modal-label mb-1 text-center"
                 data-lang-key="age">Age</label>
               <div class="relative stepper-container w-3/4 mx-auto">
                 <input type="number" id="age" value="30"
-                  class="input input-bordered w-full text-center !pr-8 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+                  class="input input-bordered settings-modal-input w-full text-center pr-8">
                 <div class="absolute inset-y-0 right-0 flex flex-col justify-center">
                   <button type="button" data-stepper-increment="age"
                     class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor"
@@ -1177,11 +1165,11 @@
               </div>
             </div>
             <div>
-              <label for="height" class="block text-sm font-medium !text-gray-800 mb-1 text-center"
+              <label for="height" class="block text-sm font-medium settings-modal-label mb-1 text-center"
                 data-lang-key="height">Height (cm)</label>
               <div class="relative stepper-container w-3/4 mx-auto">
                 <input type="number" id="height" value="170"
-                  class="input input-bordered w-full text-center !pr-8 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+                  class="input input-bordered settings-modal-input w-full text-center pr-8">
                 <div class="absolute inset-y-0 right-0 flex flex-col justify-center">
                   <button type="button" data-stepper-increment="height"
                     class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor"
@@ -1197,11 +1185,11 @@
               </div>
             </div>
             <div>
-              <label for="weight" class="block text-sm font-medium !text-gray-800 mb-1 text-center"
+              <label for="weight" class="block text-sm font-medium settings-modal-label mb-1 text-center"
                 data-lang-key="weight">Weight (kg)</label>
               <div class="relative stepper-container w-3/4 mx-auto">
                 <input type="number" id="weight" value="70"
-                  class="input input-bordered w-full text-center !pr-8 !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+                  class="input input-bordered settings-modal-input w-full text-center pr-8">
                 <div class="absolute inset-y-0 right-0 flex flex-col justify-center">
                   <button type="button" data-stepper-increment="weight"
                     class="h-1/2 px-2 text-gray-500 hover:text-gray-800"><svg class="w-3 h-3" fill="currentColor"
@@ -1218,10 +1206,9 @@
             </div>
           </div>
           <div class="mt-4">
-            <label for="activity-level" class="block text-sm font-medium !text-gray-800 mb-1"
+            <label for="activity-level" class="block text-sm font-medium settings-modal-label mb-1"
               data-lang-key="activityLevel">Activity Level</label>
-            <select id="activity-level"
-              class="select select-bordered w-full text-center !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
+            <select id="activity-level" class="select select-bordered settings-modal-select w-full text-center">
               <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no exercise)
               </option>
               <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light exercise/walks 1-2
@@ -1234,33 +1221,31 @@
                 job)</option>
             </select>
           </div>
-          <button type="submit"
-            class="btn btn-primary w-full mt-6 !bg-blue-600 !text-white hover:!bg-blue-700 !border-blue-600"
-            data-lang-key="calculateAndSave">Calculate & Save</button>
+          <button type="submit" class="btn settings-modal-btn-base settings-modal-btn-primary w-full mt-6"
+            data-lang-key="calculateAndSave">Calculate &amp; Save</button>
         </form>
 
-        <div class="divider !text-gray-700" data-lang-key="or">OR</div>
+        <div class="divider settings-modal-divider" data-lang-key="or">OR</div>
         <form id="manual-goal-form">
-          <label for="manual-calories" class="block text-sm font-medium !text-gray-800"
+          <label for="manual-calories" class="block text-sm font-medium settings-modal-label"
             data-lang-key="setManualGoal">Set Manual Calorie Goal</label>
           <input type="number" id="manual-calories" value="2000"
-            class="input input-bordered w-full mt-1 text-center !bg-white !text-gray-900 !border-gray-300 focus:!border-blue-500 !border-solid">
-          <button type="submit"
-            class="btn btn-neutral w-full mt-4 !bg-gray-600 !text-white hover:!bg-gray-700 !border-gray-600"
+            class="input input-bordered settings-modal-input w-full mt-1 text-center">
+          <button type="submit" class="btn settings-modal-btn-base settings-modal-btn-neutral w-full mt-4"
             data-lang-key="saveManualGoal">Save Manual Goal</button>
         </form>
 
         <div class="my-6 border-t pt-6">
-          <h3 class="text-lg font-semibold !text-red-600" data-lang-key="dangerZone">Danger Zone</h3>
-          <p class="text-sm !text-gray-700 mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone. Please be
+          <h3 class="text-lg font-semibold settings-modal-heading-3" data-lang-key="dangerZone">Danger Zone</h3>
+          <p class="text-sm settings-modal-text mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone.
+            Please be
             certain.</p>
-          <button id="delete-all-data-btn"
-            class="btn btn-error w-full mt-4 !bg-red-600 !text-white hover:!bg-red-700 !border-red-600"
+          <button id="delete-all-data-btn" class="btn settings-modal-btn-base settings-modal-btn-error w-full mt-4"
             data-lang-key="deleteAllData">Delete All Data</button>
         </div>
         <div class="mt-6 border-t pt-4 text-center">
-          <button type="button" id="settings-modal-close-bottom-btn"
-            class="btn btn-ghost !text-gray-700 hover:!bg-gray-200" data-lang-key="closeButton">Close</button>
+          <button type="button" id="settings-modal-close-bottom-btn" class="btn settings-modal-btn-ghost"
+            data-lang-key="closeButton">Close</button>
         </div>
       </div>
     </div>
@@ -1308,7 +1293,7 @@
       <p class="text-center mb-4">We identified this as: <strong id="identified-food-name" class="capitalize"></strong>.
         Is this correct?</p>
       <form id="quantity-form">
-        <label for="quantity-input" class="block text-sm font-medium !text-gray-800" data-lang-key="quantityLabel">Enter
+        <label for="quantity-input" class="block text-sm font-medium text-gray-800" data-lang-key="quantityLabel">Enter
           quantity (e.g., 1 piece, 100g)</label>
         <input type="text" id="quantity-input"
           class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
@@ -1362,7 +1347,7 @@
       <p class="text-center text-gray-600 mb-6">For: <strong id="quantity-spec-food-name"></strong></p>
 
       <div>
-        <label for="quantity-slider" class="block text-sm font-medium !text-gray-800"
+        <label for="quantity-slider" class="block text-sm font-medium text-gray-800"
           data-lang-key="intuitiveQuantity">Intuitive Quantity</label>
         <input type="range" id="quantity-slider" min="0" max="4" value="2" step="1"
           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2">
@@ -1372,7 +1357,7 @@
       <div class="my-4 text-center text-gray-500" data-lang-key="or">OR</div>
 
       <div>
-        <label for="quantity-spec-text" class="block text-sm font-medium !text-gray-800"
+        <label for="quantity-spec-text" class="block text-sm font-medium text-gray-800"
           data-lang-key="specificQuantity">Specific Quantity</label>
         <input type="text" id="quantity-spec-text"
           class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm"
