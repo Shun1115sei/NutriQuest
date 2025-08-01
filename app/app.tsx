@@ -1,5 +1,9 @@
+import { useEffect } from "react";
+
 export default function App() {
-  return (
-    <iframe src="/nqstatic.html" style={{ width: "100vw", height: "100vh", border: "none", display: "block" }} title="NQ App"></iframe>
-  )
+  useEffect(() => {
+    window.location.replace("/dashboard/");
+  }, []);
+
+  return null; // Or a loader/spinner/message if you want
 }
