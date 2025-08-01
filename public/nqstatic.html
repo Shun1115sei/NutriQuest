@@ -1379,6 +1379,9 @@
       </div>
 
       <div class="flex justify-end gap-2 mt-6">
+        <button type="button" id="unsure-quantity-spec-btn"
+          class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg"
+          data-lang-key="imNotSure">I'm not sure</button>
         <button type="button" id="cancel-quantity-spec-btn"
           class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
           data-lang-key="cancelButton">Cancel</button>
@@ -1387,6 +1390,7 @@
           data-lang-key="confirmButton">Confirm</button>
       </div>
     </div>
+    
   </div>
 
 
@@ -1430,6 +1434,7 @@
         quantityPlaceholder: "e.g., 1 bowl, 200g, half",
         sliderLabels: ["Very Small (0.5x)", "A Little Less (0.8x)", "Regular Portion (1x)", "A Little More (1.2x)", "Very Large (1.5x)"],
         sliderPrefixes: ["Very Small portion of", "A little less than a regular portion of", "", "A little more than a regular portion of", "Very large portion of"],
+        imNotSure: "I'm not sure",
         nextMeal: "your next meal",
         goalSetMessage: "Your daily goal has been set to {calories} kcal.",
         adviceLowProtein: "For {nextMeal}, focus on a protein-rich food like grilled chicken, fish, or tofu to improve your balance.",
@@ -1470,6 +1475,7 @@
         quantityPlaceholder: "例如：1碗，200克，一半",
         sliderLabels: ["非常小 (0.5倍)", "偏少 (0.8倍)", "标准份量 (1倍)", "偏多 (1.2倍)", "非常大 (1.5倍)"],
         sliderPrefixes: ["非常小份的", "偏少份的", "", "偏多份的", "非常大份的"],
+        imNotSure: "不确定",
         nextMeal: "下一餐",
         goalSetMessage: "您的每日目标已设定为 {calories} 大卡。",
         adviceLowProtein: "对于{nextMeal}，多吃一些富含蛋白质的食物，如烤鸡、鱼或豆腐，以改善您的平衡。",
@@ -1598,6 +1604,7 @@
     const quantitySpecText = document.getElementById('quantity-spec-text');
     const cancelQuantitySpecBtn = document.getElementById('cancel-quantity-spec-btn');
     const confirmQuantitySpecBtn = document.getElementById('confirm-quantity-spec-btn');
+    const unsureQuantitySpecBtn = document.getElementById('unsure-quantity-spec-btn');
     // Mobile Header Buttons
     const accountMenuBtnMobile = document.getElementById('account-menu-btn-mobile');
     const goToLoginBtnMobile = document.getElementById('go-to-login-btn-mobile');
@@ -3502,6 +3509,13 @@
           sliderLabel.textContent = labels[2];
         });
         cancelQuantitySpecBtn.addEventListener('click', () => quantitySpecModal.classList.add('hidden'));
+        if (unsureQuantitySpecBtn) {
+          unsureQuantitySpecBtn.addEventListener('click', () => {
+            foodInput.value = foodNameForQuantitySpec;
+            quantitySpecModal.classList.add('hidden');
+            processNewMeal(null, true);
+          });
+        }
         confirmQuantitySpecBtn.addEventListener('click', () => {
           let finalQuery = '';
           const specifiedText = quantitySpecText.value.trim();
