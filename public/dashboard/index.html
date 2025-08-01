@@ -565,7 +565,7 @@
   </style>
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body>
   <!-- PWA Install Prompt Button (hidden by default) -->
   <div id="install-banner"
     class="height:56px w-full flex justify-center items-center bg-yellow-50 border-b border-yellow-300 p-4 fixed top-0 left-0 z-50 shadow transition-all hidden">
@@ -601,7 +601,7 @@
   </div>
 
   <!-- Main Application and Auth Containers -->
-  <div id="main-app-content" class="opacity-0">
+  <div id="main-app-content" class="opacity-0  bg-gray-100 text-gray-800">
     <div id="main-content">
       <!-- Authentication Container -->
       <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
@@ -999,7 +999,6 @@
       </div>
     </div>
   </div>
-  </div>
 
   <!-- Camera Choice Modal -->
   <dialog id="camera-choice-modal" class="modal modal-bottom sm:modal-middle">
@@ -1384,6 +1383,7 @@
   <!--hidden file input for food image upload-->
   <input type="file" id="image-upload-input" accept="image/*" style="display: none;" />
 
+  <!--application logic-->
   <script>
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
@@ -3603,6 +3603,8 @@
     });
 
   </script>
+
+  <!--service worker registration-->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -3615,6 +3617,8 @@
       });
     }
   </script>
+
+  <!--pwa installation logic-->
   <script>
     // --- PWA INSTALL LOGIC ---
     let deferredPrompt = null;
