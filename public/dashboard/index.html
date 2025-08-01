@@ -1102,17 +1102,26 @@
   </dialog>
 
 
-  <!-- Favourites Modal -->
-  <div id="favourites-modal" class="modal-overlay hidden">
-    <div class="modal-content max-w-lg w-full text-left">
+  <!-- Favourites Modal (DaisyUI v5 Dialog) -->
+  <dialog id="favourites-modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box max-w-lg w-full">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
       <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="favouritesTitle">Your Favourite Meals</h2>
       <div id="favourites-list" class="space-y-2 max-h-96 overflow-y-auto">
         <!-- Favourites will be rendered here -->
       </div>
-      <button id="close-favourites-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
-        data-lang-key="closeButton">Close</button>
+      <div class="modal-action">
+        <form method="dialog">
+          <button id="close-favourites-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+        </form>
+      </div>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
   <!-- Custom Alert/Confirm Modal -->
   <div id="alert-modal" class="modal-overlay hidden">
@@ -3163,7 +3172,7 @@
         const favEl = document.createElement('div');
         favEl.className = 'flex justify-between items-center p-2 bg-gray-100 rounded-md';
         favEl.innerHTML = `<span class="capitalize cursor-pointer hover:text-blue-600 flex-grow text-left">${fav.food}</span><div class="flex items-center"><span class="text-xs text-gray-500 mr-4">${Math.round(fav.calories)} kcal</span><button data-id="${fav.id}" class="delete-favourite-btn text-xl font-bold text-red-400 hover:text-red-600 leading-none p-1">&times;</button></div>`;
-        favEl.querySelector('span.capitalize').addEventListener('click', () => { processNewMeal(fav); favouritesModal.classList.add('hidden'); });
+        favEl.querySelector('span.capitalize').addEventListener('click', () => { processNewMeal(fav); favouritesModal.close(); });
         favEl.querySelector('.delete-favourite-btn').addEventListener('click', async (e) => { const favId = e.currentTarget.dataset.id; if (await showConfirm(translations[localStorage.getItem('language') || 'en'].removeFavouriteConfirm)) await removeFavourite(favId); });
         favouritesList.appendChild(favEl);
       });
@@ -3408,7 +3417,7 @@
       }
       if (goToLoginBtn) goToLoginBtn.addEventListener('click', showAuthContainer);
       if (settingsBtn) settingsBtn.addEventListener('click', () => settingsModal.showModal());
-      if (favouritesBtn) favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.classList.remove('hidden'); });
+      if (favouritesBtn) favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.showModal(); });
 
       // --- Main App Listeners ---
       if (analyseBtn) analyseBtn.addEventListener('click', () => processNewMeal());
@@ -3492,7 +3501,7 @@
         });
       }
       if (cancelQuantityBtn) cancelQuantityBtn.addEventListener('click', () => quantityModal.classList.add('hidden'));
-      if (closeFavouritesBtn) closeFavouritesBtn.addEventListener('click', () => favouritesModal.classList.add('hidden'));
+      if (closeFavouritesBtn) closeFavouritesBtn.addEventListener('click', () => favouritesModal.close());
       if (closeCalendarBtn) closeCalendarBtn.addEventListener('click', () => calendarModal.classList.add('hidden'));
       if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => settingsModal.close());
 
