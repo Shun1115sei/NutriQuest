@@ -3693,7 +3693,7 @@
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         const lang = localStorage.getItem('language') || 'en';
 
-        // 言語が 'zh' なら中国語、それ以外（'en'など）ならシンガポール英語を適用
+        // Language will be Chinese if it is 'zh', else ('en'), use Singapore English.
         const locale = lang === 'zh' ? 'zh-CN' : 'en-SG';
 
         dateEl.textContent = today.toLocaleDateString(locale, options);
