@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Health Tracker</title>
   <link rel="manifest" href="/manifest.json">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -1124,19 +1124,24 @@
   </dialog>
 
   <!-- Custom Alert/Confirm Modal -->
-  <div id="alert-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <p id="alert-message" class="text-lg mb-6"></p>
-      <div id="alert-buttons" class="flex justify-center space-x-4">
-        <button id="alert-ok-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-8 rounded-lg"
-          data-lang-key="okButton">OK</button>
-        <button id="alert-confirm-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-8 rounded-lg"
-          data-lang-key="confirmButton">Confirm</button>
-        <button id="alert-cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-8 rounded-lg"
-          data-lang-key="cancelButton">Cancel</button>
+  <!-- Alert/Confirm Modal (DaisyUI v5 Dialog) -->
+  <dialog id="alert-modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <p id="alert-message" class="text-lg mb-6 text-center"></p>
+      <div id="alert-buttons" class="modal-action justify-center">
+        <button id="alert-ok-btn" class="btn btn-primary px-8" data-lang-key="okButton">OK</button>
+        <button id="alert-confirm-btn" class="btn btn-primary px-8" data-lang-key="confirmButton">Confirm</button>
+        <button id="alert-cancel-btn" class="btn btn-ghost px-8" data-lang-key="cancelButton">Cancel</button>
       </div>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
 
   <!-- Settings Modal (DaisyUI) -->
   <dialog id="settings-modal" class="modal modal-bottom sm:modal-middle">
@@ -1277,8 +1282,12 @@
   </dialog>
 
   <!-- Calendar Modal -->
-  <div id="calendar-modal" class="modal-overlay hidden">
-    <div class="modal-content max-w-xs w-full bg-white p-4 rounded-lg shadow-lg">
+  <!-- Calendar Modal (DaisyUI v5 Dialog) -->
+  <dialog id="calendar-modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box max-w-xs w-full">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
       <div id="calendar-header" class="flex justify-between items-center mb-4">
         <button id="calendar-prev-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1302,36 +1311,48 @@
       <div id="calendar-month-grid" class="hidden grid grid-cols-3 gap-2 text-center mt-4">
         <!-- Months will be generated here -->
       </div>
-      <button id="close-calendar-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
-        data-lang-key="closeButton">Close</button>
+      <div class="modal-action">
+        <form method="dialog">
+          <button id="close-calendar-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+        </form>
+      </div>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
-  <!-- Quantity Confirmation Modal -->
-  <div id="quantity-modal" class="modal-overlay hidden">
-    <div class="modal-content text-left">
-      <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="confirmFoodTitle">Confirm Food & Quantity
-      </h2>
+  <!-- Quantity Confirmation Modal (DaisyUI v5 Dialog) -->
+  <dialog id="quantity-modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="confirmFoodTitle">Confirm Food & Quantity</h2>
       <p class="text-center mb-4">We identified this as: <strong id="identified-food-name" class="capitalize"></strong>.
         Is this correct?</p>
       <form id="quantity-form">
-        <label for="quantity-input" class="block text-sm font-medium text-gray-800" data-lang-key="quantityLabel">Enter
+        <label for="quantity-input" class="block text-sm font-medium text-gray-800 mb-2"
+          data-lang-key="quantityLabel">Enter
           quantity (e.g., 1 piece, 100g)</label>
-        <input type="text" id="quantity-input"
-          class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm">
-        <div class="flex justify-end gap-2 mt-4">
-          <button type="button" id="cancel-quantity-btn"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
-            data-lang-key="cancelButton">Cancel</button>
-          <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+        <input type="text" id="quantity-input" class="input input-bordered w-full">
+        <div class="modal-action">
+          <form method="dialog">
+            <button type="button" id="cancel-quantity-btn" class="btn btn-ghost"
+              data-lang-key="cancelButton">Cancel</button>
+          </form>
+          <button type="submit" form="quantity-form" class="btn btn-primary"
             data-lang-key="confirmButton">Confirm</button>
         </div>
       </form>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
   <!-- Loading Overlay -->
-  <div id="loading-overlay" class="modal-overlay hidden">
+  <div id="loading-overlay" hidden class="modal-overlay">
     <div class="flex flex-col items-center justify-center text-white">
       <div class="relative w-24 h-24 flex items-center justify-center">
         <div class="loader"></div>
@@ -1344,64 +1365,86 @@
     </div>
   </div>
 
-  <!-- Voice Listening Modal -->
-  <div id="listening-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <svg class="w-16 h-16 text-blue-500 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
-        </path>
-      </svg>
-      <p id="listening-text-status" class="text-lg mt-4" data-lang-key="listeningStatus">Listening...</p>
-      <!-- 添加语音输入取消按钮 -->
-      <button id="voice-cancel-btn"
-        class="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
-        <span data-lang-key="cancelButton">Cancel</span>
-      </button>
-    </div>
-  </div>
+  <!-- Voice Listening Modal (DaisyUI v5 Dialog) -->
+  <dialog id="listening-modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
 
-  <!--quantity spec modal-->
-  <div id="quantity-spec-modal" class="modal-overlay hidden">
-    <div class="modal-content text-left">
-      <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="specifyQuantityTitle">Specify Quantity</h2>
-      <p class="text-center text-gray-600 mb-6">For: <strong id="quantity-spec-food-name"></strong></p>
-
-      <div>
-        <label for="quantity-slider" class="block text-sm font-medium text-gray-800"
-          data-lang-key="intuitiveQuantity">Intuitive Quantity</label>
-        <input type="range" id="quantity-slider" min="0" max="4" value="2" step="1"
-          class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2">
-        <div id="slider-label" class="text-center font-semibold text-blue-600 mt-2">Regular Portion</div>
+      <div class="text-center">
+        <svg class="w-16 h-16 text-blue-500 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+          </path>
+        </svg>
+        <p id="listening-text-status" class="text-lg mt-4" data-lang-key="listeningStatus">Listening...</p>
       </div>
 
-      <div class="my-4 text-center text-gray-500" data-lang-key="or">OR</div>
+      <div class="modal-action justify-center">
+        <button id="voice-cancel-btn" class="btn btn-error">
+          <span data-lang-key="cancelButton">Cancel</span>
+        </button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!--quantity spec modal-->
+  <!-- Replace the old div#quantity-spec-modal with the following -->
+  <dialog id="quantity-spec-modal" class="modal modal-bottom sm:modal-middle">
+    <form method="dialog" class="modal-box text-left">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="specifyQuantityTitle">
+        Specify Quantity
+      </h2>
+      <p class="text-center text-gray-600 mb-6">
+        For: <strong id="quantity-spec-food-name"></strong>
+      </p>
+
+      <div>
+        <label for="quantity-slider" class="block text-sm font-medium text-gray-800" data-lang-key="intuitiveQuantity">
+          Intuitive Quantity
+        </label>
+        <input type="range" id="quantity-slider" min="0" max="4" value="2" step="1"
+          class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2" />
+        <div id="slider-label" class="text-center font-semibold text-blue-600 mt-2">
+          Regular Portion
+        </div>
+      </div>
+
+      <div class="my-4 text-center" data-lang-key="or">OR</div>
 
       <div>
         <label for="quantity-spec-text" class="block text-sm font-medium text-gray-800"
-          data-lang-key="specificQuantity">Specific Quantity</label>
+          data-lang-key="specificQuantity">
+          Specific Quantity
+        </label>
         <input type="text" id="quantity-spec-text"
           class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm"
-          data-lang-key-placeholder="quantityPlaceholder" placeholder="e.g., 1 bowl, 200g, half">
+          data-lang-key-placeholder="quantityPlaceholder" placeholder="e.g., 1 bowl, 200g, half" />
       </div>
 
-      <div class="flex justify-between items-center mt-6">
+      <div class="modal-action justify-between items-center mt-6">
         <button type="button" id="unsure-quantity-spec-btn"
-          class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg"
-          data-lang-key="imNotSure">I'm not sure</button>
+          class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="imNotSure">
+          I’m not sure
+        </button>
         <div class="flex gap-2">
-          <button type="button" id="cancel-quantity-spec-btn"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
-            data-lang-key="cancelButton">Cancel</button>
-          <button type="button" id="confirm-quantity-spec-btn"
-            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
-            data-lang-key="confirmButton">Confirm</button>
+          <button type="button" id="cancel-quantity-spec-btn" class="btn btn-ghost" data-lang-key="cancelButton">
+            Cancel
+          </button>
+          <button type="button" id="confirm-quantity-spec-btn" class="btn btn-primary" data-lang-key="confirmButton">
+            Confirm
+          </button>
         </div>
       </div>
-    </div>
+    </form>
+  </dialog>
 
-  </div>
 
   <!--hidden file input for food image upload-->
   <input type="file" id="image-upload-input" accept="image/*" style="display: none;" />
@@ -1794,7 +1837,7 @@
     function showLoader(messageKey) {
       const currentLang = localStorage.getItem('language') || 'en';
       loadingText.textContent = translations[currentLang][messageKey] || translations[currentLang].analysing;
-      loadingOverlay.classList.remove('hidden');
+      loadingOverlay.removeAttribute('hidden');
     }
 
     /**
@@ -1802,53 +1845,102 @@
      *
      */
 
-    function hideLoader() { loadingOverlay.classList.add('hidden'); }
+    function hideLoader() { loadingOverlay.setAttribute('hidden', ''); }
 
     /**
      * Displays an alert modal with a message and returns a promise when dismissed
      *
      * @param {string} message - The message parameter
      */
-
     function showAlert(message) {
       return new Promise(resolve => {
         const alertModal = document.getElementById('alert-modal');
-        document.getElementById('alert-message').textContent = message;
-        document.getElementById('alert-ok-btn').style.display = 'inline-block';
-        document.getElementById('alert-confirm-btn').style.display = 'none';
-        document.getElementById('alert-cancel-btn').style.display = 'none';
-        alertModal.classList.remove('hidden');
-        document.getElementById('alert-ok-btn').onclick = () => {
-          alertModal.classList.add('hidden');
+        const alertMessage = document.getElementById('alert-message');
+        const okBtn = document.getElementById('alert-ok-btn');
+        const confirmBtn = document.getElementById('alert-confirm-btn');
+        const cancelBtn = document.getElementById('alert-cancel-btn');
+
+        // Set the message
+        alertMessage.textContent = message;
+
+        // Show only OK button for alerts
+        okBtn.classList.remove('hidden');
+        confirmBtn.classList.add('hidden');
+        cancelBtn.classList.add('hidden');
+
+        // Clean up any existing event listeners
+        const newOkBtn = okBtn.cloneNode(true);
+        okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+
+        // Add event listener for OK button
+        newOkBtn.addEventListener('click', () => {
+          alertModal.close();
+          resolve(true);
+        });
+
+        // Handle modal close events (ESC key, backdrop click)
+        const handleClose = () => {
+          alertModal.removeEventListener('close', handleClose);
           resolve(true);
         };
+        alertModal.addEventListener('close', handleClose);
+
+        // Show the modal
+        alertModal.showModal();
       });
     }
 
     /**
      * Displays a confirmation modal with confirm/cancel buttons and returns user choice
      *
-     * @param {string} message - The message parameter
+     * @param {string} message - The message to display
+     * @returns {Promise<boolean>} Promise that resolves to true if confirmed, false if cancelled
      */
-
     function showConfirm(message) {
       return new Promise(resolve => {
         const alertModal = document.getElementById('alert-modal');
-        document.getElementById('alert-message').textContent = message;
-        document.getElementById('alert-ok-btn').style.display = 'none';
-        document.getElementById('alert-confirm-btn').style.display = 'inline-block';
-        document.getElementById('alert-cancel-btn').style.display = 'inline-block';
-        alertModal.classList.remove('hidden');
-        document.getElementById('alert-confirm-btn').onclick = () => {
-          alertModal.classList.add('hidden');
+        const alertMessage = document.getElementById('alert-message');
+        const okBtn = document.getElementById('alert-ok-btn');
+        const confirmBtn = document.getElementById('alert-confirm-btn');
+        const cancelBtn = document.getElementById('alert-cancel-btn');
+
+        // Set the message
+        alertMessage.textContent = message;
+
+        // Show confirm and cancel buttons, hide OK button
+        okBtn.classList.add('hidden');
+        confirmBtn.classList.remove('hidden');
+        cancelBtn.classList.remove('hidden');
+
+        // Clean up any existing event listeners by cloning nodes
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+        // Add event listeners
+        newConfirmBtn.addEventListener('click', () => {
+          alertModal.close();
           resolve(true);
-        };
-        document.getElementById('alert-cancel-btn').onclick = () => {
-          alertModal.classList.add('hidden');
+        });
+
+        newCancelBtn.addEventListener('click', () => {
+          alertModal.close();
+          resolve(false);
+        });
+
+        // Handle modal close events (ESC key, backdrop click) - default to false
+        const handleClose = () => {
+          alertModal.removeEventListener('close', handleClose);
           resolve(false);
         };
+        alertModal.addEventListener('close', handleClose);
+
+        // Show the modal
+        alertModal.showModal();
       });
     }
+
 
     /**
      * Initiates Google OAuth sign-in process using Firebase authentication
@@ -2028,7 +2120,7 @@
           if (identifiedFoodName) {
             identifiedFoodNameEl.textContent = identifiedFoodName;
             quantityInput.value = '';
-            quantityModal.classList.remove('hidden');
+            quantityModal.showModal();
             quantityInput.focus();
           } else {
             throw new Error("Could not identify the food from the uploaded image.");
@@ -2255,8 +2347,7 @@
         if (identifiedFoodName) {
           identifiedFoodNameEl.textContent = identifiedFoodName;
           quantityInput.value = '';
-          // Update other modals to use showModal() if they haven't been converted yet
-          document.getElementById('quantity-modal').showModal();
+          quantityModal.showModal();
           quantityInput.focus();
         } else throw new Error("Could not identify the food.");
       } catch (error) {
@@ -2349,7 +2440,7 @@
         calendarDisplayDate = new Date(currentDate);
         calendarMode = (activePeriod === 'day' || activePeriod === 'week') ? 'day' : 'month';
         renderCalendar(calendarDisplayDate);
-        calendarModal.classList.remove('hidden');
+        calendarModal.showModal(); // CHANGED: Use showModal() instead of classList.remove('hidden')
       });
     }
     /**
@@ -2947,7 +3038,11 @@
           monthCell.textContent = monthName;
           monthCell.className = 'p-3 rounded-lg hover:bg-blue-100 transition-colors';
           if (index === currentDate.getMonth() && year === currentDate.getFullYear()) monthCell.classList.add('bg-blue-500', 'text-white');
-          monthCell.addEventListener('click', () => { currentDate = new Date(year, index, 1); calendarModal.classList.add('hidden'); updateDashboard('month'); });
+          monthCell.addEventListener('click', () => {
+            currentDate = new Date(year, index, 1);
+            calendarModal.close(); // CHANGED: Use close() instead of classList.add('hidden')
+            updateDashboard('month');
+          });
           calendarMonthGrid.appendChild(monthCell);
         });
       } else {
@@ -2974,7 +3069,11 @@
           if (cellDate.toDateString() === today.toDateString()) dayCell.classList.add('border-2', 'border-gray-400');
           if (cellDate.toDateString() === currentDate.toDateString()) dayCell.classList.add('bg-blue-500', 'text-white', 'font-bold');
           else dayCell.classList.add('hover:bg-blue-100');
-          dayCell.addEventListener('click', () => { currentDate = new Date(year, month, i); calendarModal.classList.add('hidden'); updateDashboard(activePeriod); });
+          dayCell.addEventListener('click', () => {
+            currentDate = new Date(year, month, i);
+            calendarModal.close(); // CHANGED: Use close() instead of classList.add('hidden')
+            updateDashboard(activePeriod);
+          });
           calendarGrid.appendChild(dayCell);
         }
       }
@@ -3278,18 +3377,21 @@
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
       listeningTextStatus.textContent = translations[currentLang].listening;
-      listeningModal.classList.remove('hidden');
+      listeningModal.showModal();
       recognition.start();
 
-      // 添加语音输入取消按钮事件监听
+      // Clean up any existing event listeners by cloning the button
       const voiceCancelBtn = document.getElementById('voice-cancel-btn');
-      voiceCancelBtn.addEventListener('click', () => {
+      const newVoiceCancelBtn = voiceCancelBtn.cloneNode(true);
+      voiceCancelBtn.parentNode.replaceChild(newVoiceCancelBtn, voiceCancelBtn);
+
+      newVoiceCancelBtn.addEventListener('click', () => {
         recognition.stop();
-        listeningModal.classList.add('hidden');
+        listeningModal.close();
       });
 
       recognition.onresult = async (event) => {
-        listeningModal.classList.add('hidden');
+        listeningModal.close();
         const speechResult = event.results[0][0].transcript;
         foodInput.placeholder = translations[currentLang].checkingSpeech;
         showLoader('checkingSpeech');
@@ -3307,9 +3409,9 @@
           hideLoader();
         } finally { foodInput.placeholder = translations[currentLang].foodInputPlaceholder; }
       };
-      recognition.onspeechend = () => { recognition.stop(); listeningModal.classList.add('hidden'); };
+      recognition.onspeechend = () => { recognition.stop(); listeningModal.close(); };
       recognition.onerror = (event) => {
-        listeningModal.classList.add('hidden');
+        listeningModal.close();
         showAlert(translations[currentLang].speechError.replace('{error}', event.error));
       };
     }
@@ -3495,14 +3597,14 @@
           const quantity = quantityInput.value.trim();
           if (quantity && identifiedFoodName) {
             foodInput.value = `${quantity} ${identifiedFoodName}`;
-            quantityModal.classList.add('hidden');
+            quantityModal.close();
             processNewMeal();
           }
         });
       }
-      if (cancelQuantityBtn) cancelQuantityBtn.addEventListener('click', () => quantityModal.classList.add('hidden'));
+      if (cancelQuantityBtn) cancelQuantityBtn.addEventListener('click', () => quantityModal.close());
       if (closeFavouritesBtn) closeFavouritesBtn.addEventListener('click', () => favouritesModal.close());
-      if (closeCalendarBtn) closeCalendarBtn.addEventListener('click', () => calendarModal.classList.add('hidden'));
+      if (closeCalendarBtn) closeCalendarBtn.addEventListener('click', () => calendarModal.close());
       if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => settingsModal.close());
 
       // ★★★★★ ここが修正された重要な箇所です ★★★★★
@@ -3523,6 +3625,7 @@
           renderCalendar(calendarDisplayDate);
         });
       }
+
       if (calendarNextMonth) {
         calendarNextMonth.addEventListener('click', () => {
           if (calendarMode === 'month') calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() + 1);
@@ -3652,6 +3755,73 @@
         cameraStream.getTracks().forEach(track => track.stop());
         cameraStream = null;
       }
+    });
+
+    // Add close event listener for quantity modal
+    quantityModal.addEventListener('close', () => {
+      // Clear the input when modal is closed
+      if (quantityInput) {
+        quantityInput.value = '';
+      }
+    });
+
+    // Function to open the modal
+    function openQuantitySpecModal(foodName) {
+      foodNameForQuantitySpec = foodName;
+      document.getElementById('quantity-spec-food-name').textContent = foodName;
+      const currentLang = localStorage.getItem('language') || 'en';
+      const labels = translations[currentLang].sliderLabels;
+      quantitySlider.value = 2;
+      sliderLabel.textContent = labels[2];
+      quantitySpecText.value = '';
+      quantitySpecModal.showModal();
+    }
+
+    // Slider input updates label
+    quantitySlider.addEventListener('input', () => {
+      const currentLang = localStorage.getItem('language') || 'en';
+      const labels = translations[currentLang].sliderLabels;
+      sliderLabel.textContent = labels[quantitySlider.value];
+      quantitySpecText.value = '';
+    });
+
+    // Text input resets slider
+    quantitySpecText.addEventListener('input', () => {
+      const currentLang = localStorage.getItem('language') || 'en';
+      const labels = translations[currentLang].sliderLabels;
+      quantitySlider.value = 2;
+      sliderLabel.textContent = labels[2];
+    });
+
+    // Cancel button closes modal
+    document.getElementById('cancel-quantity-spec-btn').addEventListener('click', () => {
+      quantitySpecModal.close();
+    });
+
+    // "I’m not sure" sets default and processes
+    document.getElementById('unsure-quantity-spec-btn').addEventListener('click', () => {
+      foodInput.value = foodNameForQuantitySpec;
+      quantitySpecModal.close();
+      processNewMeal(null, true);
+    });
+
+    // Confirm button constructs query and processes
+    document.getElementById('confirm-quantity-spec-btn').addEventListener('click', () => {
+      let finalQuery = '';
+      const specifiedText = quantitySpecText.value.trim();
+      const currentLang = localStorage.getItem('language') || 'en';
+      const prefixes = translations[currentLang].sliderPrefixes;
+
+      if (specifiedText) {
+        finalQuery = `${specifiedText} ${foodNameForQuantitySpec}`;
+      } else {
+        const prefix = prefixes[quantitySlider.value];
+        finalQuery = `${prefix} ${foodNameForQuantitySpec}`.trim();
+      }
+
+      foodInput.value = finalQuery;
+      quantitySpecModal.close();
+      processNewMeal(null, true);
     });
 
 
