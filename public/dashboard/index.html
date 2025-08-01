@@ -3624,6 +3624,15 @@
       }
     });
 
+    cameraModal.addEventListener('close', () => {
+      // Same cleanup as in closeCamera function
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+    });
+
+
   </script>
 
   <!--service worker registration-->
