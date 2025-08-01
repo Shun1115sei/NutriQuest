@@ -1014,30 +1014,33 @@
   </div>
 
   <!-- Camera Choice Modal -->
-  <div id="camera-choice-modal" class="modal-overlay hidden">
-    <div class="modal-content">
+  <dialog id="camera-choice-modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
       <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera</h2>
-
       <div class="space-y-4">
-
         <button id="scan-meal-btn"
           class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
           data-lang-key="scanMealButton">Scan Meal with Camera</button>
-
         <button id="scan-barcode-btn"
           class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
           data-lang-key="scanBarcodeButton">Scan Barcode</button>
-
         <button id="upload-image-btn"
           class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg"
           data-lang-key="uploadFromLibrary">Upload from Library</button>
-
-        <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
-          data-lang-key="closeButton">Close</button>
-
+        <form method="dialog">
+          <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
+            data-lang-key="closeButton">Close</button>
+        </form>
       </div>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
 
   <!-- Camera Modal -->
   <div id="camera-modal" class="modal-overlay hidden">
@@ -1057,7 +1060,7 @@
   </div>
 
   <!-- Barcode Scanner Modal (DaisyUI) -->
-  <dialog id="barcode-modal" class="modal">
+  <dialog id="barcode-modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box max-w-md">
       <form method="dialog">
         <button
@@ -1126,7 +1129,7 @@
   </div>
 
   <!-- Settings Modal (DaisyUI) -->
-  <dialog id="settings-modal" class="modal">
+  <dialog id="settings-modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box max-w-lg w-full max-h-[90vh] flex flex-col p-0">
 
       <div class="p-6 pb-4 border-b border-gray-200">
@@ -1352,6 +1355,7 @@
     </div>
   </div>
 
+  <!--quantity spec modal-->
   <div id="quantity-spec-modal" class="modal-overlay hidden">
     <div class="modal-content text-left">
       <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="specifyQuantityTitle">Specify Quantity</h2>
@@ -1384,14 +1388,16 @@
             class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
             data-lang-key="cancelButton">Cancel</button>
           <button type="button" id="confirm-quantity-spec-btn"
-          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
-          data-lang-key="confirmButton">Confirm</button>
+            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+            data-lang-key="confirmButton">Confirm</button>
         </div>
       </div>
     </div>
-    
+
   </div>
 
+  <!--hidden file input for food image upload-->
+  <input type="file" id="image-upload-input" accept="image/*" style="display: none;" />
 
   <script>
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -3412,16 +3418,16 @@
       }
       document.querySelectorAll('.quick-food-btn').forEach(btn => btn.addEventListener('click', () => { foodInput.value = btn.textContent; processNewMeal(); }));
       document.querySelectorAll('.meal-type-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelector('.meal-type-btn.active')?.classList.remove('active'); btn.classList.add('active'); }));
-      if (cameraScanBtn) cameraScanBtn.addEventListener('click', () => cameraChoiceModal.classList.remove('hidden'));
+      if (cameraScanBtn) cameraScanBtn.addEventListener('click', () => cameraChoiceModal.showModal());
       if (voiceInputBtn) voiceInputBtn.addEventListener('click', startVoiceRecognition);
 
       // --- Modals & Other Listeners ---
-      if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.classList.add('hidden'));
-      if (scanMealBtn) scanMealBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); openCamera(); });
-      if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.classList.add('hidden'); startBarcodeScanner(); });
+      if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.close());
+      if (scanMealBtn) scanMealBtn.addEventListener('click', () => { cameraChoiceModal.close(); openCamera(); });
+      if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.close(); startBarcodeScanner(); });
       if (uploadImageBtn) {
         uploadImageBtn.addEventListener('click', () => {
-          cameraChoiceModal.classList.add('hidden');
+          cameraChoiceModal.close();
           if (imageUploadInput) imageUploadInput.click();
         });
       }
@@ -3585,18 +3591,30 @@
     window.addEventListener('load', () => {
       // 1. 翻訳用の対応表を作成
       buildFoodKeyReverseMap();
-      
+
       // 2. 現在時刻に合わせてデフォルトの食事タイプを設定
       setDefaultMealType();
-      
+
       // 3. 保存されている言語設定を適用
       setLanguage(localStorage.getItem('language') || 'en');
-      
+
       // 4. すべてのボタンやフォームに機能を設定
       initializeAppEventListeners();
-      
+
       // 5. ヘッダーの日付を更新
       updateHeaderDate();
+    });
+
+    // barcode modal x button permission freeup fix
+    const barcodeModal = document.getElementById('barcode-modal');
+    barcodeModal.addEventListener('close', () => {
+      // Same cleanup as in your close-barcode-btn
+      if (html5QrCodeInstance && html5QrCodeInstance.isScanning) {
+        html5QrCodeInstance.stop().then(() => {
+          if (html5QrCodeInstance) html5QrCodeInstance.clear();
+          html5QrCodeInstance = null;
+        });
+      }
     });
 
   </script>
