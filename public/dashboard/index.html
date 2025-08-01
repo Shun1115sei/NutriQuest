@@ -1030,21 +1030,27 @@
 
 
   <!-- Camera Modal -->
-  <div id="camera-modal" class="modal-overlay hidden">
-    <div class="modal-content camera-modal-content">
-      <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="positionMeal">Position your meal in the
-        camera</h2>
-      <video id="camera-view" autoplay playsinline></video>
+  <dialog id="camera-modal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl">
+      <form method="dialog">
+        <button
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-gray-700 hover:bg-gray-200">✕</button>
+      </form>
+      <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="positionMeal">Position your meal in the camera</h2>
+      <video id="camera-view" autoplay playsinline class="w-full rounded-lg"></video>
       <canvas id="camera-canvas" class="hidden"></canvas>
-      <div class="flex justify-center space-x-4 mt-4">
-        <button id="capture-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full"
-          data-lang-key="captureButton">Capture</button>
-        <button id="close-camera-btn"
-          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-full"
-          data-lang-key="closeButton">Close</button>
+      <div class="modal-action justify-center">
+        <button id="capture-btn" class="btn btn-primary" data-lang-key="captureButton">Capture</button>
+        <form method="dialog">
+          <button id="close-camera-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+        </form>
       </div>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
 
   <!-- Barcode Scanner Modal (DaisyUI) -->
   <dialog id="barcode-modal" class="modal modal-bottom sm:modal-middle">
@@ -2177,13 +2183,21 @@
      */
 
     async function openCamera() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { await showAlert("Your browser does not support the camera feature."); return; }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        await showAlert("Your browser does not support the camera feature.");
+        return;
+      }
       try {
         cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
         cameraView.srcObject = cameraStream;
-        cameraModal.classList.remove('hidden');
-      } catch (err) { console.error("Camera Error:", err); await showAlert("Could not access the camera. Please ensure you have given permission."); }
+        // Use showModal() method for daisyUI v5 dialog
+        document.getElementById('camera-modal').showModal();
+      } catch (err) {
+        console.error("Camera Error:", err);
+        await showAlert("Could not access the camera. Please ensure you have given permission.");
+      }
     }
+
     /**
 
      * Closes camera interface and stops video stream
@@ -2194,8 +2208,10 @@
 
     function closeCamera() {
       if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
-      cameraModal.classList.add('hidden');
+      // Use close() method for daisyUI v5 dialog
+      document.getElementById('camera-modal').close();
     }
+
     /**
 
      * Captures image from camera stream and processes it for food identification
@@ -2222,7 +2238,8 @@
         if (identifiedFoodName) {
           identifiedFoodNameEl.textContent = identifiedFoodName;
           quantityInput.value = '';
-          quantityModal.classList.remove('hidden');
+          // Update other modals to use showModal() if they haven't been converted yet
+          document.getElementById('quantity-modal').showModal();
           quantityInput.focus();
         } else throw new Error("Could not identify the food.");
       } catch (error) {
@@ -2231,6 +2248,7 @@
         else { console.error("Image identification error:", error); await showAlert("Sorry, we couldn't identify the food in the image. Please try typing it manually."); }
       }
     }
+
     /**
 
      * Uses Google Gemini Vision API to identify food items from uploaded images
@@ -3417,8 +3435,12 @@
         });
       }
       if (imageUploadInput) imageUploadInput.addEventListener('change', handleImageUpload);
-      if (captureBtn) captureBtn.addEventListener('click', captureImage);
+      // Update the camera modal event listeners
       if (closeCameraBtn) closeCameraBtn.addEventListener('click', closeCamera);
+      if (captureBtn) captureBtn.addEventListener('click', captureImage);
+
+      // The modal backdrop will automatically close when clicked due to the form method="dialog"
+
       if (closeBarcodeBtn) {
         closeBarcodeBtn.addEventListener('click', () => {
           if (html5QrCodeInstance && html5QrCodeInstance.isScanning) {
@@ -3608,7 +3630,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
+        navigator.serviceWorker.register('/service-worker.js')
           .then((registration) => {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
           }, (err) => {
@@ -3692,6 +3714,8 @@
     });
 
   </script>
+
+  <!--language logic-->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const dateEl = document.getElementById('header-date-display');
@@ -3707,6 +3731,7 @@
       }
     });
   </script>
+
 </body>
 
 </html>
