@@ -359,15 +359,6 @@
       transform: translateX(100%);
     }
 
-    .lang-btn:not(.active):hover {
-      background-color: #d1d5db;
-    }
-
-    .lang-btn.active {
-      background-color: #4f46e5;
-      color: white;
-    }
-
     #install-banner {
       background: #fef3c7;
       color: #333;
@@ -562,12 +553,11 @@
       <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
         <div class="relative max-w-md w-full bg-white p-8 rounded-xl shadow-lg">
           <div class="absolute top-4 right-4">
-            <div class="flex items-center gap-1 bg-gray-200 rounded-full p-1">
-              <button data-lang="en"
-                class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors">EN</button>
-              <button data-lang="zh"
-                class="lang-btn px-3 py-1 text-sm font-semibold rounded-full transition-colors"><span
-                  class="hidden sm:inline">中文</span><span class="inline sm:hidden">中</span></button>
+            <div class="join">
+              <input type="radio" name="auth-language" value="en" class="lang-radio join-item btn btn-xs"
+                aria-label="EN" checked>
+              <input type="radio" name="auth-language" value="zh" class="lang-radio join-item btn btn-xs"
+                aria-label="中">
             </div>
           </div>
           <h2 id="auth-title" data-lang-key="loginTitle" class="text-3xl font-bold text-center text-gray-800 mb-6 pt-8">
@@ -664,31 +654,34 @@
             <!-- Right: Language, User, Action Buttons -->
             <div class="flex items-center gap-1 sm:gap-4 ml-auto">
               <!-- Language Switch (daisyUI Button Group) -->
-              <div class="join bg-gray-200 rounded-full p-1">
-                <button data-lang="en"
-                  class="lang-btn join-item btn btn-ghost btn-xs px-3 py-1 text-sm font-semibold rounded-full transition-colors">EN</button>
-                <button data-lang="zh"
-                  class="lang-btn join-item btn btn-ghost btn-xs px-3 py-1 text-sm font-semibold rounded-full transition-colors">中</button>
+              <div class="join">
+                <input type="radio" name="navbar-language" value="en" class="lang-radio join-item btn btn-xs"
+                  aria-label="EN" checked>
+                <input type="radio" name="navbar-language" value="zh" class="lang-radio join-item btn btn-xs"
+                  aria-label="中">
               </div>
               <!-- User Menu (relative parent required for dropdown) -->
-              <div id="user-header" class="relative flex-none" style="display: flex;">
-                <button id="account-menu-btn" class="btn btn-ghost btn-circle p-2 hover:bg-gray-200 transition-colors">
+              <div id="user-header" class="dropdown dropdown-end">
+                <div tabindex="0" role="button" id="account-menu-btn"
+                  class="btn btn-ghost btn-circle p-2 hover:bg-gray-200 transition-colors">
                   <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                </button>
-                <div id="account-dropdown"
-                  class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                  <div class="px-4 py-2 text-sm text-gray-700 border-b truncate" id="user-email-dropdown"></div>
-                  <a href="#" id="sign-out-btn-dropdown" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    data-lang-key="signOutButton">Sign Out</a>
                 </div>
+                <ul tabindex="0" id="account-dropdown"
+                  class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                  <li>
+                    <div id="user-email-dropdown"></div>
+                  </li>
+                  <li>
+                    <a href="#" id="sign-out-btn-dropdown" data-lang-key="signOutButton">Sign Out</a>
+                  </li>
+                </ul>
               </div>
               <!-- Guest Login Button -->
               <div id="guest-header" class="flex-none" style="display: none;">
-                <button id="go-to-login-btn"
-                  class="btn btn-outline btn-sm bg-gray-200 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-3 rounded-lg transition-all text-sm">
+                <button id="go-to-login-btn" class="btn btn-outline btn-sm">
                   <span data-lang-key="loginButton">Login</span>
                 </button>
               </div>
@@ -1683,7 +1676,7 @@
     function setLanguage(lang) {
       localStorage.setItem('language', lang);
       document.documentElement.lang = lang;
-      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+      document.querySelectorAll('.lang-radio').forEach(radio => radio.checked = radio.value === lang);
       const translation = translations[lang];
       document.querySelectorAll('[data-lang-key]').forEach(element => {
         const key = element.getAttribute('data-lang-key');
@@ -3269,7 +3262,7 @@
     function initializeAppEventListeners() {
       // --- General Listeners ---
       window.addEventListener('scroll', () => { if (appHeader) appHeader.classList.toggle('shadow-md', window.scrollY > 10); });
-      document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+      document.querySelectorAll('.lang-radio').forEach(radio => radio.addEventListener('change', () => setLanguage(radio.value)));
 
       const infoIcon = document.getElementById('info-tooltip-icon');
       if (infoIcon) {
