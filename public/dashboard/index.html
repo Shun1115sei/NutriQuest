@@ -1006,7 +1006,7 @@
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
-      <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera</h2>
+      <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera (mobile)</h2>
       <div class="space-y-4">
         <button id="scan-meal-btn"
           class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
@@ -1029,7 +1029,8 @@
   </dialog>
 
 
-  <!-- Camera Modal -->
+  <!-- DISABLED: Custom Camera Modal (now using system camera picker)
+   Camera Modal 
   <dialog id="camera-modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box w-11/12 max-w-4xl">
       <form method="dialog">
@@ -1050,6 +1051,7 @@
       <button>close</button>
     </form>
   </dialog>
+  -->
 
 
   <!-- Barcode Scanner Modal (DaisyUI) -->
@@ -1449,6 +1451,9 @@
   <!--hidden file input for food image upload-->
   <input type="file" id="image-upload-input" accept="image/*" style="display: none;" />
 
+  <!--hidden file input for food image upload-->
+  <input type="file" id="new-cam-module" accept="image/*" capture="environment" style="display: none;" />
+
   <!--application logic-->
   <script>
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -1473,7 +1478,7 @@
     // --- Language Translation Data ---
     const translations = {
       en: {
-        loginTitle: "Login", emailLabel: "Email", passwordLabel: "Password", loginButton: "Login", authToggle: "Need an account? Sign Up", guestButton: "Continue as Guest", forgotPassword: "Forgot Password?", enterEmailForReset: "Please enter your email address in the email field to reset your password.", passwordResetSent: "A password reset link has been sent to your email address. Please check your inbox.", healthTrackerTitle: "Health Tracker", tagline: "Your Journey to a Healthier You.", signOutButton: "Sign Out", todaysRecord: "Today's Record", tooltipInfo: "Just take a photo of your meal, talk about it, or type it in. NutriQuest is a new type of nutrition management tool that uses powerful AI (gem-2.0-flash) to automatically analyse and record your meals. It eliminates the hassle of manual input, making it easy for anyone to start managing their health.", loginToSyncButton: "Login to Sync Data", favouritesTitle: "Favourites", setGoalsTitle: "Set Your Daily Goals", googleSignIn: "Sign in with Google", foodInputPlaceholder: "e.g., 1 cup of rice and grilled chicken", voiceInputTitle: "Voice Input", scanWithCameraTitle: "Scan with Camera", breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", analyseMealButton: "Analyse Meal", quickAccess: "Quick Access", hainaneseChickenRice: "Hainanese Chicken Rice", laksa: "Laksa", kayaToast: "Kaya Toast", bakKutTeh: "Bak Kut Teh", today: "Today", thisWeek: "This Week", thisMonth: "This Month", todaysTotals: "Today's Totals", thisWeeksTotals: "This Week's Total Calories", thisMonthsTotals: "This Month's Total Calories", calories: "Calories", protein: "Protein", fat: "Fat", carbs: "Carbs", showDetails: "Show Details", closeDetails: "Close", nutritionAdvice: "Nutrition Advice", todaysCalories: "Today's Calories", nutritionBalance: "Nutrition Balance", mealList: "Meal List", noMeals: "No meals recorded for this period.", deleteAllData: "Delete All Data", scanMealButton: "Scan Meal with Camera", scanBarcodeButton: "Scan Barcode", closeButton: "Close", positionMeal: "Position your meal in the camera", captureButton: "Capture", scanBarcodeTitle: "Scan a Barcode", zoom: "Zoom", servingSizeTitle: "Enter Serving Size", servingSizeLabel: "Serving Size (grams)", cancelButton: "Cancel", addMealButton: "Add Meal", okButton: "OK", confirmButton: "Confirm", settingsDescription: "Let us calculate your needs, or set your own manual goal.", gender: "Gender", male: "Male", female: "Female", age: "Age", height: "Height (cm)", weight: "Weight (kg)", activityLevel: "Activity Level",
+        loginTitle: "Login", emailLabel: "Email", passwordLabel: "Password", loginButton: "Login", authToggle: "Need an account? Sign Up", guestButton: "Continue as Guest", forgotPassword: "Forgot Password?", enterEmailForReset: "Please enter your email address in the email field to reset your password.", passwordResetSent: "A password reset link has been sent to your email address. Please check your inbox.", healthTrackerTitle: "Health Tracker", tagline: "Your Journey to a Healthier You.", signOutButton: "Sign Out", todaysRecord: "Today's Record", tooltipInfo: "Just take a photo of your meal, talk about it, or type it in. NutriQuest is a new type of nutrition management tool that uses powerful AI (gem-2.0-flash) to automatically analyse and record your meals. It eliminates the hassle of manual input, making it easy for anyone to start managing their health.", loginToSyncButton: "Login to Sync Data", favouritesTitle: "Favourites", setGoalsTitle: "Set Your Daily Goals", googleSignIn: "Sign in with Google", foodInputPlaceholder: "e.g., 1 cup of rice and grilled chicken", voiceInputTitle: "Voice Input", scanWithCameraTitle: "Scan with Camera (mobile)", breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", analyseMealButton: "Analyse Meal", quickAccess: "Quick Access", hainaneseChickenRice: "Hainanese Chicken Rice", laksa: "Laksa", kayaToast: "Kaya Toast", bakKutTeh: "Bak Kut Teh", today: "Today", thisWeek: "This Week", thisMonth: "This Month", todaysTotals: "Today's Totals", thisWeeksTotals: "This Week's Total Calories", thisMonthsTotals: "This Month's Total Calories", calories: "Calories", protein: "Protein", fat: "Fat", carbs: "Carbs", showDetails: "Show Details", closeDetails: "Close", nutritionAdvice: "Nutrition Advice", todaysCalories: "Today's Calories", nutritionBalance: "Nutrition Balance", mealList: "Meal List", noMeals: "No meals recorded for this period.", deleteAllData: "Delete All Data", scanMealButton: "Scan Meal with Camera", scanBarcodeButton: "Scan Barcode", closeButton: "Close", positionMeal: "Position your meal in the camera", captureButton: "Capture", scanBarcodeTitle: "Scan a Barcode", zoom: "Zoom", servingSizeTitle: "Enter Serving Size", servingSizeLabel: "Serving Size (grams)", cancelButton: "Cancel", addMealButton: "Add Meal", okButton: "OK", confirmButton: "Confirm", settingsDescription: "Let us calculate your needs, or set your own manual goal.", gender: "Gender", male: "Male", female: "Female", age: "Age", height: "Height (cm)", weight: "Weight (kg)", activityLevel: "Activity Level",
         activityLevel1: "Sedentary (mostly sitting, little to no exercise)",
         activityLevel2: "Lightly Active (light exercise/walks 1-2 times a week)",
         activityLevel3: "Moderately Active (regular exercise 3-5 times a week)",
@@ -2291,7 +2296,8 @@
 
      */
 
-    async function openCamera() {
+    /* DISABLED: Custom camera function (now using system camera picker)
+async function openCamera() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         await showAlert("Your browser does not support the camera feature.");
         return;
@@ -2307,6 +2313,7 @@
       }
     }
 
+*/
     /**
 
      * Closes camera interface and stops video stream
@@ -2315,12 +2322,14 @@
 
      */
 
-    function closeCamera() {
+    /* DISABLED: Custom camera function (now using system camera picker)
+function closeCamera() {
       if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
       // Use close() method for daisyUI v5 dialog
       document.getElementById('camera-modal').close();
     }
 
+*/
     /**
 
      * Captures image from camera stream and processes it for food identification
@@ -2333,7 +2342,8 @@
 
      */
 
-    async function captureImage() {
+    /* DISABLED: Custom camera function (now using system camera picker)
+async function captureImage() {
       const context = cameraCanvas.getContext('2d');
       cameraCanvas.width = cameraView.videoWidth;
       cameraCanvas.height = cameraView.videoHeight;
@@ -2357,6 +2367,7 @@
       }
     }
 
+*/
     /**
 
      * Uses Google Gemini Vision API to identify food items from uploaded images
@@ -3545,7 +3556,12 @@
 
       // --- Modals & Other Listeners ---
       if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.close());
-      if (scanMealBtn) scanMealBtn.addEventListener('click', () => { cameraChoiceModal.close(); openCamera(); });
+      if (scanMealBtn) scanMealBtn.addEventListener('click', () => {
+        cameraChoiceModal.close();
+        // Use system camera picker instead of custom camera modal
+        const newCamModule = document.getElementById('new-cam-module');
+        if (newCamModule) newCamModule.click();
+      });
       if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.close(); startBarcodeScanner(); });
       if (uploadImageBtn) {
         uploadImageBtn.addEventListener('click', () => {
@@ -3554,9 +3570,12 @@
         });
       }
       if (imageUploadInput) imageUploadInput.addEventListener('change', handleImageUpload);
+      // Add event listener for system camera capture
+      const newCamModule = document.getElementById('new-cam-module');
+      if (newCamModule) newCamModule.addEventListener('change', handleImageUpload);
       // Update the camera modal event listeners
-      if (closeCameraBtn) closeCameraBtn.addEventListener('click', closeCamera);
-      if (captureBtn) captureBtn.addEventListener('click', captureImage);
+      // DISABLED: if (closeCameraBtn) closeCameraBtn.addEventListener('click', closeCamera);
+      // DISABLED: if (captureBtn) captureBtn.addEventListener('click', captureImage);
 
       // The modal backdrop will automatically close when clicked due to the form method="dialog"
 
@@ -3749,13 +3768,13 @@
       }
     });
 
-    cameraModal.addEventListener('close', () => {
-      // Same cleanup as in closeCamera function
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
-      }
-    });
+    // DISABLED: cameraModal.addEventListener('close', () => {
+    // Same cleanup as in closeCamera function
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    ;
 
     // Add close event listener for quantity modal
     quantityModal.addEventListener('close', () => {
