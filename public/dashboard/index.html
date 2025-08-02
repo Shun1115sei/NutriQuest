@@ -1006,11 +1006,11 @@
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
-      <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera (mobile)</h2>
+      <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera Options</h2>
       <div class="space-y-4">
         <button id="scan-meal-btn"
           class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
-          data-lang-key="scanMealButton">Scan Meal with Camera</button>
+          data-lang-key="scanMealButton">Scan Meal with Camera (mobile)</button>
         <button id="scan-barcode-btn"
           class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
           data-lang-key="scanBarcodeButton">Scan Barcode</button>
@@ -1027,32 +1027,6 @@
       <button>close</button>
     </form>
   </dialog>
-
-
-  <!-- DISABLED: Custom Camera Modal (now using system camera picker)
-   Camera Modal 
-  <dialog id="camera-modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box w-11/12 max-w-4xl">
-      <form method="dialog">
-        <button
-          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-gray-700 hover:bg-gray-200">✕</button>
-      </form>
-      <h2 class="text-2xl font-bold mb-4 text-center" data-lang-key="positionMeal">Position your meal in the camera</h2>
-      <video id="camera-view" autoplay playsinline class="w-full rounded-lg"></video>
-      <canvas id="camera-canvas" class="hidden"></canvas>
-      <div class="modal-action justify-center">
-        <button id="capture-btn" class="btn btn-primary" data-lang-key="captureButton">Capture</button>
-        <form method="dialog">
-          <button id="close-camera-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
-        </form>
-      </div>
-    </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
-  -->
-
 
   <!-- Barcode Scanner Modal (DaisyUI) -->
   <dialog id="barcode-modal" class="modal modal-bottom sm:modal-middle">
@@ -1478,7 +1452,7 @@
     // --- Language Translation Data ---
     const translations = {
       en: {
-        loginTitle: "Login", emailLabel: "Email", passwordLabel: "Password", loginButton: "Login", authToggle: "Need an account? Sign Up", guestButton: "Continue as Guest", forgotPassword: "Forgot Password?", enterEmailForReset: "Please enter your email address in the email field to reset your password.", passwordResetSent: "A password reset link has been sent to your email address. Please check your inbox.", healthTrackerTitle: "Health Tracker", tagline: "Your Journey to a Healthier You.", signOutButton: "Sign Out", todaysRecord: "Today's Record", tooltipInfo: "Just take a photo of your meal, talk about it, or type it in. NutriQuest is a new type of nutrition management tool that uses powerful AI (gem-2.0-flash) to automatically analyse and record your meals. It eliminates the hassle of manual input, making it easy for anyone to start managing their health.", loginToSyncButton: "Login to Sync Data", favouritesTitle: "Favourites", setGoalsTitle: "Set Your Daily Goals", googleSignIn: "Sign in with Google", foodInputPlaceholder: "e.g., 1 cup of rice and grilled chicken", voiceInputTitle: "Voice Input", scanWithCameraTitle: "Scan with Camera (mobile)", breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", analyseMealButton: "Analyse Meal", quickAccess: "Quick Access", hainaneseChickenRice: "Hainanese Chicken Rice", laksa: "Laksa", kayaToast: "Kaya Toast", bakKutTeh: "Bak Kut Teh", today: "Today", thisWeek: "This Week", thisMonth: "This Month", todaysTotals: "Today's Totals", thisWeeksTotals: "This Week's Total Calories", thisMonthsTotals: "This Month's Total Calories", calories: "Calories", protein: "Protein", fat: "Fat", carbs: "Carbs", showDetails: "Show Details", closeDetails: "Close", nutritionAdvice: "Nutrition Advice", todaysCalories: "Today's Calories", nutritionBalance: "Nutrition Balance", mealList: "Meal List", noMeals: "No meals recorded for this period.", deleteAllData: "Delete All Data", scanMealButton: "Scan Meal with Camera", scanBarcodeButton: "Scan Barcode", closeButton: "Close", positionMeal: "Position your meal in the camera", captureButton: "Capture", scanBarcodeTitle: "Scan a Barcode", zoom: "Zoom", servingSizeTitle: "Enter Serving Size", servingSizeLabel: "Serving Size (grams)", cancelButton: "Cancel", addMealButton: "Add Meal", okButton: "OK", confirmButton: "Confirm", settingsDescription: "Let us calculate your needs, or set your own manual goal.", gender: "Gender", male: "Male", female: "Female", age: "Age", height: "Height (cm)", weight: "Weight (kg)", activityLevel: "Activity Level",
+        loginTitle: "Login", emailLabel: "Email", passwordLabel: "Password", loginButton: "Login", authToggle: "Need an account? Sign Up", guestButton: "Continue as Guest", forgotPassword: "Forgot Password?", enterEmailForReset: "Please enter your email address in the email field to reset your password.", passwordResetSent: "A password reset link has been sent to your email address. Please check your inbox.", healthTrackerTitle: "Health Tracker", tagline: "Your Journey to a Healthier You.", signOutButton: "Sign Out", todaysRecord: "Today's Record", tooltipInfo: "Just take a photo of your meal, talk about it, or type it in. NutriQuest is a new type of nutrition management tool that uses powerful AI (gem-2.0-flash) to automatically analyse and record your meals. It eliminates the hassle of manual input, making it easy for anyone to start managing their health.", loginToSyncButton: "Login to Sync Data", favouritesTitle: "Favourites", setGoalsTitle: "Set Your Daily Goals", googleSignIn: "Sign in with Google", foodInputPlaceholder: "e.g., 1 cup of rice and grilled chicken", voiceInputTitle: "Voice Input", scanWithCameraTitle: "Scan with Camera Options", breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", analyseMealButton: "Analyse Meal", quickAccess: "Quick Access", hainaneseChickenRice: "Hainanese Chicken Rice", laksa: "Laksa", kayaToast: "Kaya Toast", bakKutTeh: "Bak Kut Teh", today: "Today", thisWeek: "This Week", thisMonth: "This Month", todaysTotals: "Today's Totals", thisWeeksTotals: "This Week's Total Calories", thisMonthsTotals: "This Month's Total Calories", calories: "Calories", protein: "Protein", fat: "Fat", carbs: "Carbs", showDetails: "Show Details", closeDetails: "Close", nutritionAdvice: "Nutrition Advice", todaysCalories: "Today's Calories", nutritionBalance: "Nutrition Balance", mealList: "Meal List", noMeals: "No meals recorded for this period.", deleteAllData: "Delete All Data", scanMealButton: "Scan Meal with Camera (mobile)", scanBarcodeButton: "Scan Barcode", closeButton: "Close", positionMeal: "Position your meal in the camera", captureButton: "Capture", scanBarcodeTitle: "Scan a Barcode", zoom: "Zoom", servingSizeTitle: "Enter Serving Size", servingSizeLabel: "Serving Size (grams)", cancelButton: "Cancel", addMealButton: "Add Meal", okButton: "OK", confirmButton: "Confirm", settingsDescription: "Let us calculate your needs, or set your own manual goal.", gender: "Gender", male: "Male", female: "Female", age: "Age", height: "Height (cm)", weight: "Weight (kg)", activityLevel: "Activity Level",
         activityLevel1: "Sedentary (mostly sitting, little to no exercise)",
         activityLevel2: "Lightly Active (light exercise/walks 1-2 times a week)",
         activityLevel3: "Moderately Active (regular exercise 3-5 times a week)",
@@ -2284,106 +2258,15 @@
         }
       }
     }
+
     /**
-
-     * Opens camera interface for meal photo capture with proper error handling
-
-     *
-
-     * @returns {Promise} Promise that resolves when the operation completes
-
-     * @async
-
-     */
-
-    /* DISABLED: Custom camera function (now using system camera picker)
-async function openCamera() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        await showAlert("Your browser does not support the camera feature.");
-        return;
-      }
-      try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        cameraView.srcObject = cameraStream;
-        // Use showModal() method for daisyUI v5 dialog
-        document.getElementById('camera-modal').showModal();
-      } catch (err) {
-        console.error("Camera Error:", err);
-        await showAlert("Could not access the camera. Please ensure you have given permission.");
-      }
-    }
-
-*/
-    /**
-
-     * Closes camera interface and stops video stream
-
-     *
-
-     */
-
-    /* DISABLED: Custom camera function (now using system camera picker)
-function closeCamera() {
-      if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
-      // Use close() method for daisyUI v5 dialog
-      document.getElementById('camera-modal').close();
-    }
-
-*/
-    /**
-
-     * Captures image from camera stream and processes it for food identification
-
-     *
-
-     * @returns {Promise} Promise that resolves when the operation completes
-
-     * @async
-
-     */
-
-    /* DISABLED: Custom camera function (now using system camera picker)
-async function captureImage() {
-      const context = cameraCanvas.getContext('2d');
-      cameraCanvas.width = cameraView.videoWidth;
-      cameraCanvas.height = cameraView.videoHeight;
-      context.drawImage(cameraView, 0, 0, cameraCanvas.width, cameraCanvas.height);
-      const imageDataUrl = cameraCanvas.toDataURL('image/jpeg');
-      closeCamera();
-      showLoader('analysing');
-      try {
-        identifiedFoodName = await identifyFoodFromImage(imageDataUrl.split(',')[1]);
-        hideLoader();
-        if (identifiedFoodName) {
-          identifiedFoodNameEl.textContent = identifiedFoodName;
-          quantityInput.value = '';
-          quantityModal.showModal();
-          quantityInput.focus();
-        } else throw new Error("Could not identify the food.");
-      } catch (error) {
-        hideLoader();
-        if (error.message === "RATE_LIMIT_EXCEEDED") showAlert(translations[localStorage.getItem('language') || 'en'].rateLimitError);
-        else { console.error("Image identification error:", error); await showAlert("Sorry, we couldn't identify the food in the image. Please try typing it manually."); }
-      }
-    }
-
-*/
-    /**
-
      * Uses Google Gemini Vision API to identify food items from uploaded images
-
      * Uses Google Gemini AI for food recognition and nutrition analysis
-
      *
-
      * @param {Object} base64ImageData - The base64imagedata parameter
-
      * @returns {Promise} Promise that resolves when the operation completes
-
      * @throws {Error} When API request fails or rate limit is exceeded
-
      * @async
-
      */
 
     async function identifyFoodFromImage(base64ImageData) {
