@@ -2,7 +2,7 @@
   "name": "NutriQuest",
   "short_name": "NutriQuest",
   "description": "A Simple Nutrition Tracker for Seniors",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
   "display_override": [
     "window-controls-overlay",
