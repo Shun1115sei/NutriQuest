@@ -1445,7 +1445,6 @@
     };
 
     // --- DOM Elements ---
-    const mainContent = document.getElementById('main-content');
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
     const authForm = document.getElementById('auth-form');
@@ -1478,11 +1477,6 @@
     const closeChoiceBtn = document.getElementById('close-choice-btn');
     const toggleDetailsBtn = document.getElementById('toggle-details-btn');
     const detailedDashboardView = document.getElementById('detailed-dashboard-view');
-    const cameraModal = document.getElementById('camera-modal');
-    const cameraView = document.getElementById('camera-view');
-    const cameraCanvas = document.getElementById('camera-canvas');
-    const captureBtn = document.getElementById('capture-btn');
-    const closeCameraBtn = document.getElementById('close-camera-btn');
     const settingsBtn = document.getElementById('settings-btn');
     const settingsModal = document.getElementById('settings-modal');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
@@ -1494,7 +1488,6 @@
     const uploadImageBtn = document.getElementById('upload-image-btn');
     const barcodeModal = document.getElementById('barcode-modal');
     const closeBarcodeBtn = document.getElementById('close-barcode-btn');
-    const barcodeResultEl = document.getElementById('barcode-result');
     const servingModal = document.getElementById('serving-modal');
     const servingForm = document.getElementById('serving-form');
     const cancelServingBtn = document.getElementById('cancel-serving-btn');
@@ -1555,7 +1548,7 @@
     const favouritesBtnMobile = document.getElementById('favourites-btn-mobile');
     const settingsBtnMobile = document.getElementById('settings-btn-mobile');
 
-    let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, cameraStream = null, html5QrCodeInstance = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
+    let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, html5QrCodeInstance = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
 
     let foodNameForQuantitySpec = '';
 
@@ -3366,8 +3359,6 @@
       const newCamModule = document.getElementById('new-cam-module');
       if (newCamModule) newCamModule.addEventListener('change', handleImageUpload);
       // Update the camera modal event listeners
-      // DISABLED: if (closeCameraBtn) closeCameraBtn.addEventListener('click', closeCamera);
-      // DISABLED: if (captureBtn) captureBtn.addEventListener('click', captureImage);
 
       // The modal backdrop will automatically close when clicked due to the form method="dialog"
 
@@ -3559,14 +3550,6 @@
         });
       }
     });
-
-    // DISABLED: cameraModal.addEventListener('close', () => {
-    // Same cleanup as in closeCamera function
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-      cameraStream = null;
-    }
-    ;
 
     // Add close event listener for quantity modal
     quantityModal.addEventListener('close', () => {
