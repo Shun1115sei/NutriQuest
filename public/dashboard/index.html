@@ -3657,52 +3657,45 @@
     const installBtn = document.getElementById('install-btn');
     const navInstallBtn = document.getElementById('nav-install-btn'); // if you have one
 
-    /**
-
-
-     * Handles hideinstallui functionality
-
-
-     *
-
-
-     */
-
-
+    // Function to hide the install UI
     function hideInstallUI() {
-      installBanner.classList.add('hidden');
+      if (installBanner) installBanner.classList.add('hidden');
       if (navInstallBtn) navInstallBtn.classList.add('hidden');
     }
 
-    /**
-
-
-     * Handles showinstallui functionality
-
-
-     *
-
-
-     */
-
-
+    // Function to show the install UI
     function showInstallUI() {
-      installBanner.classList.remove('hidden');
+      if (installBanner) installBanner.classList.remove('hidden');
       if (navInstallBtn) navInstallBtn.classList.remove('hidden');
     }
 
+    // Check if the app is already installed and hide the banner if it is.
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      hideInstallUI();
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
+      // Stash the event so it can be triggered later.
       deferredPrompt = e;
-      showInstallUI();
+      // Update the UI to show the install button.
+      // Only show the banner if it's not already installed.
+      if (!window.matchMedia('(display-mode: standalone)').matches && !window.navigator.standalone) {
+        showInstallUI();
+      }
     });
 
     if (installBtn) {
       installBtn.addEventListener('click', async () => {
         if (!deferredPrompt) return;
+        // Show the install prompt.
         deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt.
         await deferredPrompt.userChoice;
+        // We've used the prompt, and can't use it again, so hide the install UI.
         hideInstallUI();
+        // Clear the deferred prompt variable, since it can only be used once.
         deferredPrompt = null;
       });
     }
@@ -3718,7 +3711,9 @@
     }
 
     window.addEventListener('appinstalled', () => {
+      // Hide the install UI when the app is installed.
       hideInstallUI();
+      // Clear the deferredPrompt so it can be garbage collected
       deferredPrompt = null;
     });
 
