@@ -521,7 +521,8 @@
 <body>
   <!-- PWA Install Prompt Button (hidden by default) -->
   <div id="install-banner"
-    class="height:56px w-full flex justify-center items-center bg-yellow-50 border-b border-yellow-300 p-4 fixed top-0 left-0 z-50 shadow transition-all hidden">
+    class="w-full bg-transparent p-4 pl-2 text-lg focus:outline-none text-center"
+    data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken">
     <span class="text-gray-900 font-semibold mr-4">Install NutriQuest on your device for best experience!</span>
     <button id="install-btn"
       class="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-800 transition-all shadow">Install</button>
@@ -697,7 +698,7 @@
         <div class="main-container">
           <div class="w-full max-w-6xl mx-auto pt-16 sm:pt-24">
 
-            <img src="/NutriQuest/public/icons/NutriQuest_Logo.png" alt="NutriQuest Logo" class="mx-auto h-16 md:h-20 w-auto">
+            <img src="/icons/NutriQuest_Logo.png" alt="NutriQuest Logo" class="mx-auto h-16 md:h-20 w-auto">
 
             <div class="flex items-center justify-center gap-2 mt-2">
               <p data-lang-key="tagline" class="text-gray-500 text-lg">Your Journey to a Healthier You.</p>
@@ -722,7 +723,7 @@
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg></div>
               <input type="text" id="food-input"
-                class="w-full bg-transparent p-4 pl-2 text-lg rounded-full focus:outline-none"
+                class="w-full bg-transparent p-4 pl-2 text-lg rounded-full focus:outline-none border-none shadow-none"
                 data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken">
               <button id="voice-input-btn" class="p-3 text-gray-500 hover:text-blue-500"
                 data-lang-key-title="voiceInputTitle" title="Voice Input">
