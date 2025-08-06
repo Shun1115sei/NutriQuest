@@ -521,7 +521,7 @@
 <body>
   <!-- PWA Install Prompt Button (hidden by default) -->
   <div id="install-banner"
-    class="w-full bg-transparent p-4 pl-2 text-lg focus:outline-none text-center"
+    class="w-full bg-transparent p-4 pl-2 text-lg focus:outline-none text-center hidden"
     data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken">
     <span class="text-gray-900 font-semibold mr-4">Install NutriQuest on your device for best experience!</span>
     <button id="install-btn"
@@ -1657,8 +1657,7 @@
     function setLanguage(lang) {
       localStorage.setItem('language', lang);
       document.documentElement.lang = lang;
-      
-      // 新しいボタンデザインに対応する処理
+
       document.querySelectorAll('.lang-btn').forEach(btn => {
         const isActive = btn.dataset.lang === lang;
         btn.classList.toggle('bg-blue-600', isActive);
@@ -1670,15 +1669,12 @@
       const translation = translations[lang];
       document.querySelectorAll('[data-lang-key]').forEach(element => {
         const key = element.getAttribute('data-lang-key');
-        // 新しい分割されたキーに対応
         if (key === 'authToggle') {
-            // 古いキーは無視
         } else if (translation[key]) {
             element.textContent = translation[key];
         }
       });
 
-      // 分割された翻訳キーを個別に設定
       const authTogglePromptEl = document.querySelector('[data-lang-key="authTogglePrompt"]');
       const authToggleActionEl = document.querySelector('[data-lang-key="authToggleAction"]');
       if(authTogglePromptEl) authTogglePromptEl.textContent = translation.authTogglePrompt;
@@ -1693,13 +1689,12 @@
         if (translation[key]) element.title = translation[key];
       });
 
-      // isLoginModeに応じたタイトルとボタンテキストの更新
       if (isLoginMode) {
         authTitle.textContent = translation.loginTitle;
         authSubmitBtn.textContent = translation.loginButton;
         if(authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction; // Sign Up
       } else {
-        authTitle.textContent = translation.signUpTitle; // "Sign Up"の翻訳キーを追加する必要があります
+        authTitle.textContent = translation.signUpTitle;
         authSubmitBtn.textContent = translation.signUpTitle;
         if(authToggleActionEl) authToggleActionEl.textContent = translation.loginButton; // Login
       }
