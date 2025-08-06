@@ -16,7 +16,9 @@
   <!-- Barcode Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     html {
       overflow-y: scroll;
@@ -28,7 +30,7 @@
     #app-container {
       font-family: 'Inter', sans-serif;
     }
-    
+
     #splash-screen {
       font-family: 'Inter', sans-serif;
     }
@@ -670,7 +672,7 @@
             </div>
             <!-- Guest Login Button -->
             <div id="guest-header" class="flex-none" style="display: none;">
-              <button id="go-to-login-btn" class="btn btn-outline btn-sm">
+              <button id="go-to-login-btn" class="btn btn-primary btn-sm transform-gpu transition-transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-focus">
                 <span data-lang-key="loginButton">Login</span>
               </button>
             </div>
@@ -1078,10 +1080,12 @@
             <div>
               <label class="block text-sm font-medium settings-modal-label mb-1 text-center"
                 data-lang-key="gender">Gender</label>
-              <select id="gender" class="select select-bordered settings-modal-select w-3/4 mx-auto text-center">
-                <option value="male" data-lang-key="male">Male</option>
-                <option value="female" data-lang-key="female">Female</option>
-              </select>
+              <div class="w-3/4 mx-auto">
+                <select id="gender" class="select select-bordered settings-modal-select w-full text-center">
+                  <option value="male" data-lang-key="male">Male</option>
+                  <option value="female" data-lang-key="female">Female</option>
+                </select>
+              </div>
             </div>
             <div>
               <label for="age" class="block text-sm font-medium settings-modal-label mb-1 text-center"
