@@ -1666,6 +1666,12 @@
         btn.classList.toggle('hover:bg-gray-100', !isActive);
       });
 
+      // For dashboard radio buttons
+      const radioForLang = document.querySelector(`.lang-radio[value="${lang}"]`);
+      if (radioForLang) {
+        radioForLang.checked = true;
+      }
+
       const translation = translations[lang];
       document.querySelectorAll('[data-lang-key]').forEach(element => {
         const key = element.getAttribute('data-lang-key');
@@ -3262,6 +3268,13 @@
       // --- General Listeners ---
       window.addEventListener('scroll', () => { if (appHeader) appHeader.classList.toggle('shadow-md', window.scrollY > 10); });
       document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+
+      // For dashboard radio buttons
+      document.querySelectorAll('.lang-radio').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          if (e.target.checked) setLanguage(e.target.value);
+        });
+      });
 
       const infoIcon = document.getElementById('info-tooltip-icon');
       if (infoIcon) {
