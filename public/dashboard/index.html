@@ -564,15 +564,12 @@
         <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
             <div class="flex justify-end mb-4">
                 <div class="flex items-center border border-gray-200 rounded-md">
-                    <!-- data-lang属性を追加 -->
                     <button data-lang="en" class="lang-btn bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-l-md">EN</button>
                     <button data-lang="zh" class="lang-btn text-gray-500 text-xs font-bold py-1 px-3 rounded-r-md hover:bg-gray-100">中</button>
                 </div>
             </div>
-            <!-- idとdata-lang-keyを追加 -->
             <h1 id="auth-title" data-lang-key="loginTitle" class="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
             <p id="auth-error" class="text-red-500 text-center mb-4"></p>
-            <!-- idを追加 -->
             <form id="auth-form">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1" for="email" data-lang-key="emailLabel">Email</label>
@@ -583,14 +580,11 @@
                     <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type="password" required>
                 </div>
                 <div class="text-right mb-6">
-                    <!-- idとdata-lang-keyを追加 -->
                     <a id="forgot-password-link" class="text-sm text-blue-600 hover:underline" href="#" data-lang-key="forgotPassword">Forgot Password?</a>
                 </div>
-                <!-- idとdata-lang-keyを追加 -->
                 <button id="auth-submit-btn" class="w-full bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors" type="submit" data-lang-key="loginButton">Login</button>
             </form>
             <p class="text-center text-sm text-gray-600 mt-4">
-                <!-- 翻訳キーを分割 -->
                 <span data-lang-key="authTogglePrompt">Need an account?</span>
                 <a id="auth-toggle-link" class="text-blue-600 font-semibold hover:underline" href="#" data-lang-key="authToggleAction">Sign Up</a>
             </p>
@@ -599,7 +593,6 @@
                 <span class="mx-4 text-sm text-gray-400" data-lang-key="or">OR</span>
                 <hr class="flex-grow border-gray-300"/>
             </div>
-            <!-- idとdata-lang-keyを追加 -->
             <button id="google-signin-btn" class="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition-colors mb-4">
                 <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
@@ -609,7 +602,6 @@
                 </svg>
                 <span data-lang-key="googleSignIn">Sign in with Google</span>
             </button>
-            <!-- idとdata-lang-keyを追加 -->
             <button id="guest-mode-btn" class="w-full bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors" data-lang-key="guestButton">
                 Continue as Guest
             </button>
@@ -1764,9 +1756,9 @@
         alertMessage.textContent = message;
 
         // Show only OK button for alerts
-        okBtn.classList.remove('hidden');
-        confirmBtn.classList.add('hidden');
-        cancelBtn.classList.add('hidden');
+        okBtn.style.display = 'inline-flex';
+        confirmBtn.style.display = 'none';
+        cancelBtn.style.display = 'none';
 
         // Clean up any existing event listeners
         const newOkBtn = okBtn.cloneNode(true);
@@ -1808,9 +1800,9 @@
         alertMessage.textContent = message;
 
         // Show confirm and cancel buttons, hide OK button
-        okBtn.classList.add('hidden');
-        confirmBtn.classList.remove('hidden');
-        cancelBtn.classList.remove('hidden');
+        okBtn.style.display = 'none';
+        confirmBtn.style.display = 'inline-flex';
+        cancelBtn.style.display = 'inline-flex';
 
         // Clean up any existing event listeners by cloning nodes
         const newConfirmBtn = confirmBtn.cloneNode(true);
