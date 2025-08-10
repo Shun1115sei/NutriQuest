@@ -22,10 +22,6 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <style>
-    html {
-      overflow-y: scroll;
-    }
-
     body {
       font-family: 'Poppins', sans-serif;
     }
@@ -38,40 +34,11 @@
       font-family: 'Inter', sans-serif;
     }
 
-    .main-container {
-      padding: 1rem;
-      transition: filter 0.3s;
-    }
-
-    @media (min-width: 640px) {
-      .main-container {
-        padding: 2rem;
-      }
-    }
-
-    #auth-container,
-    #app-container {
-      transition: opacity 0.5s, visibility 0.5s;
-    }
-
     .filter-btn.active,
     .meal-type-btn.active {
       background-color: #374151;
       color: white;
       border-color: #374151;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
     }
 
     .favourite-star {
@@ -201,36 +168,6 @@
       100% {
         stroke-dashoffset: -190;
       }
-    }
-
-    .scanner-container {
-      position: relative;
-      width: 100%;
-      border-radius: 0.5rem;
-      overflow: hidden;
-    }
-
-    #html5-qrcode-barcode {
-      border-radius: 0.5rem;
-    }
-
-    #splash-screen {
-      transition: opacity 0.5s ease-out;
-      overflow: hidden;
-    }
-
-    #splash-title-container {
-      position: relative;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #splash-title {
-      display: flex;
-      position: relative;
-      z-index: 10;
     }
 
     #splash-heart {
@@ -377,6 +314,8 @@
     }
 
     .custom-titlebar {
+      width: env(titlebar-area-width, 100%);
+      left: env(titlebar-area-x, 0px);
       -webkit-app-region: drag;
       app-region: drag;
     }
@@ -385,140 +324,6 @@
     .custom-titlebar input {
       -webkit-app-region: no-drag;
       app-region: no-drag;
-    }
-
-    /* Custom Settings Modal Classes - NO DaisyUI modifications */
-    .settings-modal-box {
-      background-color: #ffffff;
-      color: #1f2937;
-    }
-
-    .settings-modal-box * {
-      color: inherit;
-    }
-
-    .settings-modal-label {
-      color: #374151;
-      font-weight: 500;
-    }
-
-    .settings-modal-btn-base {
-      border: 1px solid;
-    }
-
-    .settings-modal-btn-primary {
-      background-color: #2563eb;
-      color: #ffffff;
-      border-color: #2563eb;
-    }
-
-    .settings-modal-btn-primary:hover {
-      background-color: #1d4ed8;
-      border-color: #1d4ed8;
-    }
-
-    .settings-modal-btn-neutral {
-      background-color: #4b5563;
-      color: #ffffff;
-      border-color: #4b5563;
-    }
-
-    .settings-modal-btn-neutral:hover {
-      background-color: #374151;
-      border-color: #374151;
-    }
-
-    .settings-modal-btn-error {
-      background-color: #dc2626;
-      color: #ffffff;
-      border-color: #dc2626;
-    }
-
-    .settings-modal-btn-error:hover {
-      background-color: #b91c1c;
-      border-color: #b91c1c;
-    }
-
-    .settings-modal-btn-ghost {
-      background-color: transparent;
-      color: #374151;
-      border-color: transparent;
-    }
-
-    .settings-modal-btn-ghost:hover {
-      background-color: #f3f4f6;
-    }
-
-    .settings-modal-input,
-    .settings-modal-select {
-      background-color: #ffffff;
-      color: #1f2937;
-      border-color: #d1d5db;
-      border-width: 1px;
-      border-style: solid;
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .settings-modal-input:focus,
-    .settings-modal-select:focus {
-      border-color: #3b82f6;
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-
-    .settings-modal-input::placeholder {
-      color: #9ca3af;
-    }
-
-    .settings-modal-select option {
-      background-color: #ffffff;
-      color: #1f2937;
-    }
-
-    .settings-modal-heading-2 {
-      color: #1f2937;
-    }
-
-    .settings-modal-heading-3 {
-      color: #dc2626;
-    }
-
-    .settings-modal-text {
-      color: #4b5563;
-    }
-
-    .settings-modal-divider {
-      color: #6b7280;
-    }
-
-    .settings-modal-divider::before,
-    .settings-modal-divider::after {
-      border-color: #d1d5db;
-    }
-
-    .settings-modal-form-control {
-      margin-bottom: 1rem;
-    }
-
-    .settings-modal-textarea {
-      background-color: #ffffff;
-      color: #1f2937;
-      border-color: #d1d5db;
-      border-width: 1px;
-      border-style: solid;
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .settings-modal-textarea:focus {
-      border-color: #3b82f6;
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-
-    .settings-modal-grid>div {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
     }
   </style>
 </head>
@@ -534,9 +339,10 @@
   <!-- Spacer to prevent overlap, optional -->
 
   <!-- Splash Screen -->
-  <div id="splash-screen" class="fixed inset-0 bg-gray-100 flex flex-col items-center justify-center z-50">
-    <div id="splash-title-container">
-      <h1 id="splash-title" class="text-5xl font-bold text-gray-700">
+  <div id="splash-screen"
+    class="transition-opacity duration-500 ease-out overflow-hidden fixed inset-0 bg-gray-100 flex flex-col items-center justify-center z-50">
+    <div id="splash-title-container" class="relative h-[80px] flex items-center justify-center">
+      <h1 id="splash-title" class="flex relative z-10 text-5xl font-bold text-gray-700">
         <span id="splash-nutri">Nutri</span><span id="splash-quest">Quest</span>
       </h1>
       <svg id="splash-heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -639,7 +445,7 @@
       <div id="app-container" class="hidden h-screen flex flex-col">
         <!-- Header -->
         <!-- DaisyUI Navbar: NutriQuest App Header -->
-        <header id="app-header" class="navbar bg-base-100 shadow sticky top-0 z-50">
+        <header id="app-header" class="custom-titlebar navbar bg-base-100 shadow sticky top-0 z-50">
 
           <!-- Left: Logo and Date -->
           <div class="flex items-center gap-2 sm:gap-3">
@@ -689,7 +495,7 @@
               </ul>
             </div>
             <!-- Guest Login Button -->
-            <div id="guest-header" class="flex-none" style="display: none;">
+            <div id="guest-header" class="flex-none hidden">
               <button id="go-to-login-btn"
                 class="btn btn-primary btn-sm transform-gpu transition-transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-focus">
                 <span data-lang-key="loginButton">Login</span>
@@ -716,7 +522,7 @@
 
         </header>
 
-        <div class="main-container">
+        <div class="p-4 sm:p-8">
           <div class="w-full max-w-6xl mx-auto pt-16 sm:pt-24">
 
             <img src="/icons/NutriQuest_Logo.png" alt="NutriQuest Logo" class="mx-auto h-16 md:h-20 w-auto">
@@ -993,12 +799,12 @@
           class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-gray-700 hover:bg-gray-200">✕</button>
       </form>
       <h3 class="text-2xl font-bold mb-4 text-center" data-lang-key="scanBarcodeTitle">Scan a Barcode</h3>
-      <div class="scanner-container">
-        <div id="html5-qrcode-barcode" style="width: 100%; border-radius: 0.5rem;"></div>
-      </div>
+      <div id="html5-qrcode-barcode" class="w-full rounded-lg"></div>
       <p id="barcode-result" class="mt-2 text-gray-600 text-center"></p>
       <div class="modal-action">
-        <button id="close-barcode-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+        <form method="dialog">
+          <button class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+        </form>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">
@@ -1077,100 +883,98 @@
 
   <!-- Settings Modal (DaisyUI) -->
   <dialog id="settings-modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box settings-modal-box max-w-lg w-full max-h-[90vh] flex flex-col p-0">
-
+    <div class="modal-box flex flex-col">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle settings-modal-btn-ghost absolute right-2 top-2">✕</button>
+      </form>
       <div class="p-6 pb-4 border-b border-gray-200">
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle settings-modal-btn-ghost absolute right-2 top-2">✕</button>
-        </form>
-        <h2 class="text-2xl font-bold text-center settings-modal-heading-2" data-lang-key="setGoalsTitle">Set Your Daily
+        <h2 class="text-2xl font-bold text-center" data-lang-key="setGoalsTitle">Set Your Daily
           Goals
         </h2>
       </div>
 
       <div class="overflow-y-auto p-6">
-        <p class="text-center settings-modal-text mb-6" data-lang-key="settingsDescription">Let us calculate your needs,
-          or
-          set your own manual goal.</p>
+        <p data-lang-key="settingsDescription">
+          Let us calculate your needs, or set your own manual goal.
+        </p>
+        <form id="diagnosis-form" class="mt-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="gender">Gender</legend>
+              <select id="gender" class="select">
+                <option value="male" data-lang-key="male">Male</option>
+                <option value="female" data-lang-key="female">Female</option>
+              </select>
+            </fieldset>
 
-        <form id="diagnosis-form">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 settings-modal-grid">
-            <div>
-              <label class="block text-sm font-medium settings-modal-label mb-1 text-center"
-                data-lang-key="gender">Gender</label>
-              <div class="w-3/4 mx-auto">
-                <select id="gender" class="select select-bordered settings-modal-select w-full text-center">
-                  <option value="male" data-lang-key="male">Male</option>
-                  <option value="female" data-lang-key="female">Female</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label for="age" class="block text-sm font-medium settings-modal-label mb-1 text-center"
-                data-lang-key="age">Age</label>
-              <div class="relative stepper-container w-3/4 mx-auto">
-                <input type="number" id="age" value="30"
-                  class="input input-bordered settings-modal-input w-full text-center pr-8" />
-              </div>
-            </div>
-            <div>
-              <label for="height" class="block text-sm font-medium settings-modal-label mb-1 text-center"
-                data-lang-key="height">Height (cm)</label>
-              <div class="relative stepper-container w-3/4 mx-auto">
-                <input type="number" id="height" value="170"
-                  class="input input-bordered settings-modal-input w-full text-center pr-8" />
-              </div>
-            </div>
-            <div>
-              <label for="weight" class="block text-sm font-medium settings-modal-label mb-1 text-center"
-                data-lang-key="weight">Weight (kg)</label>
-              <div class="relative stepper-container w-3/4 mx-auto">
-                <input type="number" id="weight" value="70"
-                  class="input input-bordered settings-modal-input w-full text-center pr-8" />
-              </div>
-            </div>
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="age">Age</legend>
+              <input type="number" id="age" value="30" class="input" />
+            </fieldset>
+
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="height">Height (cm)</legend>
+              <input type="number" id="height" value="170" class="input" />
+            </fieldset>
+
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="weight">Weight (kg)</legend>
+              <input type="number" id="weight" value="70" class="input" />
+            </fieldset>
           </div>
-          <div class="mt-4">
-            <label for="activity-level" class="block text-sm font-medium settings-modal-label mb-1"
-              data-lang-key="activityLevel">Activity Level</label>
-            <select id="activity-level" class="select select-bordered settings-modal-select w-full text-center">
-              <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no exercise)
+
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend" data-lang-key="activityLevel">Activity Level</legend>
+            <select id="activity-level" class="select">
+              <option value="1.2" data-lang-key="activityLevel1">
+                Sedentary (mostly sitting, little to no exercise)
               </option>
-              <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light exercise/walks 1-2
-                times a week)</option>
-              <option value="1.55" data-lang-key="activityLevel3">Moderately Active (regular exercise 3-5 times a week)
+              <option value="1.375" data-lang-key="activityLevel2" selected>
+                Lightly Active (light exercise/walks 1-2 times a week)
               </option>
-              <option value="1.725" data-lang-key="activityLevel4">Very Active (vigorous exercise 6-7 times a week)
+              <option value="1.55" data-lang-key="activityLevel3">
+                Moderately Active (regular exercise 3-5 times a week)
               </option>
-              <option value="1.9" data-lang-key="activityLevel5">Extremely Active (strenuous exercise daily or physical
-                job)</option>
+              <option value="1.725" data-lang-key="activityLevel4">
+                Very Active (vigorous exercise 6-7 times a week)
+              </option>
+              <option value="1.9" data-lang-key="activityLevel5">
+                Extremely Active (strenuous exercise daily or physical job)
+              </option>
             </select>
-          </div>
-          <button type="submit" class="btn settings-modal-btn-base settings-modal-btn-primary w-full mt-6"
-            data-lang-key="calculateAndSave">Calculate &amp; Save</button>
+          </fieldset>
+
+          <button type="submit" class="btn btn-primary w-full mt-6" data-lang-key="calculateAndSave">
+            Calculate &amp; Save
+          </button>
         </form>
 
-        <div class="divider settings-modal-divider" data-lang-key="or">OR</div>
+        <div class="divider" data-lang-key="or">OR</div>
         <form id="manual-goal-form">
-          <label for="manual-calories" class="block text-sm font-medium settings-modal-label"
-            data-lang-key="setManualGoal">Set Manual Calorie Goal</label>
-          <input type="number" id="manual-calories" value="2000"
-            class="input input-bordered settings-modal-input w-full mt-1 text-center">
-          <button type="submit" class="btn settings-modal-btn-base settings-modal-btn-neutral w-full mt-4"
-            data-lang-key="saveManualGoal">Save Manual Goal</button>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend" data-lang-key="setManualGoal">Set Manual Calorie Goal</legend>
+            <input type="number" id="manual-calories" value="2000" class="input">
+            <button type="submit" class="btn btn-soft btn-neutral w-full mt-4" data-lang-key="saveManualGoal">
+              Save Manual Goal
+            </button>
+          </fieldset>
         </form>
 
-        <div class="my-6 border-t pt-6">
-          <h3 class="text-lg font-semibold settings-modal-heading-3" data-lang-key="dangerZone">Danger Zone</h3>
-          <p class="text-sm settings-modal-text mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone.
-            Please be
-            certain.</p>
-          <button id="delete-all-data-btn" class="btn settings-modal-btn-base settings-modal-btn-error w-full mt-4"
-            data-lang-key="deleteAllData">Delete All Data</button>
+        <div class="divider"></div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-error" data-lang-key="dangerZone">Danger Zone</h3>
+          <p class="text-sm mt-1" data-lang-key="dangerZoneDesc">
+            This action cannot be undone. Please be certain.
+          </p>
+          <button id="delete-all-data-btn" class="btn btn-error w-full mt-4" data-lang-key="deleteAllData">
+            Delete All Data
+          </button>
         </div>
-        <div class="mt-6 border-t pt-4 text-center">
+        <div class="divider"></div>
+        <div class="text-center">
           <form method="dialog">
-            <button type="button" class="btn settings-modal-btn-ghost" data-lang-key="closeButton">Close</button>
+            <button class="btn w-full btn-ghost" data-lang-key="closeButton">Close</button>
           </form>
         </div>
       </div>
@@ -1250,7 +1054,8 @@
   </dialog>
 
   <!-- Loading Overlay -->
-  <div id="loading-overlay" hidden class="modal-overlay">
+  <div id="loading-overlay" hidden
+    class="fixed inset-0 bg-black/40 backdrop-blur flex items-center justify-center z-[1000]">
     <div class="flex flex-col items-center justify-center text-white">
       <div class="relative w-24 h-24 flex items-center justify-center">
         <div class="loader"></div>
@@ -1294,8 +1099,10 @@
   <!--quantity spec modal-->
   <!-- Replace the old div#quantity-spec-modal with the following -->
   <dialog id="quantity-spec-modal" class="modal modal-bottom sm:modal-middle">
-    <form method="dialog" class="modal-box text-left">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
       <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="specifyQuantityTitle">
         Specify Quantity
       </h2>
@@ -1332,23 +1139,23 @@
           I’m not sure
         </button>
         <div class="flex gap-2">
-          <button type="button" class="btn btn-ghost" data-lang-key="cancelButton">
-            Cancel
-          </button>
+          <form method="dialog">
+            <button class="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
+          </form>
           <button type="button" id="confirm-quantity-spec-btn" class="btn btn-primary" data-lang-key="confirmButton">
             Confirm
           </button>
         </div>
       </div>
-    </form>
+    </div>
   </dialog>
 
 
   <!--hidden file input for food image upload-->
-  <input type="file" id="image-upload-input" accept="image/*" style="display: none;" />
+  <input type="file" id="image-upload-input" accept="image/*" class="hidden" />
 
   <!--hidden file input for food image upload-->
-  <input type="file" id="new-cam-module" accept="image/*" capture="environment" style="display: none;" />
+  <input type="file" id="new-cam-module" accept="image/*" capture="environment" class="hidden" />
 
   <!--application logic-->
   <script>
@@ -1497,7 +1304,6 @@
     const imageUploadInput = document.getElementById('image-upload-input');
     const uploadImageBtn = document.getElementById('upload-image-btn');
     const barcodeModal = document.getElementById('barcode-modal');
-    const closeBarcodeBtn = document.getElementById('close-barcode-btn');
     const servingModal = document.getElementById('serving-modal');
     const servingForm = document.getElementById('serving-form');
     const servingProductName = document.getElementById('serving-product-name');
@@ -3392,18 +3198,6 @@
       if (imageUploadInput) imageUploadInput.addEventListener('change', handleImageUpload);
       if (newCamModule) newCamModule.addEventListener('change', handleImageUpload);
 
-      if (closeBarcodeBtn) {
-        closeBarcodeBtn.addEventListener('click', () => {
-          if (html5QrCodeInstance && html5QrCodeInstance.isScanning) {
-            html5QrCodeInstance.stop().then(() => {
-              if (html5QrCodeInstance) html5QrCodeInstance.clear();
-              html5QrCodeInstance = null;
-            });
-          }
-          const barcodeModal = document.getElementById('barcode-modal');
-          if (barcodeModal) barcodeModal.close();
-        });
-      }
       if (servingForm) {
         servingForm.addEventListener('submit', (e) => {
           e.preventDefault();
