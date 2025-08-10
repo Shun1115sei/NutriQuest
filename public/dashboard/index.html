@@ -18,7 +18,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
     html {
       overflow-y: scroll;
@@ -27,6 +29,7 @@
     body {
       font-family: 'Poppins', sans-serif;
     }
+
     #app-container {
       font-family: 'Inter', sans-serif;
     }
@@ -522,8 +525,7 @@
 
 <body>
   <!-- PWA Install Prompt Button (hidden by default) -->
-  <div id="install-banner"
-    class="w-full bg-transparent p-4 pl-2 text-lg focus:outline-none text-center hidden"
+  <div id="install-banner" class="w-full bg-transparent p-4 pl-2 text-lg focus:outline-none text-center hidden"
     data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken">
     <span class="text-gray-900 font-semibold mr-4">Install NutriQuest on your device for best experience!</span>
     <button id="install-btn"
@@ -562,49 +564,73 @@
       <!-- Authentication Container -->
       <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
         <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-            <div class="flex justify-end mb-4">
-                <div class="flex items-center border border-gray-200 rounded-md">
-                    <button data-lang="en" class="lang-btn bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-l-md">EN</button>
-                    <button data-lang="zh" class="lang-btn text-gray-500 text-xs font-bold py-1 px-3 rounded-r-md hover:bg-gray-100">中</button>
-                </div>
+          <div class="flex justify-end mb-4">
+            <div class="flex items-center border border-gray-200 rounded-md">
+              <button data-lang="en"
+                class="lang-btn bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-l-md">EN</button>
+              <button data-lang="zh"
+                class="lang-btn text-gray-500 text-xs font-bold py-1 px-3 rounded-r-md hover:bg-gray-100">中</button>
             </div>
-            <h1 id="auth-title" data-lang-key="loginTitle" class="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
-            <p id="auth-error" class="text-red-500 text-center mb-4"></p>
-            <form id="auth-form">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="email" data-lang-key="emailLabel">Email</label>
-                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" type="email" required>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="password" data-lang-key="passwordLabel">Password</label>
-                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type="password" required>
-                </div>
-                <div class="text-right mb-6">
-                    <a id="forgot-password-link" class="text-sm text-blue-600 hover:underline" href="#" data-lang-key="forgotPassword">Forgot Password?</a>
-                </div>
-                <button id="auth-submit-btn" class="w-full bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors" type="submit" data-lang-key="loginButton">Login</button>
-            </form>
-            <p class="text-center text-sm text-gray-600 mt-4">
-                <span data-lang-key="authTogglePrompt">Need an account?</span>
-                <a id="auth-toggle-link" class="text-blue-600 font-semibold hover:underline" href="#" data-lang-key="authToggleAction">Sign Up</a>
-            </p>
-            <div class="flex items-center my-6">
-                <hr class="flex-grow border-gray-300"/>
-                <span class="mx-4 text-sm text-gray-400" data-lang-key="or">OR</span>
-                <hr class="flex-grow border-gray-300"/>
+          </div>
+          <h1 id="auth-title" data-lang-key="loginTitle" class="text-3xl font-bold text-center text-gray-800 mb-6">Login
+          </h1>
+          <p id="auth-error" class="text-red-500 text-center mb-4"></p>
+          <form id="auth-form">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="email"
+                data-lang-key="emailLabel">Email</label>
+              <input
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                id="email" type="email" required>
             </div>
-            <button id="google-signin-btn" class="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition-colors mb-4">
-                <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
-                </svg>
-                <span data-lang-key="googleSignIn">Sign in with Google</span>
-            </button>
-            <button id="guest-mode-btn" class="w-full bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors" data-lang-key="guestButton">
-                Continue as Guest
-            </button>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="password"
+                data-lang-key="passwordLabel">Password</label>
+              <input
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                id="password" type="password" required>
+            </div>
+            <div class="text-right mb-6">
+              <a id="forgot-password-link" class="text-sm text-blue-600 hover:underline" href="#"
+                data-lang-key="forgotPassword">Forgot Password?</a>
+            </div>
+            <button id="auth-submit-btn"
+              class="w-full bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              type="submit" data-lang-key="loginButton">Login</button>
+          </form>
+          <p class="text-center text-sm text-gray-600 mt-4">
+            <span data-lang-key="authTogglePrompt">Need an account?</span>
+            <a id="auth-toggle-link" class="text-blue-600 font-semibold hover:underline" href="#"
+              data-lang-key="authToggleAction">Sign Up</a>
+          </p>
+          <div class="flex items-center my-6">
+            <hr class="flex-grow border-gray-300" />
+            <span class="mx-4 text-sm text-gray-400" data-lang-key="or">OR</span>
+            <hr class="flex-grow border-gray-300" />
+          </div>
+          <button id="google-signin-btn"
+            class="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition-colors mb-4">
+            <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                fill="#4285F4"></path>
+              <path
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                fill="#34A853"></path>
+              <path
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                fill="#FBBC05"></path>
+              <path
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                fill="#EA4335"></path>
+            </svg>
+            <span data-lang-key="googleSignIn">Sign in with Google</span>
+          </button>
+          <button id="guest-mode-btn"
+            class="w-full bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+            data-lang-key="guestButton">
+            Continue as Guest
+          </button>
         </div>
       </div>
 
@@ -664,7 +690,8 @@
             </div>
             <!-- Guest Login Button -->
             <div id="guest-header" class="flex-none" style="display: none;">
-              <button id="go-to-login-btn" class="btn btn-primary btn-sm transform-gpu transition-transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-focus">
+              <button id="go-to-login-btn"
+                class="btn btn-primary btn-sm transform-gpu transition-transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-focus">
                 <span data-lang-key="loginButton">Login</span>
               </button>
             </div>
@@ -948,7 +975,7 @@
           class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg"
           data-lang-key="uploadFromLibrary">Upload from Library</button>
         <form method="dialog">
-          <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
+          <button class="mt-4 w-full text-center text-gray-500 hover:underline"
             data-lang-key="closeButton">Close</button>
         </form>
       </div>
@@ -994,8 +1021,7 @@
         <input type="number" id="serving-size" value="100" class="input input-bordered w-full">
         <div class="modal-action">
           <form method="dialog">
-            <button type="button" id="cancel-serving-btn" class="btn btn-ghost"
-              data-lang-key="cancelButton">Cancel</button>
+            <button type="button" class="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
           </form>
           <button type="submit" form="serving-form" class="btn btn-primary" data-lang-key="addMealButton">Add
             Meal</button>
@@ -1020,7 +1046,7 @@
       </div>
       <div class="modal-action">
         <form method="dialog">
-          <button id="close-favourites-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+          <button class="btn btn-ghost" data-lang-key="closeButton">Close</button>
         </form>
       </div>
     </div>
@@ -1143,8 +1169,9 @@
             data-lang-key="deleteAllData">Delete All Data</button>
         </div>
         <div class="mt-6 border-t pt-4 text-center">
-          <button type="button" id="settings-modal-close-bottom-btn" class="btn settings-modal-btn-ghost"
-            data-lang-key="closeButton">Close</button>
+          <form method="dialog">
+            <button type="button" class="btn settings-modal-btn-ghost" data-lang-key="closeButton">Close</button>
+          </form>
         </div>
       </div>
     </div>
@@ -1185,7 +1212,7 @@
       </div>
       <div class="modal-action">
         <form method="dialog">
-          <button id="close-calendar-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+          <button class="btn btn-ghost" data-lang-key="closeButton">Close</button>
         </form>
       </div>
     </div>
@@ -1210,8 +1237,7 @@
         <input type="text" id="quantity-input" class="input input-bordered w-full">
         <div class="modal-action">
           <form method="dialog">
-            <button type="button" id="cancel-quantity-btn" class="btn btn-ghost"
-              data-lang-key="cancelButton">Cancel</button>
+            <button type="button" class="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
           </form>
           <button type="submit" form="quantity-form" class="btn btn-primary"
             data-lang-key="confirmButton">Confirm</button>
@@ -1306,7 +1332,7 @@
           I’m not sure
         </button>
         <div class="flex gap-2">
-          <button type="button" id="cancel-quantity-spec-btn" class="btn btn-ghost" data-lang-key="cancelButton">
+          <button type="button" class="btn btn-ghost" data-lang-key="cancelButton">
             Cancel
           </button>
           <button type="button" id="confirm-quantity-spec-btn" class="btn btn-primary" data-lang-key="confirmButton">
@@ -1461,14 +1487,11 @@
     const cameraChoiceModal = document.getElementById('camera-choice-modal');
     const scanMealBtn = document.getElementById('scan-meal-btn');
     const scanBarcodeBtn = document.getElementById('scan-barcode-btn');
-    const closeChoiceBtn = document.getElementById('close-choice-btn');
     const toggleDetailsBtn = document.getElementById('toggle-details-btn');
     const detailedDashboardView = document.getElementById('detailed-dashboard-view');
     const settingsBtn = document.getElementById('settings-btn');
     const settingsModal = document.getElementById('settings-modal');
-    const closeSettingsBtn = document.getElementById('close-settings-btn');
     const diagnosisForm = document.getElementById('diagnosis-form');
-    const settingsModalCloseBottomBtn = document.getElementById('settings-modal-close-bottom-btn');
     const manualGoalForm = document.getElementById('manual-goal-form');
     const deleteAllDataBtn = document.getElementById('delete-all-data-btn');
     const imageUploadInput = document.getElementById('image-upload-input');
@@ -1477,11 +1500,9 @@
     const closeBarcodeBtn = document.getElementById('close-barcode-btn');
     const servingModal = document.getElementById('serving-modal');
     const servingForm = document.getElementById('serving-form');
-    const cancelServingBtn = document.getElementById('cancel-serving-btn');
     const servingProductName = document.getElementById('serving-product-name');
     const favouritesBtn = document.getElementById('favourites-btn');
     const favouritesModal = document.getElementById('favourites-modal');
-    const closeFavouritesBtn = document.getElementById('close-favourites-btn');
     const favouritesList = document.getElementById('favourites-list');
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
@@ -1512,13 +1533,11 @@
     const calendarWeekdays = document.getElementById('calendar-weekdays');
     const calendarPrevMonth = document.getElementById('calendar-prev-month');
     const calendarNextMonth = document.getElementById('calendar-next-month');
-    const closeCalendarBtn = document.getElementById('close-calendar-btn');
     const calendarMonthGrid = document.getElementById('calendar-month-grid');
     const quantityModal = document.getElementById('quantity-modal');
     const quantityForm = document.getElementById('quantity-form');
     const identifiedFoodNameEl = document.getElementById('identified-food-name');
     const quantityInput = document.getElementById('quantity-input');
-    const cancelQuantityBtn = document.getElementById('cancel-quantity-btn');
     const offlineModal = document.getElementById('offline-modal');
     const offlineCloseBtn = document.getElementById('offline-close-btn');
     const quantitySpecModal = document.getElementById('quantity-spec-modal');
@@ -1526,9 +1545,10 @@
     const quantitySlider = document.getElementById('quantity-slider');
     const sliderLabel = document.getElementById('slider-label');
     const quantitySpecText = document.getElementById('quantity-spec-text');
-    const cancelQuantitySpecBtn = document.getElementById('cancel-quantity-spec-btn');
     const confirmQuantitySpecBtn = document.getElementById('confirm-quantity-spec-btn');
     const unsureQuantitySpecBtn = document.getElementById('unsure-quantity-spec-btn');
+    const newCamModule = document.getElementById('new-cam-module');
+
     // Mobile Header Buttons
     const accountMenuBtnMobile = document.getElementById('account-menu-btn-mobile');
     const goToLoginBtnMobile = document.getElementById('go-to-login-btn-mobile');
@@ -1673,15 +1693,15 @@
         const key = element.getAttribute('data-lang-key');
         if (key === 'authToggle') {
         } else if (translation[key]) {
-            element.textContent = translation[key];
+          element.textContent = translation[key];
         }
       });
 
       const authTogglePromptEl = document.querySelector('[data-lang-key="authTogglePrompt"]');
       const authToggleActionEl = document.querySelector('[data-lang-key="authToggleAction"]');
-      if(authTogglePromptEl) authTogglePromptEl.textContent = translation.authTogglePrompt;
-      if(authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction;
-      
+      if (authTogglePromptEl) authTogglePromptEl.textContent = translation.authTogglePrompt;
+      if (authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction;
+
       document.querySelectorAll('[data-lang-key-placeholder]').forEach(element => {
         const key = element.getAttribute('data-lang-key-placeholder');
         if (translation[key]) element.placeholder = translation[key];
@@ -1694,11 +1714,11 @@
       if (isLoginMode) {
         authTitle.textContent = translation.loginTitle;
         authSubmitBtn.textContent = translation.loginButton;
-        if(authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction; // Sign Up
+        if (authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction; // Sign Up
       } else {
         authTitle.textContent = translation.signUpTitle;
         authSubmitBtn.textContent = translation.signUpTitle;
-        if(authToggleActionEl) authToggleActionEl.textContent = translation.loginButton; // Login
+        if (authToggleActionEl) authToggleActionEl.textContent = translation.loginButton; // Login
       }
 
       if (!appContainer.classList.contains('hidden')) updateDashboard(activePeriod);
@@ -3358,27 +3378,25 @@
       if (voiceInputBtn) voiceInputBtn.addEventListener('click', startVoiceRecognition);
 
       // --- Modals & Other Listeners ---
-      if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.close());
       if (scanMealBtn) scanMealBtn.addEventListener('click', () => {
         cameraChoiceModal.close();
-        // Use system camera picker instead of custom camera modal
-        const newCamModule = document.getElementById('new-cam-module');
         if (newCamModule) newCamModule.click();
       });
-      if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.close(); startBarcodeScanner(); });
+
+      if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => {
+        cameraChoiceModal.close();
+        startBarcodeScanner();
+      });
+
       if (uploadImageBtn) {
         uploadImageBtn.addEventListener('click', () => {
           cameraChoiceModal.close();
           if (imageUploadInput) imageUploadInput.click();
         });
       }
-      if (imageUploadInput) imageUploadInput.addEventListener('change', handleImageUpload);
-      // Add event listener for system camera capture
-      const newCamModule = document.getElementById('new-cam-module');
-      if (newCamModule) newCamModule.addEventListener('change', handleImageUpload);
-      // Update the camera modal event listeners
 
-      // The modal backdrop will automatically close when clicked due to the form method="dialog"
+      if (imageUploadInput) imageUploadInput.addEventListener('change', handleImageUpload);
+      if (newCamModule) newCamModule.addEventListener('change', handleImageUpload);
 
       if (closeBarcodeBtn) {
         closeBarcodeBtn.addEventListener('click', () => {
@@ -3410,7 +3428,6 @@
           }
         });
       }
-      if (cancelServingBtn) cancelServingBtn.addEventListener('click', () => servingModal.close()); // CHANGED: Use close()
       if (quantityForm) {
         quantityForm.addEventListener('submit', (e) => {
           e.preventDefault();
@@ -3422,15 +3439,8 @@
           }
         });
       }
-      if (cancelQuantityBtn) cancelQuantityBtn.addEventListener('click', () => quantityModal.close());
-      if (closeFavouritesBtn) closeFavouritesBtn.addEventListener('click', () => favouritesModal.close());
-      if (closeCalendarBtn) closeCalendarBtn.addEventListener('click', () => calendarModal.close());
-      if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => settingsModal.close());
 
       // ★★★★★ ここが修正された重要な箇所です ★★★★★
-      if (settingsModalCloseBottomBtn) {
-        settingsModalCloseBottomBtn.addEventListener('click', () => settingsModal.close());
-      }
 
       if (deleteAllDataBtn) deleteAllDataBtn.addEventListener('click', resetAllData);
 
@@ -3466,7 +3476,6 @@
           quantitySlider.value = 2;
           sliderLabel.textContent = labels[2];
         });
-        cancelQuantitySpecBtn.addEventListener('click', () => quantitySpecModal.close());
         if (unsureQuantitySpecBtn) {
           unsureQuantitySpecBtn.addEventListener('click', () => {
             foodInput.value = foodNameForQuantitySpec;
@@ -3603,11 +3612,6 @@
       const labels = translations[currentLang].sliderLabels;
       quantitySlider.value = 2;
       sliderLabel.textContent = labels[2];
-    });
-
-    // Cancel button closes modal
-    document.getElementById('cancel-quantity-spec-btn').addEventListener('click', () => {
-      quantitySpecModal.close();
     });
 
     // "I’m not sure" sets default and processes
