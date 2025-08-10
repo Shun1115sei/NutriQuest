@@ -1281,7 +1281,7 @@
       </div>
 
       <div class="modal-action justify-center">
-        <button id="voice-cancel-btn" class="btn btn-error">
+        <button class="btn btn-error">
           <span data-lang-key="cancelButton">Cancel</span>
         </button>
       </div>
@@ -3207,15 +3207,9 @@
       listeningModal.showModal();
       recognition.start();
 
-      // Clean up any existing event listeners by cloning the button
-      const voiceCancelBtn = document.getElementById('voice-cancel-btn');
-      const newVoiceCancelBtn = voiceCancelBtn.cloneNode(true);
-      voiceCancelBtn.parentNode.replaceChild(newVoiceCancelBtn, voiceCancelBtn);
-
-      newVoiceCancelBtn.addEventListener('click', () => {
+      listeningModal.addEventListener('close', () => {
         recognition.stop();
-        listeningModal.close();
-      });
+      })
 
       recognition.onresult = async (event) => {
         listeningModal.close();
