@@ -1848,75 +1848,84 @@
       if (!file) return;
 
       // Reset the file input value to allow selecting the same file again.
-      // Doing this immediately is generally safe and better than waiting.
       event.target.value = null;
 
       const MAX_WIDTH = 800;
       const MAX_HEIGHT = 800;
 
-      const image = new Image();
-      const objectUrl = URL.createObjectURL(file);
+      try {
+        // 1. Decode the image using the more memory-efficient createImageBitmap
+        const imageBitmap = await createImageBitmap(file);
 
-      image.onload = async () => {
-        // The image is loaded, now resize it using a canvas.
-        let width = image.width;
-        let height = image.height;
+        // 2. Calculate new dimensions while preserving aspect ratio.
+        let width = imageBitmap.width;
+        let height = imageBitmap.height;
 
         if (width > height) {
           if (width > MAX_WIDTH) {
-            height = height * (MAX_WIDTH / width);
+            height = Math.round(height * (MAX_WIDTH / width));
             width = MAX_WIDTH;
           }
         } else {
           if (height > MAX_HEIGHT) {
-            width = width * (MAX_HEIGHT / height);
+            width = Math.round(width * (MAX_HEIGHT / height));
             height = MAX_HEIGHT;
           }
         }
 
+        // 3. Draw the resized image onto a canvas.
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(image, 0, 0, width, height);
+        ctx.drawImage(imageBitmap, 0, 0, width, height);
 
-        // Get the resized image as a base64 encoded JPEG.
-        const resizedImageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        // 4. Close the ImageBitmap to free up its memory immediately.
+        imageBitmap.close();
 
-        // Release the object URL to free up memory.
-        URL.revokeObjectURL(objectUrl);
-
-        showLoader('analysing');
-        try {
-          const base64String = resizedImageDataUrl.split(',')[1];
-          identifiedFoodName = await identifyFoodFromImage(base64String);
-          hideLoader();
-          if (identifiedFoodName) {
-            identifiedFoodNameEl.textContent = identifiedFoodName;
-            quantityInput.value = '';
-            quantityModal.showModal();
-            quantityInput.focus();
-          } else {
-            throw new Error("Could not identify the food from the uploaded image.");
+        // 5. Get the resized image as a Blob, which is more memory-efficient than a data URL.
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showAlert("Sorry, there was an error processing the image.");
+            return;
           }
-        } catch (error) {
-          hideLoader();
-          console.error("Image upload identification error:", error);
-          const currentLang = localStorage.getItem('language') || 'en';
-          if (error.message === "RATE_LIMIT_EXCEEDED") {
-            showAlert(translations[currentLang].rateLimitError);
-          } else {
-            showAlert("Sorry, we couldn't identify the food in the image.");
-          }
-        }
-      };
 
-      image.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-        showAlert("Sorry, there was an error processing the image.");
-      };
+          // 6. Convert the small blob to a base64 string for the API.
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const resizedImageDataUrl = reader.result;
+            showLoader('analysing');
+            try {
+              const base64String = resizedImageDataUrl.split(',')[1];
+              identifiedFoodName = await identifyFoodFromImage(base64String);
+              hideLoader();
+              if (identifiedFoodName) {
+                identifiedFoodNameEl.textContent = identifiedFoodName;
+                quantityInput.value = '';
+                quantityModal.showModal();
+                quantityInput.focus();
+              } else {
+                throw new Error("Could not identify the food from the uploaded image.");
+              }
+            } catch (error) {
+              hideLoader();
+              console.error("Image upload identification error:", error);
+              const currentLang = localStorage.getItem('language') || 'en';
+              if (error.message === "RATE_LIMIT_EXCEEDED") {
+                showAlert(translations[currentLang].rateLimitError);
+              } else {
+                showAlert("Sorry, we couldn't identify the food in the image.");
+              }
+            }
+          };
+          reader.readAsDataURL(blob);
 
-      image.src = objectUrl;
+        }, 'image/jpeg', 0.8); // Use JPEG format with quality 0.8
+
+      } catch (error) {
+        console.error("Error creating ImageBitmap:", error);
+        showAlert("Sorry, this image format might not be supported or the file is corrupted.");
+      }
     }
     /**
 
