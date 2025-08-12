@@ -1846,10 +1846,15 @@
     async function handleImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-      event.target.value = null; // 同じファイルを連続で選択できるようにするため
 
       const reader = new FileReader();
       reader.onload = async (e) => {
+        // By setting the value to null here, inside the onload event,
+        // we ensure that the file has been read before we clear the input.
+        // This can prevent issues on some mobile browsers.
+        // 同じファイルを連続で選択できるようにするため
+        event.target.value = null;
+
         const imageDataUrl = e.target.result;
         showLoader('analysing');
         try {
