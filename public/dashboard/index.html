@@ -18,15 +18,14 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
-    html {
-      overflow-y: scroll;
-    }
-
     body {
       font-family: 'Poppins', sans-serif;
     }
+
     #app-container {
       font-family: 'Inter', sans-serif;
     }
@@ -35,40 +34,11 @@
       font-family: 'Inter', sans-serif;
     }
 
-    .main-container {
-      padding: 1rem;
-      transition: filter 0.3s;
-    }
-
-    @media (min-width: 640px) {
-      .main-container {
-        padding: 2rem;
-      }
-    }
-
-    #auth-container,
-    #app-container {
-      transition: opacity 0.5s, visibility 0.5s;
-    }
-
     .filter-btn.active,
     .meal-type-btn.active {
       background-color: #374151;
       color: white;
       border-color: #374151;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
     }
 
     .favourite-star {
@@ -198,36 +168,6 @@
       100% {
         stroke-dashoffset: -190;
       }
-    }
-
-    .scanner-container {
-      position: relative;
-      width: 100%;
-      border-radius: 0.5rem;
-      overflow: hidden;
-    }
-
-    #html5-qrcode-barcode {
-      border-radius: 0.5rem;
-    }
-
-    #splash-screen {
-      transition: opacity 0.5s ease-out;
-      overflow: hidden;
-    }
-
-    #splash-title-container {
-      position: relative;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #splash-title {
-      display: flex;
-      position: relative;
-      z-index: 10;
     }
 
     #splash-heart {
@@ -374,6 +314,8 @@
     }
 
     .custom-titlebar {
+      width: env(titlebar-area-width, 100%);
+      left: env(titlebar-area-x, 0px);
       -webkit-app-region: drag;
       app-region: drag;
     }
@@ -383,147 +325,12 @@
       -webkit-app-region: no-drag;
       app-region: no-drag;
     }
-
-    /* Custom Settings Modal Classes - NO DaisyUI modifications */
-    .settings-modal-box {
-      background-color: #ffffff;
-      color: #1f2937;
-    }
-
-    .settings-modal-box * {
-      color: inherit;
-    }
-
-    .settings-modal-label {
-      color: #374151;
-      font-weight: 500;
-    }
-
-    .settings-modal-btn-base {
-      border: 1px solid;
-    }
-
-    .settings-modal-btn-primary {
-      background-color: #2563eb;
-      color: #ffffff;
-      border-color: #2563eb;
-    }
-
-    .settings-modal-btn-primary:hover {
-      background-color: #1d4ed8;
-      border-color: #1d4ed8;
-    }
-
-    .settings-modal-btn-neutral {
-      background-color: #4b5563;
-      color: #ffffff;
-      border-color: #4b5563;
-    }
-
-    .settings-modal-btn-neutral:hover {
-      background-color: #374151;
-      border-color: #374151;
-    }
-
-    .settings-modal-btn-error {
-      background-color: #dc2626;
-      color: #ffffff;
-      border-color: #dc2626;
-    }
-
-    .settings-modal-btn-error:hover {
-      background-color: #b91c1c;
-      border-color: #b91c1c;
-    }
-
-    .settings-modal-btn-ghost {
-      background-color: transparent;
-      color: #374151;
-      border-color: transparent;
-    }
-
-    .settings-modal-btn-ghost:hover {
-      background-color: #f3f4f6;
-    }
-
-    .settings-modal-input,
-    .settings-modal-select {
-      background-color: #ffffff;
-      color: #1f2937;
-      border-color: #d1d5db;
-      border-width: 1px;
-      border-style: solid;
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .settings-modal-input:focus,
-    .settings-modal-select:focus {
-      border-color: #3b82f6;
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-
-    .settings-modal-input::placeholder {
-      color: #9ca3af;
-    }
-
-    .settings-modal-select option {
-      background-color: #ffffff;
-      color: #1f2937;
-    }
-
-    .settings-modal-heading-2 {
-      color: #1f2937;
-    }
-
-    .settings-modal-heading-3 {
-      color: #dc2626;
-    }
-
-    .settings-modal-text {
-      color: #4b5563;
-    }
-
-    .settings-modal-divider {
-      color: #6b7280;
-    }
-
-    .settings-modal-divider::before,
-    .settings-modal-divider::after {
-      border-color: #d1d5db;
-    }
-
-    .settings-modal-form-control {
-      margin-bottom: 1rem;
-    }
-
-    .settings-modal-textarea {
-      background-color: #ffffff;
-      color: #1f2937;
-      border-color: #d1d5db;
-      border-width: 1px;
-      border-style: solid;
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .settings-modal-textarea:focus {
-      border-color: #3b82f6;
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-
-    .settings-modal-grid>div {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
   </style>
 </head>
 
 <body>
   <!-- PWA Install Prompt Button (hidden by default) -->
-  <div id="install-banner"
-    class="w-full bg-transparent p-4 pl-2 text-lg focus:outline-none text-center hidden"
+  <div id="install-banner" class="w-full bg-transparent p-4 pl-2 text-lg focus:outline-none text-center hidden"
     data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken">
     <span class="text-gray-900 font-semibold mr-4">Install NutriQuest on your device for best experience!</span>
     <button id="install-btn"
@@ -532,9 +339,10 @@
   <!-- Spacer to prevent overlap, optional -->
 
   <!-- Splash Screen -->
-  <div id="splash-screen" class="fixed inset-0 bg-gray-100 flex flex-col items-center justify-center z-50">
-    <div id="splash-title-container">
-      <h1 id="splash-title" class="text-5xl font-bold text-gray-700">
+  <div id="splash-screen"
+    class="transition-opacity duration-500 ease-out overflow-hidden fixed inset-0 bg-gray-100 flex flex-col items-center justify-center z-50">
+    <div id="splash-title-container" class="relative h-[80px] flex items-center justify-center">
+      <h1 id="splash-title" class="flex relative z-10 text-5xl font-bold text-gray-700">
         <span id="splash-nutri">Nutri</span><span id="splash-quest">Quest</span>
       </h1>
       <svg id="splash-heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -561,50 +369,98 @@
     <div id="main-content">
       <!-- Authentication Container -->
       <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-        <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-            <div class="flex justify-end mb-4">
-                <div class="flex items-center border border-gray-200 rounded-md">
-                    <button data-lang="en" class="lang-btn bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-l-md">EN</button>
-                    <button data-lang="zh" class="lang-btn text-gray-500 text-xs font-bold py-1 px-3 rounded-r-md hover:bg-gray-100">中</button>
-                </div>
+        <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
+          <div class="flex justify-end mb-4">
+            <div class="join">
+              <input type="radio" name="login-language" value="en" class="lang-radio join-item btn btn-sm"
+                aria-label="EN" checked>
+              <input type="radio" name="login-language" value="zh" class="lang-radio join-item btn btn-sm"
+                aria-label="中">
             </div>
-            <h1 id="auth-title" data-lang-key="loginTitle" class="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
-            <p id="auth-error" class="text-red-500 text-center mb-4"></p>
-            <form id="auth-form">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="email" data-lang-key="emailLabel">Email</label>
-                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" type="email" required>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="password" data-lang-key="passwordLabel">Password</label>
-                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type="password" required>
-                </div>
-                <div class="text-right mb-6">
-                    <a id="forgot-password-link" class="text-sm text-blue-600 hover:underline" href="#" data-lang-key="forgotPassword">Forgot Password?</a>
-                </div>
-                <button id="auth-submit-btn" class="w-full bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors" type="submit" data-lang-key="loginButton">Login</button>
-            </form>
-            <p class="text-center text-sm text-gray-600 mt-4">
-                <span data-lang-key="authTogglePrompt">Need an account?</span>
-                <a id="auth-toggle-link" class="text-blue-600 font-semibold hover:underline" href="#" data-lang-key="authToggleAction">Sign Up</a>
-            </p>
-            <div class="flex items-center my-6">
-                <hr class="flex-grow border-gray-300"/>
-                <span class="mx-4 text-sm text-gray-400" data-lang-key="or">OR</span>
-                <hr class="flex-grow border-gray-300"/>
-            </div>
-            <button id="google-signin-btn" class="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition-colors mb-4">
-                <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+          </div>
+          <h1 id="auth-title" data-lang-key="loginTitle" class="text-3xl font-bold text-center text-gray-800 mb-6">Login
+          </h1>
+          <p id="auth-error" class="text-red-500 text-center mb-4"></p>
+
+          <form id="auth-form">
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="emailLabel">Email</legend>
+              <label class="input validator">
+                <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
+                    stroke="currentColor">
+                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </g>
                 </svg>
-                <span data-lang-key="googleSignIn">Sign in with Google</span>
-            </button>
-            <button id="guest-mode-btn" class="w-full bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors" data-lang-key="guestButton">
-                Continue as Guest
-            </button>
+                <input id="email" type="email" placeholder="mail@site.com" required>
+              </label>
+              <div class="validator-hint hidden">Enter valid email address</div>
+            </fieldset>
+
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="passwordLabel">Password</legend>
+              <label class="input validator">
+                <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
+                    stroke="currentColor">
+                    <path
+                      d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z">
+                    </path>
+                    <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+                  </g>
+                </svg>
+                <input id="password" type="password" required placeholder="Password" minlength="8"
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                  title="Must be more than 8 characters, including number, lowercase letter, uppercase letter" />
+              </label>
+              <p class="validator-hint hidden">
+                Must be more than 8 characters, including
+                <br />
+                At least one number
+                <br />
+                At least one lowercase letter
+                <br />
+                At least one uppercase letter
+              </p>
+            </fieldset>
+
+            <div class="text-right mb-6">
+              <a id="forgot-password-link" class="text-sm link link-hover link-primary" href="#"
+                data-lang-key="forgotPassword">Forgot
+                Password?</a>
+            </div>
+            <button id="auth-submit-btn" class="w-full btn btn-primary" type="submit"
+              data-lang-key="loginButton">Login</button>
+          </form>
+          <p class="text-center text-sm text-gray-600 mt-4">
+            <span data-lang-key="authTogglePrompt">Need an account?</span>
+            <a id="auth-toggle-link" class="link link-hover link-primary" href="#" data-lang-key="authToggleAction">Sign
+              Up</a>
+          </p>
+
+          <div class="divider">OR</div>
+
+          <button id="google-signin-btn" class="w-full flex items-center justify-center btn btn-outline mt-4">
+            <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                fill="#4285F4"></path>
+              <path
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                fill="#34A853"></path>
+              <path
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                fill="#FBBC05"></path>
+              <path
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                fill="#EA4335"></path>
+            </svg>
+            <span data-lang-key="googleSignIn">Sign in with Google</span>
+          </button>
+          <button id="guest-mode-btn" class="w-full mt-4 btn btn-soft" data-lang-key="guestButton">
+            Continue as Guest
+          </button>
         </div>
       </div>
 
@@ -613,7 +469,7 @@
       <div id="app-container" class="hidden h-screen flex flex-col">
         <!-- Header -->
         <!-- DaisyUI Navbar: NutriQuest App Header -->
-        <header id="app-header" class="navbar bg-base-100 shadow sticky top-0 z-50">
+        <header id="app-header" class="custom-titlebar navbar bg-base-100 shadow sticky top-0 z-50">
 
           <!-- Left: Logo and Date -->
           <div class="flex items-center gap-2 sm:gap-3">
@@ -638,22 +494,22 @@
           <div class="flex items-center gap-1 sm:gap-4 ml-auto">
             <!-- Language Switch (daisyUI Button Group) -->
             <div class="join">
-              <input type="radio" name="navbar-language" value="en" class="lang-radio join-item btn btn-xs"
+              <input type="radio" name="navbar-language" value="en" class="lang-radio join-item btn btn-sm"
                 aria-label="EN" checked>
-              <input type="radio" name="navbar-language" value="zh" class="lang-radio join-item btn btn-xs"
+              <input type="radio" name="navbar-language" value="zh" class="lang-radio join-item btn btn-sm"
                 aria-label="中">
             </div>
             <!-- User Menu (relative parent required for dropdown) -->
             <div id="user-header" class="dropdown dropdown-end">
               <div tabindex="0" role="button" id="account-menu-btn"
-                class="btn btn-ghost btn-circle p-2 hover:bg-gray-200 transition-colors">
+                class="btn btn-sm btn-ghost btn-circle p-2 hover:bg-gray-200 transition-colors">
                 <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
               <ul tabindex="0" id="account-dropdown"
-                class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow">
                 <li>
                   <div id="user-email-dropdown"></div>
                 </li>
@@ -663,8 +519,8 @@
               </ul>
             </div>
             <!-- Guest Login Button -->
-            <div id="guest-header" class="flex-none" style="display: none;">
-              <button id="go-to-login-btn" class="btn btn-primary btn-sm transform-gpu transition-transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-focus">
+            <div id="guest-header" class="flex-none hidden">
+              <button id="go-to-login-btn" class="btn btn-primary btn-sm">
                 <span data-lang-key="loginButton">Login</span>
               </button>
             </div>
@@ -689,7 +545,7 @@
 
         </header>
 
-        <div class="main-container">
+        <div class="p-4 sm:p-8">
           <div class="w-full max-w-6xl mx-auto pt-16 sm:pt-24">
 
             <img src="/icons/NutriQuest_Logo.png" alt="NutriQuest Logo" class="mx-auto h-16 md:h-20 w-auto">
@@ -785,10 +641,9 @@
           </div>
 
           <div class="mt-8 text-center">
-            <span id="toggle-dashboard-btn"
-              class="text-blue-600 hover:text-blue-800 font-semibold text-lg cursor-pointer underline transition-colors">
+            <a class="text-lg link link-hover link-primary font-bold" id="toggle-dashboard-btn">
               <span data-lang-key="viewDashboard">View Dashboard</span>
-            </span>
+            </a>
           </div>
 
           <div id="dashboard" class="mt-10 w-full max-w-6xl mx-auto hidden">
@@ -898,8 +753,8 @@
                   </div>
                 </div>
                 <!-- Nutrition Advice Card -->
-                <div id="advice-card" class="p-6 rounded-xl shadow-sm hidden">
-                  <h2 class="text-2xl font-bold text-gray-800 mb-4" data-lang-key="nutritionAdvice">Nutrition Advice
+                <div id="advice-card" class="card shadow-sm hidden">
+                  <h2 class="card-title mb-2" data-lang-key="nutritionAdvice">Nutrition Advice
                   </h2>
                   <div id="advice-content" class="flex items-start space-x-4">
                     <span id="advice-icon" class="text-3xl"></span>
@@ -920,9 +775,9 @@
               </div>
             </div>
             <div class="mt-8 text-center">
-              <button id="reset-all-btn"
-                class="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-5 rounded-lg transition-all"
-                data-lang-key="deleteTodayData">Delete Today's Data</button>
+              <button id="reset-all-btn" class="btn btn-warning" data-lang-key="deleteTodayData">
+                Delete Today's Data
+              </button>
             </div>
           </div>
         </div>
@@ -938,18 +793,17 @@
       </form>
       <h2 class="text-2xl font-bold mb-6" data-lang-key="scanWithCameraTitle">Scan with Camera Options</h2>
       <div class="space-y-4">
-        <button id="scan-meal-btn"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
-          data-lang-key="scanMealButton">Scan Meal with Camera (mobile)</button>
-        <button id="scan-barcode-btn"
-          class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
-          data-lang-key="scanBarcodeButton">Scan Barcode</button>
-        <button id="upload-image-btn"
-          class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg"
-          data-lang-key="uploadFromLibrary">Upload from Library</button>
+        <button id="scan-meal-btn" class="w-full btn btn-primary" data-lang-key="scanMealButton">
+          Scan Meal with Camera (mobile)
+        </button>
+        <button id="scan-barcode-btn" class="w-full btn btn-accent" data-lang-key="scanBarcodeButton">
+          Scan Barcode
+        </button>
+        <button id="upload-image-btn" class="w-full btn btn-secondary" data-lang-key="uploadFromLibrary">
+          Upload from Library
+        </button>
         <form method="dialog">
-          <button id="close-choice-btn" class="mt-4 w-full text-center text-gray-500 hover:underline"
-            data-lang-key="closeButton">Close</button>
+          <button class="w-full btn btn-ghost" data-lang-key="closeButton">Close</button>
         </form>
       </div>
     </div>
@@ -966,12 +820,12 @@
           class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-gray-700 hover:bg-gray-200">✕</button>
       </form>
       <h3 class="text-2xl font-bold mb-4 text-center" data-lang-key="scanBarcodeTitle">Scan a Barcode</h3>
-      <div class="scanner-container">
-        <div id="html5-qrcode-barcode" style="width: 100%; border-radius: 0.5rem;"></div>
-      </div>
+      <div id="html5-qrcode-barcode" class="w-full rounded-lg"></div>
       <p id="barcode-result" class="mt-2 text-gray-600 text-center"></p>
       <div class="modal-action">
-        <button id="close-barcode-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+        <form method="dialog">
+          <button class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+        </form>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">
@@ -994,8 +848,7 @@
         <input type="number" id="serving-size" value="100" class="input input-bordered w-full">
         <div class="modal-action">
           <form method="dialog">
-            <button type="button" id="cancel-serving-btn" class="btn btn-ghost"
-              data-lang-key="cancelButton">Cancel</button>
+            <button type="button" class="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
           </form>
           <button type="submit" form="serving-form" class="btn btn-primary" data-lang-key="addMealButton">Add
             Meal</button>
@@ -1020,7 +873,7 @@
       </div>
       <div class="modal-action">
         <form method="dialog">
-          <button id="close-favourites-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+          <button class="btn btn-ghost" data-lang-key="closeButton">Close</button>
         </form>
       </div>
     </div>
@@ -1051,100 +904,99 @@
 
   <!-- Settings Modal (DaisyUI) -->
   <dialog id="settings-modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box settings-modal-box max-w-lg w-full max-h-[90vh] flex flex-col p-0">
-
-      <div class="p-6 pb-4 border-b border-gray-200">
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle settings-modal-btn-ghost absolute right-2 top-2">✕</button>
-        </form>
-        <h2 class="text-2xl font-bold text-center settings-modal-heading-2" data-lang-key="setGoalsTitle">Set Your Daily
+    <div class="modal-box flex flex-col">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <div class="p-4 border-b border-gray-200">
+        <h2 class="text-2xl font-bold text-center" data-lang-key="setGoalsTitle">Set Your Daily
           Goals
         </h2>
       </div>
 
-      <div class="overflow-y-auto p-6">
-        <p class="text-center settings-modal-text mb-6" data-lang-key="settingsDescription">Let us calculate your needs,
-          or
-          set your own manual goal.</p>
+      <div class="overflow-x-hidden overflow-y-auto p-4">
+        <p data-lang-key="settingsDescription">
+          Let us calculate your needs, or set your own manual goal.
+        </p>
+        <form id="diagnosis-form" class="mt-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="gender">Gender</legend>
+              <select id="gender" class="select">
+                <option value="male" data-lang-key="male">Male</option>
+                <option value="female" data-lang-key="female">Female</option>
+              </select>
+            </fieldset>
 
-        <form id="diagnosis-form">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 settings-modal-grid">
-            <div>
-              <label class="block text-sm font-medium settings-modal-label mb-1 text-center"
-                data-lang-key="gender">Gender</label>
-              <div class="w-3/4 mx-auto">
-                <select id="gender" class="select select-bordered settings-modal-select w-full text-center">
-                  <option value="male" data-lang-key="male">Male</option>
-                  <option value="female" data-lang-key="female">Female</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label for="age" class="block text-sm font-medium settings-modal-label mb-1 text-center"
-                data-lang-key="age">Age</label>
-              <div class="relative stepper-container w-3/4 mx-auto">
-                <input type="number" id="age" value="30"
-                  class="input input-bordered settings-modal-input w-full text-center pr-8" />
-              </div>
-            </div>
-            <div>
-              <label for="height" class="block text-sm font-medium settings-modal-label mb-1 text-center"
-                data-lang-key="height">Height (cm)</label>
-              <div class="relative stepper-container w-3/4 mx-auto">
-                <input type="number" id="height" value="170"
-                  class="input input-bordered settings-modal-input w-full text-center pr-8" />
-              </div>
-            </div>
-            <div>
-              <label for="weight" class="block text-sm font-medium settings-modal-label mb-1 text-center"
-                data-lang-key="weight">Weight (kg)</label>
-              <div class="relative stepper-container w-3/4 mx-auto">
-                <input type="number" id="weight" value="70"
-                  class="input input-bordered settings-modal-input w-full text-center pr-8" />
-              </div>
-            </div>
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="age">Age</legend>
+              <input type="number" id="age" value="30" class="input" />
+            </fieldset>
+
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="height">Height (cm)</legend>
+              <input type="number" id="height" value="170" class="input" />
+            </fieldset>
+
+            <fieldset class="fieldset">
+              <legend class="fieldset-legend" data-lang-key="weight">Weight (kg)</legend>
+              <input type="number" id="weight" value="70" class="input" />
+            </fieldset>
           </div>
-          <div class="mt-4">
-            <label for="activity-level" class="block text-sm font-medium settings-modal-label mb-1"
-              data-lang-key="activityLevel">Activity Level</label>
-            <select id="activity-level" class="select select-bordered settings-modal-select w-full text-center">
-              <option value="1.2" data-lang-key="activityLevel1">Sedentary (mostly sitting, little to no exercise)
+
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend" data-lang-key="activityLevel">Activity Level</legend>
+            <select id="activity-level" class="select">
+              <option value="1.2" data-lang-key="activityLevel1">
+                Sedentary (mostly sitting, little to no exercise)
               </option>
-              <option value="1.375" data-lang-key="activityLevel2" selected>Lightly Active (light exercise/walks 1-2
-                times a week)</option>
-              <option value="1.55" data-lang-key="activityLevel3">Moderately Active (regular exercise 3-5 times a week)
+              <option value="1.375" data-lang-key="activityLevel2" selected>
+                Lightly Active (light exercise/walks 1-2 times a week)
               </option>
-              <option value="1.725" data-lang-key="activityLevel4">Very Active (vigorous exercise 6-7 times a week)
+              <option value="1.55" data-lang-key="activityLevel3">
+                Moderately Active (regular exercise 3-5 times a week)
               </option>
-              <option value="1.9" data-lang-key="activityLevel5">Extremely Active (strenuous exercise daily or physical
-                job)</option>
+              <option value="1.725" data-lang-key="activityLevel4">
+                Very Active (vigorous exercise 6-7 times a week)
+              </option>
+              <option value="1.9" data-lang-key="activityLevel5">
+                Extremely Active (strenuous exercise daily or physical job)
+              </option>
             </select>
-          </div>
-          <button type="submit" class="btn settings-modal-btn-base settings-modal-btn-primary w-full mt-6"
-            data-lang-key="calculateAndSave">Calculate &amp; Save</button>
+          </fieldset>
+
+          <button type="submit" class="btn btn-primary w-full mt-6" data-lang-key="calculateAndSave">
+            Calculate &amp; Save
+          </button>
         </form>
 
-        <div class="divider settings-modal-divider" data-lang-key="or">OR</div>
+        <div class="divider" data-lang-key="or">OR</div>
         <form id="manual-goal-form">
-          <label for="manual-calories" class="block text-sm font-medium settings-modal-label"
-            data-lang-key="setManualGoal">Set Manual Calorie Goal</label>
-          <input type="number" id="manual-calories" value="2000"
-            class="input input-bordered settings-modal-input w-full mt-1 text-center">
-          <button type="submit" class="btn settings-modal-btn-base settings-modal-btn-neutral w-full mt-4"
-            data-lang-key="saveManualGoal">Save Manual Goal</button>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend" data-lang-key="setManualGoal">Set Manual Calorie Goal</legend>
+            <input type="number" id="manual-calories" value="2000" class="input">
+            <button type="submit" class="btn btn-soft btn-neutral w-full mt-4" data-lang-key="saveManualGoal">
+              Save Manual Goal
+            </button>
+          </fieldset>
         </form>
 
-        <div class="my-6 border-t pt-6">
-          <h3 class="text-lg font-semibold settings-modal-heading-3" data-lang-key="dangerZone">Danger Zone</h3>
-          <p class="text-sm settings-modal-text mt-1" data-lang-key="dangerZoneDesc">This action cannot be undone.
-            Please be
-            certain.</p>
-          <button id="delete-all-data-btn" class="btn settings-modal-btn-base settings-modal-btn-error w-full mt-4"
-            data-lang-key="deleteAllData">Delete All Data</button>
+        <div class="divider"></div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-error" data-lang-key="dangerZone">Danger Zone</h3>
+          <p class="text-sm mt-1" data-lang-key="dangerZoneDesc">
+            This action cannot be undone. Please be certain.
+          </p>
+          <button id="delete-all-data-btn" class="btn btn-error w-full mt-4" data-lang-key="deleteAllData">
+            Delete All Data
+          </button>
         </div>
-        <div class="mt-6 border-t pt-4 text-center">
-          <button type="button" id="settings-modal-close-bottom-btn" class="btn settings-modal-btn-ghost"
-            data-lang-key="closeButton">Close</button>
+        <div class="divider"></div>
+        <div class="text-center">
+          <form method="dialog">
+            <button class="btn w-full btn-ghost" data-lang-key="closeButton">Close</button>
+          </form>
         </div>
       </div>
     </div>
@@ -1185,7 +1037,7 @@
       </div>
       <div class="modal-action">
         <form method="dialog">
-          <button id="close-calendar-btn" class="btn btn-ghost" data-lang-key="closeButton">Close</button>
+          <button class="btn btn-ghost" data-lang-key="closeButton">Close</button>
         </form>
       </div>
     </div>
@@ -1210,8 +1062,7 @@
         <input type="text" id="quantity-input" class="input input-bordered w-full">
         <div class="modal-action">
           <form method="dialog">
-            <button type="button" id="cancel-quantity-btn" class="btn btn-ghost"
-              data-lang-key="cancelButton">Cancel</button>
+            <button type="button" class="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
           </form>
           <button type="submit" form="quantity-form" class="btn btn-primary"
             data-lang-key="confirmButton">Confirm</button>
@@ -1224,7 +1075,8 @@
   </dialog>
 
   <!-- Loading Overlay -->
-  <div id="loading-overlay" hidden class="modal-overlay">
+  <div id="loading-overlay" hidden
+    class="fixed inset-0 bg-black/40 backdrop-blur flex items-center justify-center z-[1000]">
     <div class="flex flex-col items-center justify-center text-white">
       <div class="relative w-24 h-24 flex items-center justify-center">
         <div class="loader"></div>
@@ -1255,9 +1107,11 @@
       </div>
 
       <div class="modal-action justify-center">
-        <button id="voice-cancel-btn" class="btn btn-error">
-          <span data-lang-key="cancelButton">Cancel</span>
-        </button>
+        <form method="dialog">
+          <button class="btn btn-ghost">
+            <span data-lang-key="cancelButton">Cancel</span>
+          </button>
+        </form>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">
@@ -1268,8 +1122,10 @@
   <!--quantity spec modal-->
   <!-- Replace the old div#quantity-spec-modal with the following -->
   <dialog id="quantity-spec-modal" class="modal modal-bottom sm:modal-middle">
-    <form method="dialog" class="modal-box text-left">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    <div class="modal-box flex flex-col items-center justify-center">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
       <h2 class="text-2xl font-bold mb-2 text-center" data-lang-key="specifyQuantityTitle">
         Specify Quantity
       </h2>
@@ -1277,52 +1133,51 @@
         For: <strong id="quantity-spec-food-name"></strong>
       </p>
 
-      <div>
-        <label for="quantity-slider" class="block text-sm font-medium text-gray-800" data-lang-key="intuitiveQuantity">
-          Intuitive Quantity
-        </label>
-        <input type="range" id="quantity-slider" min="0" max="4" value="2" step="1"
-          class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2" />
+      <fieldset class="fieldset w-full max-w-xs">
+        <legend class="fieldset-legend" data-lang-key="intuitiveQuantity">Intuitive Quantity</legend>
+        <input type="range" class="range range-primary w-full" id="quantity-slider" min="0" max="4" value="2"
+          step="1" />
+        <div class="flex justify-between px-2.5 mt-2 text-xs w-full">
+          <span>|</span>
+          <span>|</span>
+          <span>|</span>
+          <span>|</span>
+          <span>|</span>
+        </div>
         <div id="slider-label" class="text-center font-semibold text-blue-600 mt-2">
           Regular Portion
         </div>
-      </div>
+      </fieldset>
 
-      <div class="my-4 text-center" data-lang-key="or">OR</div>
+      <div class="divider" data-lang-key="or">OR</div>
 
-      <div>
-        <label for="quantity-spec-text" class="block text-sm font-medium text-gray-800"
-          data-lang-key="specificQuantity">
-          Specific Quantity
-        </label>
-        <input type="text" id="quantity-spec-text"
-          class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm"
-          data-lang-key-placeholder="quantityPlaceholder" placeholder="e.g., 1 bowl, 200g, half" />
-      </div>
+      <fieldset class="fieldset w-full">
+        <legend class="fieldset-legend" data-lang-key="specificQuantity">Specific Quantity</legend>
+        <input type="text" id="quantity-spec-text" class="input" data-lang-key-placeholder="quantityPlaceholder"
+          placeholder="e.g., 1 bowl, 200g, half" />
+      </fieldset>
 
-      <div class="modal-action justify-between items-center mt-6">
-        <button type="button" id="unsure-quantity-spec-btn"
-          class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg" data-lang-key="imNotSure">
-          I’m not sure
+      <div class="flex items-center justify-between mt-6 w-full">
+        <button type="button" id="unsure-quantity-spec-btn" class="btn btn-secondary" data-lang-key="imNotSure">
+          I'm not sure
         </button>
         <div class="flex gap-2">
-          <button type="button" id="cancel-quantity-spec-btn" class="btn btn-ghost" data-lang-key="cancelButton">
-            Cancel
-          </button>
+          <form method="dialog">
+            <button class="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
+          </form>
           <button type="button" id="confirm-quantity-spec-btn" class="btn btn-primary" data-lang-key="confirmButton">
             Confirm
           </button>
         </div>
       </div>
-    </form>
+    </div>
   </dialog>
 
+  <!--hidden file input for food image upload-->
+  <input type="file" id="image-upload-input" accept="image/*" class="hidden" />
 
   <!--hidden file input for food image upload-->
-  <input type="file" id="image-upload-input" accept="image/*" style="display: none;" />
-
-  <!--hidden file input for food image upload-->
-  <input type="file" id="new-cam-module" accept="image/*" capture="environment" style="display: none;" />
+  <input type="file" id="new-cam-module" accept="image/*" capture="environment" class="hidden" />
 
   <!--application logic-->
   <script>
@@ -1461,27 +1316,21 @@
     const cameraChoiceModal = document.getElementById('camera-choice-modal');
     const scanMealBtn = document.getElementById('scan-meal-btn');
     const scanBarcodeBtn = document.getElementById('scan-barcode-btn');
-    const closeChoiceBtn = document.getElementById('close-choice-btn');
     const toggleDetailsBtn = document.getElementById('toggle-details-btn');
     const detailedDashboardView = document.getElementById('detailed-dashboard-view');
     const settingsBtn = document.getElementById('settings-btn');
     const settingsModal = document.getElementById('settings-modal');
-    const closeSettingsBtn = document.getElementById('close-settings-btn');
     const diagnosisForm = document.getElementById('diagnosis-form');
-    const settingsModalCloseBottomBtn = document.getElementById('settings-modal-close-bottom-btn');
     const manualGoalForm = document.getElementById('manual-goal-form');
     const deleteAllDataBtn = document.getElementById('delete-all-data-btn');
     const imageUploadInput = document.getElementById('image-upload-input');
     const uploadImageBtn = document.getElementById('upload-image-btn');
     const barcodeModal = document.getElementById('barcode-modal');
-    const closeBarcodeBtn = document.getElementById('close-barcode-btn');
     const servingModal = document.getElementById('serving-modal');
     const servingForm = document.getElementById('serving-form');
-    const cancelServingBtn = document.getElementById('cancel-serving-btn');
     const servingProductName = document.getElementById('serving-product-name');
     const favouritesBtn = document.getElementById('favourites-btn');
     const favouritesModal = document.getElementById('favourites-modal');
-    const closeFavouritesBtn = document.getElementById('close-favourites-btn');
     const favouritesList = document.getElementById('favourites-list');
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
@@ -1512,13 +1361,11 @@
     const calendarWeekdays = document.getElementById('calendar-weekdays');
     const calendarPrevMonth = document.getElementById('calendar-prev-month');
     const calendarNextMonth = document.getElementById('calendar-next-month');
-    const closeCalendarBtn = document.getElementById('close-calendar-btn');
     const calendarMonthGrid = document.getElementById('calendar-month-grid');
     const quantityModal = document.getElementById('quantity-modal');
     const quantityForm = document.getElementById('quantity-form');
     const identifiedFoodNameEl = document.getElementById('identified-food-name');
     const quantityInput = document.getElementById('quantity-input');
-    const cancelQuantityBtn = document.getElementById('cancel-quantity-btn');
     const offlineModal = document.getElementById('offline-modal');
     const offlineCloseBtn = document.getElementById('offline-close-btn');
     const quantitySpecModal = document.getElementById('quantity-spec-modal');
@@ -1526,9 +1373,10 @@
     const quantitySlider = document.getElementById('quantity-slider');
     const sliderLabel = document.getElementById('slider-label');
     const quantitySpecText = document.getElementById('quantity-spec-text');
-    const cancelQuantitySpecBtn = document.getElementById('cancel-quantity-spec-btn');
     const confirmQuantitySpecBtn = document.getElementById('confirm-quantity-spec-btn');
     const unsureQuantitySpecBtn = document.getElementById('unsure-quantity-spec-btn');
+    const newCamModule = document.getElementById('new-cam-module');
+
     // Mobile Header Buttons
     const accountMenuBtnMobile = document.getElementById('account-menu-btn-mobile');
     const goToLoginBtnMobile = document.getElementById('go-to-login-btn-mobile');
@@ -1663,25 +1511,24 @@
       });
 
       // For dashboard radio buttons
-      const radioForLang = document.querySelector(`.lang-radio[value="${lang}"]`);
-      if (radioForLang) {
-        radioForLang.checked = true;
-      }
+      document.querySelectorAll(`.lang-radio[value="${lang}"]`).forEach(radio => {
+        radio.checked = true;
+      });
 
       const translation = translations[lang];
       document.querySelectorAll('[data-lang-key]').forEach(element => {
         const key = element.getAttribute('data-lang-key');
         if (key === 'authToggle') {
         } else if (translation[key]) {
-            element.textContent = translation[key];
+          element.textContent = translation[key];
         }
       });
 
       const authTogglePromptEl = document.querySelector('[data-lang-key="authTogglePrompt"]');
       const authToggleActionEl = document.querySelector('[data-lang-key="authToggleAction"]');
-      if(authTogglePromptEl) authTogglePromptEl.textContent = translation.authTogglePrompt;
-      if(authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction;
-      
+      if (authTogglePromptEl) authTogglePromptEl.textContent = translation.authTogglePrompt;
+      if (authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction;
+
       document.querySelectorAll('[data-lang-key-placeholder]').forEach(element => {
         const key = element.getAttribute('data-lang-key-placeholder');
         if (translation[key]) element.placeholder = translation[key];
@@ -1694,11 +1541,11 @@
       if (isLoginMode) {
         authTitle.textContent = translation.loginTitle;
         authSubmitBtn.textContent = translation.loginButton;
-        if(authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction; // Sign Up
+        if (authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction; // Sign Up
       } else {
         authTitle.textContent = translation.signUpTitle;
         authSubmitBtn.textContent = translation.signUpTitle;
-        if(authToggleActionEl) authToggleActionEl.textContent = translation.loginButton; // Login
+        if (authToggleActionEl) authToggleActionEl.textContent = translation.loginButton; // Login
       }
 
       if (!appContainer.classList.contains('hidden')) updateDashboard(activePeriod);
@@ -1999,14 +1846,49 @@
     async function handleImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-      event.target.value = null; // 同じファイルを連続で選択できるようにするため
 
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const imageDataUrl = e.target.result;
+      // Reset the file input value to allow selecting the same file again.
+      // Doing this immediately is generally safe and better than waiting.
+      event.target.value = null;
+
+      const MAX_WIDTH = 800;
+      const MAX_HEIGHT = 800;
+
+      const image = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      image.onload = async () => {
+        // The image is loaded, now resize it using a canvas.
+        let width = image.width;
+        let height = image.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = height * (MAX_WIDTH / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = width * (MAX_HEIGHT / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, width, height);
+
+        // Get the resized image as a base64 encoded JPEG.
+        const resizedImageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Release the object URL to free up memory.
+        URL.revokeObjectURL(objectUrl);
+
         showLoader('analysing');
         try {
-          const base64String = imageDataUrl.split(',')[1];
+          const base64String = resizedImageDataUrl.split(',')[1];
           identifiedFoodName = await identifyFoodFromImage(base64String);
           hideLoader();
           if (identifiedFoodName) {
@@ -2028,7 +1910,13 @@
           }
         }
       };
-      reader.readAsDataURL(file);
+
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        showAlert("Sorry, there was an error processing the image.");
+      };
+
+      image.src = objectUrl;
     }
     /**
 
@@ -3187,15 +3075,9 @@
       listeningModal.showModal();
       recognition.start();
 
-      // Clean up any existing event listeners by cloning the button
-      const voiceCancelBtn = document.getElementById('voice-cancel-btn');
-      const newVoiceCancelBtn = voiceCancelBtn.cloneNode(true);
-      voiceCancelBtn.parentNode.replaceChild(newVoiceCancelBtn, voiceCancelBtn);
-
-      newVoiceCancelBtn.addEventListener('click', () => {
+      listeningModal.addEventListener('close', () => {
         recognition.stop();
-        listeningModal.close();
-      });
+      })
 
       recognition.onresult = async (event) => {
         listeningModal.close();
@@ -3358,40 +3240,26 @@
       if (voiceInputBtn) voiceInputBtn.addEventListener('click', startVoiceRecognition);
 
       // --- Modals & Other Listeners ---
-      if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', () => cameraChoiceModal.close());
       if (scanMealBtn) scanMealBtn.addEventListener('click', () => {
         cameraChoiceModal.close();
-        // Use system camera picker instead of custom camera modal
-        const newCamModule = document.getElementById('new-cam-module');
         if (newCamModule) newCamModule.click();
       });
-      if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => { cameraChoiceModal.close(); startBarcodeScanner(); });
+
+      if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => {
+        cameraChoiceModal.close();
+        startBarcodeScanner();
+      });
+
       if (uploadImageBtn) {
         uploadImageBtn.addEventListener('click', () => {
           cameraChoiceModal.close();
           if (imageUploadInput) imageUploadInput.click();
         });
       }
+
       if (imageUploadInput) imageUploadInput.addEventListener('change', handleImageUpload);
-      // Add event listener for system camera capture
-      const newCamModule = document.getElementById('new-cam-module');
       if (newCamModule) newCamModule.addEventListener('change', handleImageUpload);
-      // Update the camera modal event listeners
 
-      // The modal backdrop will automatically close when clicked due to the form method="dialog"
-
-      if (closeBarcodeBtn) {
-        closeBarcodeBtn.addEventListener('click', () => {
-          if (html5QrCodeInstance && html5QrCodeInstance.isScanning) {
-            html5QrCodeInstance.stop().then(() => {
-              if (html5QrCodeInstance) html5QrCodeInstance.clear();
-              html5QrCodeInstance = null;
-            });
-          }
-          const barcodeModal = document.getElementById('barcode-modal');
-          if (barcodeModal) barcodeModal.close();
-        });
-      }
       if (servingForm) {
         servingForm.addEventListener('submit', (e) => {
           e.preventDefault();
@@ -3410,7 +3278,6 @@
           }
         });
       }
-      if (cancelServingBtn) cancelServingBtn.addEventListener('click', () => servingModal.close()); // CHANGED: Use close()
       if (quantityForm) {
         quantityForm.addEventListener('submit', (e) => {
           e.preventDefault();
@@ -3422,15 +3289,8 @@
           }
         });
       }
-      if (cancelQuantityBtn) cancelQuantityBtn.addEventListener('click', () => quantityModal.close());
-      if (closeFavouritesBtn) closeFavouritesBtn.addEventListener('click', () => favouritesModal.close());
-      if (closeCalendarBtn) closeCalendarBtn.addEventListener('click', () => calendarModal.close());
-      if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => settingsModal.close());
 
       // ★★★★★ ここが修正された重要な箇所です ★★★★★
-      if (settingsModalCloseBottomBtn) {
-        settingsModalCloseBottomBtn.addEventListener('click', () => settingsModal.close());
-      }
 
       if (deleteAllDataBtn) deleteAllDataBtn.addEventListener('click', resetAllData);
 
@@ -3466,7 +3326,6 @@
           quantitySlider.value = 2;
           sliderLabel.textContent = labels[2];
         });
-        cancelQuantitySpecBtn.addEventListener('click', () => quantitySpecModal.close());
         if (unsureQuantitySpecBtn) {
           unsureQuantitySpecBtn.addEventListener('click', () => {
             foodInput.value = foodNameForQuantitySpec;
@@ -3603,11 +3462,6 @@
       const labels = translations[currentLang].sliderLabels;
       quantitySlider.value = 2;
       sliderLabel.textContent = labels[2];
-    });
-
-    // Cancel button closes modal
-    document.getElementById('cancel-quantity-spec-btn').addEventListener('click', () => {
-      quantitySpecModal.close();
     });
 
     // "I’m not sure" sets default and processes
