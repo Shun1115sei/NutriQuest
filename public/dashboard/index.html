@@ -1847,18 +1847,48 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        // By setting the value to null here, inside the onload event,
-        // we ensure that the file has been read before we clear the input.
-        // This can prevent issues on some mobile browsers.
-        // 同じファイルを連続で選択できるようにするため
-        event.target.value = null;
+      // Reset the file input value to allow selecting the same file again.
+      // Doing this immediately is generally safe and better than waiting.
+      event.target.value = null;
 
-        const imageDataUrl = e.target.result;
+      const MAX_WIDTH = 800;
+      const MAX_HEIGHT = 800;
+
+      const image = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      image.onload = async () => {
+        // The image is loaded, now resize it using a canvas.
+        let width = image.width;
+        let height = image.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = height * (MAX_WIDTH / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = width * (MAX_HEIGHT / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, width, height);
+
+        // Get the resized image as a base64 encoded JPEG.
+        const resizedImageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Release the object URL to free up memory.
+        URL.revokeObjectURL(objectUrl);
+
         showLoader('analysing');
         try {
-          const base64String = imageDataUrl.split(',')[1];
+          const base64String = resizedImageDataUrl.split(',')[1];
           identifiedFoodName = await identifyFoodFromImage(base64String);
           hideLoader();
           if (identifiedFoodName) {
@@ -1880,7 +1910,13 @@
           }
         }
       };
-      reader.readAsDataURL(file);
+
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        showAlert("Sorry, there was an error processing the image.");
+      };
+
+      image.src = objectUrl;
     }
     /**
 
