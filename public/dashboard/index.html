@@ -3472,34 +3472,6 @@
       quantitySlider.value = 2;
       sliderLabel.textContent = labels[2];
     });
-
-    // "I’m not sure" sets default and processes
-    document.getElementById('unsure-quantity-spec-btn').addEventListener('click', () => {
-      foodInput.value = foodNameForQuantitySpec;
-      quantitySpecModal.close();
-      processNewMeal(null, true);
-    });
-
-    // Confirm button constructs query and processes
-    document.getElementById('confirm-quantity-spec-btn').addEventListener('click', () => {
-      let finalQuery = '';
-      const specifiedText = quantitySpecText.value.trim();
-      const currentLang = localStorage.getItem('language') || 'en';
-      const prefixes = translations[currentLang].sliderPrefixes;
-
-      if (specifiedText) {
-        finalQuery = `${specifiedText} ${foodNameForQuantitySpec}`;
-      } else {
-        const prefix = prefixes[quantitySlider.value];
-        finalQuery = `${prefix} ${foodNameForQuantitySpec}`.trim();
-      }
-
-      foodInput.value = finalQuery;
-      quantitySpecModal.close();
-      processNewMeal(null, true);
-    });
-
-
   </script>
 
   <!--service worker registration-->
