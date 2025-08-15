@@ -1830,19 +1830,14 @@
       updateDashboard(activePeriod);
     }
     /**
-
      * Handles image file upload, processes it for food identification using AI vision
-
+     * This version is optimized for mobile devices to prevent browser reloads due to memory pressure.
+     * It resizes the image on a canvas before converting it to a base64 string.
      *
-
-     * @param {Event} event - The event parameter
-
-     * @returns {Promise} Promise that resolves when the operation completes
-
+     * @param {Event} event - The file input change event.
+     * @returns {Promise} A promise that resolves when the operation completes.
      * @async
-
      */
-
     async function handleImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1850,14 +1845,15 @@
       // Reset the file input value to allow selecting the same file again.
       event.target.value = null;
 
+      // Define the maximum dimensions for the resized image.
       const MAX_WIDTH = 800;
       const MAX_HEIGHT = 800;
 
       try {
-        // 1. Decode the image using the more memory-efficient createImageBitmap
+        // 1. Use createImageBitmap for a memory-efficient way to get image dimensions.
         const imageBitmap = await createImageBitmap(file);
 
-        // 2. Calculate new dimensions while preserving aspect ratio.
+        // 2. Calculate new dimensions while preserving the aspect ratio.
         let width = imageBitmap.width;
         let height = imageBitmap.height;
 
@@ -1873,24 +1869,25 @@
           }
         }
 
-        // 3. Draw the resized image onto a canvas.
+        // 3. Create a canvas to draw the resized image onto.
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(imageBitmap, 0, 0, width, height);
 
-        // 4. Close the ImageBitmap to free up its memory immediately.
+        // 4. Immediately close the ImageBitmap to free up its memory. This is crucial!
         imageBitmap.close();
 
-        // 5. Get the resized image as a Blob, which is more memory-efficient than a data URL.
+        // 5. Get the resized image as a Blob, which is more memory-efficient than a data URL for large images.
+        // We'll convert this small blob to base64, which is much safer than converting the original large file.
         canvas.toBlob(async (blob) => {
           if (!blob) {
             showAlert("Sorry, there was an error processing the image.");
             return;
           }
 
-          // 6. Convert the small blob to a base64 string for the API.
+          // 6. Convert the small, resized blob to a base64 string for the API.
           const reader = new FileReader();
           reader.onloadend = async () => {
             const resizedImageDataUrl = reader.result;
@@ -1900,6 +1897,7 @@
               identifiedFoodName = await identifyFoodFromImage(base64String);
               hideLoader();
               if (identifiedFoodName) {
+                // If identification is successful, show the quantity confirmation modal.
                 identifiedFoodNameEl.textContent = identifiedFoodName;
                 quantityInput.value = '';
                 quantityModal.showModal();
@@ -1920,7 +1918,7 @@
           };
           reader.readAsDataURL(blob);
 
-        }, 'image/jpeg', 0.8); // Use JPEG format with quality 0.8
+        }, 'image/jpeg', 0.8); // Use JPEG format with 80% quality for a good balance.
 
       } catch (error) {
         console.error("Error creating ImageBitmap:", error);
