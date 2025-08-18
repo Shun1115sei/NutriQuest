@@ -1887,36 +1887,31 @@
             return;
           }
 
-          // 6. Convert the small, resized blob to a base64 string for the API.
-          const reader = new FileReader();
-          reader.onloadend = async () => {
-            const resizedImageDataUrl = reader.result;
-            showLoader('analysing');
-            try {
-              const base64String = resizedImageDataUrl.split(',')[1];
-              identifiedFoodName = await identifyFoodFromImage(base64String);
-              hideLoader();
-              if (identifiedFoodName) {
-                // If identification is successful, show the quantity confirmation modal.
-                identifiedFoodNameEl.textContent = identifiedFoodName;
-                quantityInput.value = '';
-                quantityModal.showModal();
-                quantityInput.focus();
-              } else {
-                throw new Error("Could not identify the food from the uploaded image.");
-              }
-            } catch (error) {
-              hideLoader();
-              console.error("Image upload identification error:", error);
-              const currentLang = localStorage.getItem('language') || 'en';
-              if (error.message === "RATE_LIMIT_EXCEEDED") {
-                showAlert(translations[currentLang].rateLimitError);
-              } else {
-                showAlert("Sorry, we couldn't identify the food in the image.");
-              }
+          showLoader('analysing');
+          try {
+            identifiedFoodName = await identifyFoodFromImage(blob);
+            hideLoader();
+            if (identifiedFoodName) {
+              // If identification is successful, show the quantity confirmation modal.
+              identifiedFoodNameEl.textContent = identifiedFoodName;
+              quantityInput.value = '';
+              quantityModal.showModal();
+              quantityInput.focus();
+            } else {
+              throw new Error("Could not identify the food from the uploaded image.");
             }
-          };
-          reader.readAsDataURL(blob);
+          } catch (error) {
+            hideLoader();
+            console.error("Image upload identification error:", error);
+            const currentLang = localStorage.getItem('language') || 'en';
+            if (error.message === "RATE_LIMIT_EXCEEDED") {
+              showAlert(translations[currentLang].rateLimitError);
+            } else {
+              showAlert("Sorry, we couldn't identify the food in the image.");
+            }
+          } finally {
+            blob = null;
+          }
 
         }, 'image/jpeg', 0.8); // Use JPEG format with 80% quality for a good balance.
 
@@ -2077,7 +2072,18 @@
      * @async
      */
 
-    async function identifyFoodFromImage(base64ImageData) {
+    async function identifyFoodFromImage(imageData) {
+      let base64ImageData;
+      if (imageData instanceof Blob) {
+        base64ImageData = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(imageData);
+        });
+      } else {
+        base64ImageData = imageData;
+      }
       const prompt = "What food is in this image? Describe it in a short phrase. If it's not food, say 'not food'.";
       const payload = { contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64ImageData } }] }] };
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -2088,7 +2094,13 @@
         const result = await response.json();
         const text = result.candidates[0].content.parts[0].text;
         return text.toLowerCase().includes('not food') ? null : text;
-      } catch (error) { console.error("Error fetching from Gemini Vision API:", error); if (error.message === "RATE_LIMIT_EXCEEDED") throw error; return null; }
+      } catch (error) {
+        console.error("Error fetching from Gemini Vision API:", error);
+        if (error.message === "RATE_LIMIT_EXCEEDED") throw error;
+        return null;
+      } finally {
+        if (imageData instanceof Blob) imageData = null;
+      }
     }
     /**
 

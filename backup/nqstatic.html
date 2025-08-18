@@ -1555,39 +1555,62 @@
     async function openCamera() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { await showAlert("Your browser does not support the camera feature."); return; }
       try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
         cameraView.srcObject = cameraStream;
         cameraModal.classList.remove('hidden');
       } catch (err) { console.error("Camera Error:", err); await showAlert("Could not access the camera. Please ensure you have given permission."); }
     }
     function closeCamera() {
       if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+      cameraView.srcObject = null;
+      cameraCanvas.width = 0;
+      cameraCanvas.height = 0;
+      cameraStream = null;
       cameraModal.classList.add('hidden');
     }
     async function captureImage() {
       const context = cameraCanvas.getContext('2d');
-      cameraCanvas.width = cameraView.videoWidth;
-      cameraCanvas.height = cameraView.videoHeight;
-      context.drawImage(cameraView, 0, 0, cameraCanvas.width, cameraCanvas.height);
-      const imageDataUrl = cameraCanvas.toDataURL('image/jpeg');
-      closeCamera();
-      showLoader('analysing');
-      try {
-        identifiedFoodName = await identifyFoodFromImage(imageDataUrl.split(',')[1]);
-        hideLoader();
-        if (identifiedFoodName) {
-          identifiedFoodNameEl.textContent = identifiedFoodName;
-          quantityInput.value = '';
-          quantityModal.classList.remove('hidden');
-          quantityInput.focus();
-        } else throw new Error("Could not identify the food.");
-      } catch (error) {
-        hideLoader();
-        if (error.message === "RATE_LIMIT_EXCEEDED") showAlert(translations[localStorage.getItem('language') || 'en'].rateLimitError);
-        else { console.error("Image identification error:", error); await showAlert("Sorry, we couldn't identify the food in the image. Please try typing it manually."); }
-      }
+      const targetWidth = 1280;
+      const targetHeight = 720;
+      cameraCanvas.width = targetWidth;
+      cameraCanvas.height = targetHeight;
+      context.drawImage(cameraView, 0, 0, targetWidth, targetHeight);
+      cameraCanvas.toBlob(async (blob) => {
+        closeCamera();
+        showLoader('analysing');
+        try {
+          identifiedFoodName = await identifyFoodFromImage(blob);
+          hideLoader();
+          if (identifiedFoodName) {
+            identifiedFoodNameEl.textContent = identifiedFoodName;
+            quantityInput.value = '';
+            quantityModal.classList.remove('hidden');
+            quantityInput.focus();
+          } else throw new Error("Could not identify the food.");
+        } catch (error) {
+          hideLoader();
+          if (error.message === "RATE_LIMIT_EXCEEDED") showAlert(translations[localStorage.getItem('language') || 'en'].rateLimitError);
+          else { console.error("Image identification error:", error); await showAlert("Sorry, we couldn't identify the food in the image. Please try typing it manually."); }
+        } finally {
+          blob = null;
+        }
+      }, 'image/jpeg', 0.8);
     }
-    async function identifyFoodFromImage(base64ImageData) {
+    async function identifyFoodFromImage(imageData) {
+      let base64ImageData;
+      if (imageData instanceof Blob) {
+        base64ImageData = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(imageData);
+        });
+      } else {
+        base64ImageData = imageData;
+      }
+
       const prompt = "What food is in this image? Describe it in a short phrase. If it's not food, say 'not food'.";
       const payload = { contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64ImageData } }] }] };
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -1598,7 +1621,13 @@
         const result = await response.json();
         const text = result.candidates[0].content.parts[0].text;
         return text.toLowerCase().includes('not food') ? null : text;
-      } catch (error) { console.error("Error fetching from Gemini Vision API:", error); if (error.message === "RATE_LIMIT_EXCEEDED") throw error; return null; }
+      } catch (error) {
+        console.error("Error fetching from Gemini Vision API:", error);
+        if (error.message === "RATE_LIMIT_EXCEEDED") throw error;
+        return null;
+      } finally {
+        if (imageData instanceof Blob) imageData = null;
+      }
     }
     async function getNutritionalInfo(prompt) {
       const chatHistory = [{ role: "user", parts: [{ text: `Provide the estimated nutritional information for "${prompt}" in a valid JSON format. The JSON object should only contain these keys: "food" (string), "calories" (number), "protein" (number, in grams), "fat" (number, in grams), and "carbs" (number, in grams).` }] }];
