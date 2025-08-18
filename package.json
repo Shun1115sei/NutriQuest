@@ -14,7 +14,7 @@
     "vite": "^7.0.6"
   },
   "dependencies": {
-    "@react-router/node": "^7.7.1",
+    "@react-router/node": "^7.8.1",
     "@vercel/react-router": "^1.2.2",
     "isbot": "^5",
     "react": "^19.1.1",
