@@ -3438,7 +3438,7 @@
 
     const hasPendingImage = !!localStorage.getItem('pendingImage');
     const splashScreenFinished = new Promise(resolve => {
-      const hideSplash = () => {
+      window.addEventListener('load', () => {
         if (hasPendingImage) {
           splashScreen.classList.add('hidden');
           mainAppContent.style.opacity = '1';
@@ -3451,13 +3451,7 @@
             resolve();
           }, 2700);
         }
-      };
-
-      if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        hideSplash();
-      } else {
-        document.addEventListener('DOMContentLoaded', hideSplash);
-      }
+      });
     });
 
     auth.onAuthStateChanged(async user => {
