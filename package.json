@@ -3,7 +3,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "build": "vite build",
+    "build": "react-router build",
     "serve": "vite preview"
   },
   "devDependencies": {
