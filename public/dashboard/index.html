@@ -1887,21 +1887,10 @@
             return;
           }
 
-          // Cache image so it can be processed after a reload
-          try {
-            const reader = new FileReader();
-            reader.onload = () => {
-              try { localStorage.setItem('pendingImage', reader.result); }
-              catch (e) { console.error('Failed to cache image', e); }
-            };
-            reader.readAsDataURL(blob);
-          } catch (e) {
-            console.error('Error caching image', e);
-          }
-
           showLoader('analysing');
           try {
             identifiedFoodName = await identifyFoodFromImage(blob);
+            hideLoader();
             if (identifiedFoodName) {
               // If identification is successful, show the quantity confirmation modal.
               identifiedFoodNameEl.textContent = identifiedFoodName;
@@ -1912,6 +1901,7 @@
               throw new Error("Could not identify the food from the uploaded image.");
             }
           } catch (error) {
+            hideLoader();
             console.error("Image upload identification error:", error);
             const currentLang = localStorage.getItem('language') || 'en';
             if (error.message === "RATE_LIMIT_EXCEEDED") {
@@ -1920,8 +1910,6 @@
               showAlert("Sorry, we couldn't identify the food in the image.");
             }
           } finally {
-            hideLoader();
-            localStorage.removeItem('pendingImage');
             blob = null;
           }
 
@@ -1930,37 +1918,6 @@
       } catch (error) {
         console.error("Error creating ImageBitmap:", error);
         showAlert("Sorry, this image format might not be supported or the file is corrupted.");
-      }
-    } catch (err) {
-      console.error("Error processing saved image:", err);
-      showAlert("Sorry, we couldn't identify the food in the image.");
-    } finally {
-      hideLoader();
-      localStorage.removeItem('pendingImage');
-    }
-
-    /**
-     * Processes any image stored before a reload and triggers food identification
-     * so camera captures that cause a page refresh still get analysed.
-     *
-     * @returns {Promise<void>} resolves when processing completes
-     * @async
-     */
-    async function processPendingImage() {
-      const pending = localStorage.getItem('pendingImage');
-      if (!pending) return;
-      showLoader('analysing');
-      try {
-        const res = await fetch(pending);
-        const blob = await res.blob();
-        identifiedFoodName = await identifyFoodFromImage(blob);
-        if (identifiedFoodName) {
-          identifiedFoodNameEl.textContent = identifiedFoodName;
-          quantityInput.value = '';
-          quantityModal.showModal();
-          quantityInput.focus();
-        } else {
-          showAlert("Sorry, we couldn't identify the food in the image.");
       }
     }
     /**
@@ -3436,21 +3393,14 @@
       setupDashboardListeners();
     }
 
-    const hasPendingImage = !!localStorage.getItem('pendingImage');
     const splashScreenFinished = new Promise(resolve => {
       window.addEventListener('load', () => {
-        if (hasPendingImage) {
+        setTimeout(() => { splashScreen.style.opacity = '0'; }, 2200);
+        setTimeout(() => {
           splashScreen.classList.add('hidden');
           mainAppContent.style.opacity = '1';
           resolve();
-        } else {
-          setTimeout(() => { splashScreen.style.opacity = '0'; }, 2200);
-          setTimeout(() => {
-            splashScreen.classList.add('hidden');
-            mainAppContent.style.opacity = '1';
-            resolve();
-          }, 2700);
-        }
+        }, 2700);
       });
     });
 
@@ -3484,9 +3434,6 @@
 
       // 5. ヘッダーの日付を更新
       updateHeaderDate();
-
-      // 6. If an image was captured before a reload, process it now
-      if (localStorage.getItem('pendingImage')) processPendingImage();
     });
 
     // barcode modal x button permission freeup fix
