@@ -1838,16 +1838,18 @@
      * @returns {Promise} A promise that resolves when the operation completes.
      * @async
      */
-    async function handleImageUpload(event) {
-      const file = event.target.files[0];
+    async function handleImageUpload(eventOrFile) {
+      const file = eventOrFile.target ? eventOrFile.target.files[0] : eventOrFile;
       if (!file) return;
 
-      event.target.value = null;
-
-      const MAX_WIDTH = 800;
-      const MAX_HEIGHT = 800;
-
       try {
+        if (eventOrFile.target) {
+          await saveImage(file);
+          sessionStorage.setItem('photo_pending', 'true');
+        }
+
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
         const imageBitmap = await createImageBitmap(file);
 
         let width = imageBitmap.width;
@@ -1872,11 +1874,6 @@
         imageBitmap.close();
 
         canvas.toBlob(async (blob) => {
-          if (!blob) {
-            showAlert("Sorry, there was an error processing the image.");
-            return;
-          }
-
           const reader = new FileReader();
           reader.onloadend = async () => {
             const resizedImageDataUrl = reader.result;
@@ -1885,34 +1882,32 @@
               const base64String = resizedImageDataUrl.split(',')[1];
               identifiedFoodName = await identifyFoodFromImage(base64String);
               hideLoader();
-
-              // ▼▼▼ AIが null または "unknown" を返さなかったかチェックするよう変更 ▼▼▼
-              if (identifiedFoodName) { 
+              if (identifiedFoodName) {
                 identifiedFoodNameEl.textContent = identifiedFoodName;
                 quantityInput.value = '';
                 quantityModal.showModal();
                 quantityInput.focus();
+                await clearImage();
+                sessionStorage.removeItem('photo_pending');
               } else {
                 throw new Error("Could not identify the food from the uploaded image.");
               }
             } catch (error) {
               hideLoader();
               console.error("Image upload identification error:", error);
-              const currentLang = localStorage.getItem('language') || 'en';
-              if (error.message === "RATE_LIMIT_EXCEEDED") {
-                showAlert(translations[currentLang].rateLimitError);
-              } else {
-                showAlert("Sorry, we couldn't identify the food in the image.");
-              }
+              showAlert("Sorry, we couldn't identify the food in the image.");
+              await clearImage();
+              sessionStorage.removeItem('photo_pending');
             }
           };
           reader.readAsDataURL(blob);
-
         }, 'image/jpeg', 0.8);
 
       } catch (error) {
-        console.error("Error creating ImageBitmap:", error);
-        showAlert("Sorry, this image format might not be supported or the file is corrupted.");
+        console.error("Error in handleImageUpload:", error);
+        showAlert("An error occurred while processing the image. Please try again.");
+        await clearImage();
+        sessionStorage.removeItem('photo_pending');
       }
     }
     /**
@@ -2100,6 +2095,64 @@
         if (imageData instanceof Blob) imageData = null;
       }
     }
+
+    // --- IndexedDB Helper Functions ---
+    function openDb() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open('NutriQuestDB', 1);
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains('temp_images')) {
+            db.createObjectStore('temp_images', { keyPath: 'id' });
+          }
+        };
+        request.onsuccess = (event) => {
+          resolve(event.target.result);
+        };
+        request.onerror = (event) => {
+          reject('IndexedDB error: ' + event.target.errorCode);
+        };
+      });
+    }
+
+    async function saveImage(imageBlob) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['temp_images'], 'readwrite');
+        const store = transaction.objectStore('temp_images');
+        const request = store.put({ id: 'last_photo', blob: imageBlob });
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => reject('Failed to save image: ' + event.target.error);
+      });
+    }
+
+    async function readImage() {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['temp_images'], 'readonly');
+        const store = transaction.objectStore('temp_images');
+        const request = store.get('last_photo');
+        request.onsuccess = (event) => {
+          resolve(event.target.result ? event.target.result.blob : null);
+        };
+        request.onerror = (event) => reject('Failed to read image: ' + event.target.error);
+      });
+    }
+
+    async function clearImage() {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['temp_images'], 'readwrite');
+        const store = transaction.objectStore('temp_images');
+        const request = store.delete('last_photo');
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => reject('Failed to clear image: ' + event.target.error);
+      });
+    }
+
+
+
+
     /**
 
      * Gets nutritional information for food items using Google Gemini API
@@ -3456,6 +3509,22 @@
     });
 
     window.addEventListener('load', () => {
+      if (sessionStorage.getItem('photo_pending') === 'true') {
+        console.log('Reload detected. Attempting to recover pending photo...');
+        readImage().then(savedImage => {
+          if (savedImage) {
+            console.log('Photo recovered from IndexedDB. Restarting analysis.');
+            showAlert("中断された写真の分析を再開します。");
+            handleImageUpload(savedImage);
+          } else {
+            sessionStorage.removeItem('photo_pending');
+          }
+        }).catch(err => {
+            console.error('Failed to recover photo:', err);
+            sessionStorage.removeItem('photo_pending');
+        });
+      }
+
       // 1. 翻訳用の対応表を作成
       buildFoodKeyReverseMap();
 
