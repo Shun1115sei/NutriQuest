@@ -1185,6 +1185,7 @@
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
     // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
     const GEMINI_API_KEY = "AIzaSyCldW53rqjHejtKvuGyxyQM8R9kuEtgZN0";
+    
 
     const firebaseConfig = {
       apiKey: "AIzaSyB2uJs32bmnoOgHcB6GTZuu0eBanfZWLWE",
@@ -1830,9 +1831,8 @@
       updateDashboard(activePeriod);
     }
     /**
-     * Handles image file upload, processes it for food identification using AI vision
-     * This version is optimized for mobile devices to prevent browser reloads due to memory pressure.
-     * It resizes the image on a canvas before converting it to a base64 string.
+     * Handles image file upload, processes it for food identification using AI vision.
+     * This version is optimized for mobile devices and includes the logic to handle the new "unknown" response.
      *
      * @param {Event} event - The file input change event.
      * @returns {Promise} A promise that resolves when the operation completes.
@@ -1842,21 +1842,16 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      // Reset the file input value to allow selecting the same file again.
       event.target.value = null;
 
-      // Define the maximum dimensions for the resized image.
       const MAX_WIDTH = 800;
       const MAX_HEIGHT = 800;
 
       try {
-        // 1. Use createImageBitmap for a memory-efficient way to get image dimensions.
         const imageBitmap = await createImageBitmap(file);
 
-        // 2. Calculate new dimensions while preserving the aspect ratio.
         let width = imageBitmap.width;
         let height = imageBitmap.height;
-
         if (width > height) {
           if (width > MAX_WIDTH) {
             height = Math.round(height * (MAX_WIDTH / width));
@@ -1869,51 +1864,51 @@
           }
         }
 
-        // 3. Create a canvas to draw the resized image onto.
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(imageBitmap, 0, 0, width, height);
-
-        // 4. Immediately close the ImageBitmap to free up its memory. This is crucial!
         imageBitmap.close();
 
-        // 5. Get the resized image as a Blob, which is more memory-efficient than a data URL for large images.
-        // We'll convert this small blob to base64, which is much safer than converting the original large file.
         canvas.toBlob(async (blob) => {
           if (!blob) {
             showAlert("Sorry, there was an error processing the image.");
             return;
           }
 
-          showLoader('analysing');
-          try {
-            identifiedFoodName = await identifyFoodFromImage(blob);
-            hideLoader();
-            if (identifiedFoodName) {
-              // If identification is successful, show the quantity confirmation modal.
-              identifiedFoodNameEl.textContent = identifiedFoodName;
-              quantityInput.value = '';
-              quantityModal.showModal();
-              quantityInput.focus();
-            } else {
-              throw new Error("Could not identify the food from the uploaded image.");
-            }
-          } catch (error) {
-            hideLoader();
-            console.error("Image upload identification error:", error);
-            const currentLang = localStorage.getItem('language') || 'en';
-            if (error.message === "RATE_LIMIT_EXCEEDED") {
-              showAlert(translations[currentLang].rateLimitError);
-            } else {
-              showAlert("Sorry, we couldn't identify the food in the image.");
-            }
-          } finally {
-            blob = null;
-          }
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const resizedImageDataUrl = reader.result;
+            showLoader('analysing');
+            try {
+              const base64String = resizedImageDataUrl.split(',')[1];
+              identifiedFoodName = await identifyFoodFromImage(base64String);
+              hideLoader();
 
-        }, 'image/jpeg', 0.8); // Use JPEG format with 80% quality for a good balance.
+              // ▼▼▼ AIが null または "unknown" を返さなかったかチェックするよう変更 ▼▼▼
+              if (identifiedFoodName) { 
+                identifiedFoodNameEl.textContent = identifiedFoodName;
+                quantityInput.value = '';
+                quantityModal.showModal();
+                quantityInput.focus();
+              } else {
+                throw new Error("Could not identify the food from the uploaded image.");
+              }
+            } catch (error) {
+              hideLoader();
+              console.error("Image upload identification error:", error);
+              const currentLang = localStorage.getItem('language') || 'en';
+              if (error.message === "RATE_LIMIT_EXCEEDED") {
+                showAlert(translations[currentLang].rateLimitError);
+              } else {
+                showAlert("Sorry, we couldn't identify the food in the image.");
+              }
+            }
+          };
+          reader.readAsDataURL(blob);
+
+        }, 'image/jpeg', 0.8);
 
       } catch (error) {
         console.error("Error creating ImageBitmap:", error);
@@ -2084,7 +2079,10 @@
       } else {
         base64ImageData = imageData;
       }
-      const prompt = "What food is in this image? Describe it in a short phrase. If it's not food, say 'not food'.";
+      const prompt = `You are an expert food identifier specializing in Asian cuisine, particularly Singaporean dishes. Your task is to look at the image and identify the main dish.
+      Return ONLY the most common name for the food (e.g., "Hainanese chicken rice", "Laksa", "Ramen").
+      Do not add any descriptions or extra words.
+      If the image does not contain food, or you cannot identify it, return the single word "unknown".`;
       const payload = { contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64ImageData } }] }] };
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
       try {
@@ -2121,18 +2119,56 @@
      */
 
     async function getNutritionalInfo(prompt) {
-      const chatHistory = [{ role: "user", parts: [{ text: `Provide the estimated nutritional information for "${prompt}" in a valid JSON format. The JSON object should only contain these keys: "food" (string), "calories" (number), "protein" (number, in grams), "fat" (number, in grams), and "carbs" (number, in grams).` }] }];
-      const payload = { contents: chatHistory, generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "food": { "type": "STRING" }, "calories": { "type": "NUMBER" }, "protein": { "type": "NUMBER" }, "fat": { "type": "NUMBER" }, "carbs": { "type": "NUMBER" } }, required: ["food", "calories", "protein", "fat", "carbs"] } } };
+      console.log("Using Gemini API for analysis.");
+
+      const chatHistory = [{ 
+        role: "user", 
+        parts: [{ 
+          text: `You are an expert nutrition analyst. Your task is to provide the estimated nutritional information for "${prompt}" in a valid JSON format. 
+          The JSON object should only contain these keys: "food" (string), "calories" (number), "protein" (number, in grams), "fat" (number, in grams), and "carbs" (number, in grams).
+          
+          --- IMPORTANT RULES FOR ESTIMATING PORTION SIZE ---
+          1.  If the user does NOT specify any quantity (e.g., "ramen", "chicken rice"), you MUST assume a standard, single serving size (an average portion for one person).
+          2.  If the user specifies a very small, ambiguous quantity using words like "bite", "mouthful", "spoonful", or the Chinese characters "口", "匙", you MUST estimate a very small, appropriate nutritional value (e.g., 10-30 kcal per bite). Do not assume it's a full meal in this case.
+          3.  If the user specifies a clear quantity (e.g., "1 cup of rice", "200g chicken"), use that specified quantity for your calculation.`
+        }] 
+      }];
+
+
+      const payload = { 
+        contents: chatHistory, 
+        generationConfig: { 
+          responseMimeType: "application/json", 
+          responseSchema: { 
+            "type": "OBJECT", 
+            "properties": { 
+              "food": { "type": "STRING" }, 
+              "calories": { "type": "NUMBER" }, 
+              "protein": { "type": "NUMBER" }, 
+              "fat": { "type": "NUMBER" }, 
+              "carbs": { "type": "NUMBER" } 
+            }, 
+            "required": ["food", "calories", "protein", "fat", "carbs"] 
+          } 
+        } 
+      };
+      
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+      
       try {
-        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        if (response.status === 429) throw new Error("RATE_LIMIT_EXCEEDED");
-        if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-        const result = await response.json();
-        const text = result.candidates[0].content.parts[0].text;
-        return JSON.parse(text);
-      } catch (error) { console.error("Error fetching from Gemini API:", error); if (error.message === "RATE_LIMIT_EXCEEDED") throw error; return null; }
+          const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          if (response.status === 429) throw new Error("RATE_LIMIT_EXCEEDED");
+          if (!response.ok) throw new Error(`API request failed. Status: ${response.status}`);
+          const result = await response.json();
+          const text = result.candidates[0].content.parts[0].text;
+          return JSON.parse(text);
+      } catch (error) {
+          console.error("An error occurred while fetching data from the Gemini API:", error);
+          if (error.message === "RATE_LIMIT_EXCEEDED") throw error;
+          return null;
+      }
     }
+
     /**
 
      * Sets up event listeners for dashboard UI interactions and navigation
