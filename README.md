@@ -1,6 +1,6 @@
 NutriQuest - A Simple Nutrition Tracker for Seniors
 
-🌟 Overview:
+Overview
 NutriQuest is a simple and intuitive nutrition management web application designed specifically for seniors in Singapore. As part of an IB CAS project, its primary goal is to empower the elderly to easily track their daily nutritional intake, fostering a healthier and more informed lifestyle. The project aims to contribute to the UN's Sustainable Development Goals (SDGs), specifically Goal 3, "Good Health and Well-being," and Goal 4, "Quality Education," by providing an accessible tool for health literacy and management.
 
 ✨ Key Features:
