@@ -1854,7 +1854,8 @@
       try {
         if (eventOrFile.target) {
           await saveImage(file);
-          sessionStorage.setItem('photo_pending', 'true');
+          // ▼▼▼ sessionStorageからlocalStorageに変更 ▼▼▼
+          localStorage.setItem('photo_pending', 'true');
         }
 
         const MAX_WIDTH = 800;
@@ -1897,7 +1898,8 @@
                 quantityModal.showModal();
                 quantityInput.focus();
                 await clearImage();
-                sessionStorage.removeItem('photo_pending');
+                // ▼▼▼ sessionStorageからlocalStorageに変更 ▼▼▼
+                localStorage.removeItem('photo_pending');
               } else {
                 throw new Error("Could not identify the food from the uploaded image.");
               }
@@ -1906,7 +1908,8 @@
               console.error("Image upload identification error:", error);
               showAlert("Sorry, we couldn't identify the food in the image.");
               await clearImage();
-              sessionStorage.removeItem('photo_pending');
+              // ▼▼▼ sessionStorageからlocalStorageに変更 ▼▼▼
+              localStorage.removeItem('photo_pending');
             }
           };
           reader.readAsDataURL(blob);
@@ -1916,7 +1919,8 @@
         console.error("Error in handleImageUpload:", error);
         showAlert("An error occurred while processing the image. Please try again.");
         await clearImage();
-        sessionStorage.removeItem('photo_pending');
+        // ▼▼▼ sessionStorageからlocalStorageに変更 ▼▼▼
+        localStorage.removeItem('photo_pending');
       }
     }
     /**
@@ -3518,35 +3522,33 @@
     });
 
     window.addEventListener('load', () => {
-      // Once the page has finished loading, first obtain the language settings.
       const currentLang = localStorage.getItem('language') || 'en';
 
-      // Check for interrupted photos
-      if (sessionStorage.getItem('photo_pending') === 'true') {
+      // ▼▼▼ Changed from sessionStorage to localStorage ▼▼▼
+      if (localStorage.getItem('photo_pending') === 'true') {
         console.log('Reload detected. Switching to recovery splash screen...');
 
-        // 1. Hide normal splash screen elements
         document.getElementById('splash-title-container').classList.add('hidden');
         document.getElementById('splash-ecg-line').classList.add('hidden');
         document.getElementById('splash-tagline').classList.add('hidden');
 
-        // 2. Display recovery message elements and set translated text
         const recoveryContainer = document.getElementById('recovery-message');
         const recoveryText = recoveryContainer.querySelector('p');
         recoveryText.textContent = translations[currentLang]?.recoveringAnalysis || "Recovering interrupted photo analysis...";
         recoveryContainer.classList.remove('hidden');
         
-        // 3. Resume analysis by loading images from the database (without displaying alerts)
         readImage().then(savedImage => {
           if (savedImage) {
             console.log('Photo recovered from IndexedDB. Restarting analysis.');
             handleImageUpload(savedImage);
           } else {
-            sessionStorage.removeItem('photo_pending');
+            // ▼▼▼ Changed from sessionStorage to localStorage ▼▼▼
+            localStorage.removeItem('photo_pending');
           }
         }).catch(err => {
             console.error('Failed to recover photo:', err);
-            sessionStorage.removeItem('photo_pending');
+            // ▼▼▼ Changed from sessionStorage to localStorage ▼▼▼
+            localStorage.removeItem('photo_pending');
         });
 
       }
