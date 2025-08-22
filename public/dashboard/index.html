@@ -3497,17 +3497,32 @@
 
     const splashScreenFinished = new Promise(resolve => {
       window.addEventListener('load', () => {
-        setTimeout(() => { splashScreen.style.opacity = '0'; }, 2200);
-        setTimeout(() => {
-          splashScreen.classList.add('hidden');
-          mainAppContent.style.opacity = '1';
-          resolve();
-        }, 2700);
       });
     });
 
     auth.onAuthStateChanged(async user => {
-      await splashScreenFinished;
+      const isRecovering = localStorage.getItem('photo_pending') === 'true';
+
+      if (isRecovering) {
+        // In recovery mode, animations are terminated immediately.
+        console.log('Recovery mode detected, skipping splash animation.');
+        splashScreen.style.opacity = '0';
+        setTimeout(() => {
+            splashScreen.classList.add('hidden');
+            mainAppContent.style.opacity = '1';
+        }, 500); // Fade out quickly in 0.5 seconds
+
+      } else {
+        // In the case of normal startup, execute normal animation.
+        console.log('Normal startup, running splash animation.');
+        setTimeout(() => { splashScreen.style.opacity = '0'; }, 2200);
+        setTimeout(() => {
+          splashScreen.classList.add('hidden');
+          mainAppContent.style.opacity = '1';
+        }, 2700);
+      }
+      
+      // Display screen according to login status
       if (user) {
         await loadUserGoals();
         await loadFavourites();
@@ -3524,7 +3539,6 @@
     window.addEventListener('load', () => {
       const currentLang = localStorage.getItem('language') || 'en';
 
-      // ▼▼▼ Changed from sessionStorage to localStorage ▼▼▼
       if (localStorage.getItem('photo_pending') === 'true') {
         console.log('Reload detected. Switching to recovery splash screen...');
 
@@ -3542,12 +3556,10 @@
             console.log('Photo recovered from IndexedDB. Restarting analysis.');
             handleImageUpload(savedImage);
           } else {
-            // ▼▼▼ Changed from sessionStorage to localStorage ▼▼▼
             localStorage.removeItem('photo_pending');
           }
         }).catch(err => {
             console.error('Failed to recover photo:', err);
-            // ▼▼▼ Changed from sessionStorage to localStorage ▼▼▼
             localStorage.removeItem('photo_pending');
         });
 
