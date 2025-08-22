@@ -341,6 +341,13 @@
   <!-- Splash Screen -->
   <div id="splash-screen"
     class="transition-opacity duration-500 ease-out overflow-hidden fixed inset-0 bg-gray-100 flex flex-col items-center justify-center z-50">
+    <div id="recovery-message" class="hidden text-center p-4">
+      <svg class="w-12 h-12 text-blue-500 mx-auto animate-spin mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <p class="text-lg text-gray-600"></p>
+    </div>
     <div id="splash-title-container" class="relative h-[80px] flex items-center justify-center">
       <h1 id="splash-title" class="flex relative z-10 text-5xl font-bold text-gray-700">
         <span id="splash-nutri">Nutri</span><span id="splash-quest">Quest</span>
@@ -1243,6 +1250,7 @@
         uploadFromLibrary: "Upload from Library",
         sun: "S", mon: "M", tue: "T", wed: "W", thu: "T", fri: "F", sat: "S",
         week: "Week", periodGoal: "Period Goal", actualIntake: "Actual Intake",
+        recoveringAnalysis: "Recovering interrupted photo analysis...",
       },
       zh: {
         loginTitle: "登录", emailLabel: "电子邮件", passwordLabel: "密码", loginButton: "登录", authTogglePrompt: "需要一个账户？", authToggleAction: "注册", signUpTitle: "注册", guestButton: "以访客身份继续", forgotPassword: "忘记密码？", enterEmailForReset: "请在电子邮件字段中输入您的电子邮件地址以重置密码。", passwordResetSent: "密码重置链接已发送到您的电子邮件地址。请检查您的收件箱。", healthTrackerTitle: "健康追踪器", tagline: "开启您的健康之旅。", signOutButton: "登出", todaysRecord: "今日记录", tooltipInfo: "只需拍下您的餐点、语音描述或打字输入。NutriQuest是一款新型营养管理工具，它使用强大的人工智能（gemini-2.0-flash）来自动分析和记录您的膳食。这免去了手动输入的麻烦，让任何人都能轻松开始健康管理。", loginToSyncButton: "登录以同步数据", favouritesTitle: "收藏", setGoalsTitle: "设定每日目标", googleSignIn: "使用谷歌登录", foodInputPlaceholder: "例如：一碗米饭和烤鸡", voiceInputTitle: "语音输入", scanWithCameraTitle: "用相机扫描", breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "点心", analyseMealButton: "分析膳食", quickAccess: "快速访问", hainaneseChickenRice: "海南鸡饭", laksa: "叻沙", kayaToast: "咖椰吐司", bakKutTeh: "肉骨茶", today: "今天", thisWeek: "本星期", thisMonth: "这个月", todaysTotals: "今日总计", thisWeeksTotals: "本周总热量", thisMonthsTotals: "本月总热量", calories: "卡路里", protein: "蛋白质", fat: "脂肪", carbs: "碳水化合物", showDetails: "显示详细信息", closeDetails: "关闭", nutritionAdvice: "营养建议", todaysCalories: "今日卡路里", nutritionBalance: "营养均衡", mealList: "膳食清单", noMeals: "此期间没有记录膳食。", deleteAllData: "删除所有数据", scanMealButton: "用相机扫描膳食", scanBarcodeButton: "扫描条形码", closeButton: "关闭", positionMeal: "将您的餐点放在相机中", captureButton: "捕获", scanBarcodeTitle: "扫描条形码", zoom: "变焦", servingSizeTitle: "输入份量", servingSizeLabel: "份量（克）", cancelButton: "取消", addMealButton: "添加膳食", okButton: "好", confirmButton: "确认", settingsDescription: "让我们计算您的需求，或设置您自己的手动目标。", gender: "性别", male: "男性", female: "女性", age: "年龄", height: "身高（厘米）", weight: "体重（公斤）", activityLevel: "活动水平",
@@ -1284,6 +1292,7 @@
         uploadFromLibrary: "从相册上传",
         sun: "日", mon: "一", tue: "二", wed: "三", thu: "四", fri: "五", sat: "六",
         week: "周", periodGoal: "期间目标", actualIntake: "实际摄入",
+        recoveringAnalysis: "正在恢复中断的照片分析...",
       }
     };
 
@@ -3509,12 +3518,28 @@
     });
 
     window.addEventListener('load', () => {
+      // Once the page has finished loading, first obtain the language settings.
+      const currentLang = localStorage.getItem('language') || 'en';
+
+      // Check for interrupted photos
       if (sessionStorage.getItem('photo_pending') === 'true') {
-        console.log('Reload detected. Attempting to recover pending photo...');
+        console.log('Reload detected. Switching to recovery splash screen...');
+
+        // 1. Hide normal splash screen elements
+        document.getElementById('splash-title-container').classList.add('hidden');
+        document.getElementById('splash-ecg-line').classList.add('hidden');
+        document.getElementById('splash-tagline').classList.add('hidden');
+
+        // 2. Display recovery message elements and set translated text
+        const recoveryContainer = document.getElementById('recovery-message');
+        const recoveryText = recoveryContainer.querySelector('p');
+        recoveryText.textContent = translations[currentLang]?.recoveringAnalysis || "Recovering interrupted photo analysis...";
+        recoveryContainer.classList.remove('hidden');
+        
+        // 3. Resume analysis by loading images from the database (without displaying alerts)
         readImage().then(savedImage => {
           if (savedImage) {
             console.log('Photo recovered from IndexedDB. Restarting analysis.');
-            showAlert("中断された写真の分析を再開します。");
             handleImageUpload(savedImage);
           } else {
             sessionStorage.removeItem('photo_pending');
@@ -3523,21 +3548,22 @@
             console.error('Failed to recover photo:', err);
             sessionStorage.removeItem('photo_pending');
         });
+
       }
 
-      // 1. 翻訳用の対応表を作成
+      // Create a translation table
       buildFoodKeyReverseMap();
 
-      // 2. 現在時刻に合わせてデフォルトの食事タイプを設定
+      // Set the default meal type according to the current time.
       setDefaultMealType();
 
-      // 3. 保存されている言語設定を適用
-      setLanguage(localStorage.getItem('language') || 'en');
+      // Apply saved language settings
+      setLanguage(currentLang);
 
-      // 4. すべてのボタンやフォームに機能を設定
+      // Set functions for all buttons and forms
       initializeAppEventListeners();
 
-      // 5. ヘッダーの日付を更新
+      // Update the date in the header
       updateHeaderDate();
     });
 
