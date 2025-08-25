@@ -26,23 +26,6 @@ This project aims to contribute to the UN SDGs: Goal 3 (**Good Health and Well-b
 
 ---
 
-## Getting Started
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Shun1115sei/NutriQuest.git
-   ```
-2. **Configure Firebase**  
-   Edit the `firebaseConfig` in the `<script>` section at the bottom of `nqstatic.html` with your Firebase project credentials.
-
-3. **Set Gemini API Key**  
-   In the same `<script>` tag, set `GEMINI_API_KEY` with your Google AI Studio API key.
-
-4. **Run the application**  
-   Open `nqstatic.html` in your browser.
-
----
-
 ## Usage
 
 1. **Sign up / Log in** (Google authentication or guest mode)
