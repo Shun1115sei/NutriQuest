@@ -8,7 +8,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/|icons/|manifest.json|service-worker.js|_next/|static/).*)",
+      "source": "/((?!api/|icons/|manifest\\.json|service-worker\\.js|robots\\.txt).*)",
       "destination": "/dashboard/index.html"
     }
   ]
