@@ -101,4 +101,4 @@ MIT
 
 ## Links
 
-- [NutriQuest Web App](https://nutri-quest-five.vercel.app)
+- [NutriQuest Web App](cas.nutriquest.ltd)
