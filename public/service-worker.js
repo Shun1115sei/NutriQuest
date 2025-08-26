@@ -1,6 +1,6 @@
 // 2025-07-30 02:08:59: Updated file for cache busting
 // Define the name of the cache
-const CACHE_NAME = 'nutriquest-cache-v3'; // Update the CACHE_NAME
+const CACHE_NAME = 'nutriquest-cache-v2'; // Update the CACHE_NAME
 // List of the files that you cache
 const urlsToCache = [
   '/dashboard/index.html',
