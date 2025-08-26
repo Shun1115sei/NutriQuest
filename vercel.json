@@ -8,8 +8,8 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/((?!api/|icons/|manifest.json|service-worker.js|_next/|static/).*)",
+      "destination": "/dashboard/index.html"
     }
   ]
 }
