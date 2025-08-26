@@ -15,6 +15,7 @@
   <link rel="icon" type="image/png" href="/icons/192.png">
   <!-- Barcode Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://unpkg.com/assemblyai@4.2.0/dist/assemblyai.streaming.umd.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1396,6 +1397,9 @@
     let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, html5QrCodeInstance = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
 
     let foodNameForQuantitySpec = '';
+    let assemblyAITranscriber = null;
+    let mediaRecorder = null;
+    let finalTranscript = '';
 
     /**
      * Opens the quantity specification modal for a given food item
@@ -3184,46 +3188,80 @@
      */
 
 
-    function startVoiceRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) { showAlert('Your browser does not support voice input.'); return; }
-      const recognition = new SpeechRecognition();
-      const currentLang = localStorage.getItem('language') || 'en';
-      recognition.lang = currentLang === 'zh' ? 'zh-CN' : 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      listeningTextStatus.textContent = translations[currentLang].listening;
-      listeningModal.showModal();
-      recognition.start();
+    async function startVoiceRecognition() {
+        const currentLang = localStorage.getItem('language') || 'en';
+        listeningTextStatus.textContent = translations[currentLang].listening;
+        listeningModal.showModal();
 
-      listeningModal.addEventListener('close', () => {
-        recognition.stop();
-      })
-
-      recognition.onresult = async (event) => {
-        listeningModal.close();
-        const speechResult = event.results[0][0].transcript;
-        foodInput.placeholder = translations[currentLang].checkingSpeech;
-        showLoader('checkingSpeech');
         try {
-          const correctedFood = await getSimilarSoundingFood(speechResult);
-          hideLoader();
-          if (correctedFood && correctedFood.toLowerCase() !== speechResult.toLowerCase()) {
-            const message = translations[currentLang].didYouMean.replace('{foodName}', correctedFood);
-            if (await showConfirm(message)) foodInput.value = correctedFood;
-            else foodInput.value = '';
-          } else foodInput.value = speechResult;
+            // 1. サーバーから一時的な認証トークンを取得
+            const tokenResponse = await fetch('/api/assemblyai-token');
+            if (!tokenResponse.ok) {
+                throw new Error('Could not get AssemblyAI token.');
+            }
+            const { token } = await tokenResponse.json();
+
+            // 2. マイクの音声ストリームを取得
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            // 3. AssemblyAIのTranscriberを初期化
+            assemblyAITranscriber = new assemblyai.StreamingTranscriber({ token });
+
+            // 4. 文字起こし結果を受け取るイベントリスナーを設定
+            assemblyAITranscriber.on('transcript', (transcript) => {
+                if (transcript.message_type === 'FinalTranscript') {
+                    finalTranscript += transcript.text + ' ';
+                    foodInput.value = finalTranscript.trim();
+                }
+            });
+
+            assemblyAITranscriber.on('error', (error) => {
+                console.error('AssemblyAI Error:', error);
+                showAlert('An error occurred during transcription.');
+                stopVoiceRecognition();
+            });
+
+            // 5. 接続を開始
+            await assemblyAITranscriber.connect();
+
+            // 6. MediaRecorderを使ってマイク音声を送信
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.addEventListener('dataavailable', (event) => {
+                if (event.data.size > 0 && assemblyAITranscriber.isOpen) {
+                    assemblyAITranscriber.sendAudio(event.data);
+                }
+            });
+            mediaRecorder.start(1000); // 1秒ごとに音声データを送信
+
+            // モーダルが閉じられたら停止する
+            listeningModal.addEventListener('close', stopVoiceRecognition, { once: true });
+
         } catch (error) {
-          console.error("Error correcting speech:", error);
-          foodInput.value = speechResult;
-          hideLoader();
-        } finally { foodInput.placeholder = translations[currentLang].foodInputPlaceholder; }
-      };
-      recognition.onspeechend = () => { recognition.stop(); listeningModal.close(); };
-      recognition.onerror = (event) => {
-        listeningModal.close();
-        showAlert(translations[currentLang].speechError.replace('{error}', event.error));
-      };
+            console.error("Error starting voice recognition:", error);
+            showAlert("Could not start the microphone. Please check permissions.");
+            listeningModal.close();
+        }
+    }
+
+    async function stopVoiceRecognition() {
+        if (assemblyAITranscriber) {
+            await assemblyAITranscriber.close();
+            assemblyAITranscriber = null;
+        }
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            mediaRecorder = null;
+        }
+        if (finalTranscript.trim()) {
+            foodInput.value = finalTranscript.trim();
+        }
+        finalTranscript = ''; // リセット
+
+        // モーダルがまだ開いていれば閉じる
+        if (listeningModal.open) {
+            listeningModal.close();
+        }
     }
     /**
 
@@ -3238,19 +3276,6 @@
      * @async
 
      */
-
-    async function getSimilarSoundingFood(prompt) {
-      const chatHistory = [{ role: "user", parts: [{ text: `A user said "${prompt}" via voice input. If this is a common food item, return the food item's name. If it is not a food item, return the name of a common food item that sounds similar. Respond with only the food name in a valid JSON format. The JSON object should only contain the key "food".` }] }];
-      const payload = { contents: chatHistory, generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "food": { type: "STRING" } }, required: ["food"] } } };
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-      try {
-        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-        const result = await response.json();
-        const text = result.candidates[0].content.parts[0].text;
-        return JSON.parse(text).food;
-      } catch (error) { console.error("Error fetching from Gemini API for correction:", error); return null; }
-    }
 
     // --- APPLICATION INITIALIZATION ---
     /**
