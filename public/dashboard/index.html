@@ -1398,6 +1398,7 @@
 
     let foodNameForQuantitySpec = '';
     let assemblyAITranscriber = null;
+    let assemblyAIReady = false;
     let mediaRecorder = null;
     let finalTranscript = '';
 
@@ -3194,6 +3195,7 @@
         listeningModal.showModal();
 
         try {
+            assemblyAIReady = false;
             // 1. サーバーから一時的な認証トークンを取得
             const tokenResponse = await fetch('/api/assemblyai-token');
             if (!tokenResponse.ok) {
@@ -3206,6 +3208,10 @@
 
             // 3. AssemblyAIのTranscriberを初期化
             assemblyAITranscriber = new assemblyai.StreamingTranscriber({ token });
+
+            assemblyAITranscriber.on('open', () => {
+                assemblyAIReady = true;
+            });
 
             // 4. 文字起こし結果を受け取るイベントリスナーを設定
             assemblyAITranscriber.on('transcript', (transcript) => {
@@ -3223,11 +3229,12 @@
 
             // 5. 接続を開始
             await assemblyAITranscriber.connect();
+            assemblyAIReady = true;
 
             // 6. MediaRecorderを使ってマイク音声を送信
             mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.addEventListener('dataavailable', (event) => {
-                if (event.data.size > 0 && assemblyAITranscriber.isOpen) {
+                if (event.data.size > 0 && assemblyAIReady && assemblyAITranscriber) {
                     assemblyAITranscriber.sendAudio(event.data);
                 }
             });
@@ -3248,6 +3255,7 @@
             await assemblyAITranscriber.close();
             assemblyAITranscriber = null;
         }
+        assemblyAIReady = false;
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             mediaRecorder.stop();
             mediaRecorder.stream.getTracks().forEach(track => track.stop());
