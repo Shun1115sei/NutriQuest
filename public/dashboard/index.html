@@ -3200,7 +3200,16 @@
             // 1. サーバーから一時的な認証トークンを取得
             const tokenResponse = await fetch('/api/assemblyai-token');
             if (!tokenResponse.ok) {
-                throw new Error('Could not get AssemblyAI token.');
+                let tokenErrorMessage = 'Could not get AssemblyAI token.';
+                try {
+                    const errorPayload = await tokenResponse.json();
+                    if (errorPayload && typeof errorPayload.error === 'string' && errorPayload.error.trim().length > 0) {
+                        tokenErrorMessage = `${tokenErrorMessage} ${errorPayload.error}`;
+                    }
+                } catch (parseError) {
+                    // ignore JSON parsing errors and fall back to the default message
+                }
+                throw new Error(tokenErrorMessage);
             }
             const { token } = await tokenResponse.json();
 
