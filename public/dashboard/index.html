@@ -3194,6 +3194,7 @@
         listeningTextStatus.textContent = translations[currentLang].listening;
         listeningModal.showModal();
 
+        let stream;
         try {
             assemblyAIReady = false;
             // 1. サーバーから一時的な認証トークンを取得
@@ -3204,7 +3205,7 @@
             const { token } = await tokenResponse.json();
 
             // 2. マイクの音声ストリームを取得
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
             // 3. AssemblyAIのTranscriberを初期化
             assemblyAITranscriber = new assemblyai.StreamingTranscriber({ token });
@@ -3245,7 +3246,24 @@
 
         } catch (error) {
             console.error("Error starting voice recognition:", error);
-            showAlert("Could not start the microphone. Please check permissions.");
+            assemblyAIReady = false;
+            let alertMessage = "Could not start voice recognition.";
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            if (error && typeof error === 'object') {
+                const { name, message } = error;
+                if (name === 'NotAllowedError' || name === 'SecurityError') {
+                    alertMessage = 'Microphone access was denied. Please allow microphone access in your browser settings.';
+                } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+                    alertMessage = 'No suitable microphone was found. Please check your audio input device.';
+                } else if (typeof message === 'string' && message.includes('Failed to fetch')) {
+                    alertMessage = 'Could not contact the transcription service. Please check your internet connection and try again.';
+                } else if (typeof message === 'string' && message.trim().length > 0) {
+                    alertMessage = `Could not start voice recognition: ${message}`;
+                }
+            }
+            showAlert(alertMessage);
             listeningModal.close();
         }
     }
