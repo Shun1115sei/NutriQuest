@@ -3283,6 +3283,8 @@
             alertMessage = `Could not start voice recognition: ${message}`;
           }
         }
+        await showAlert(alertMessage);
+      }
     }
     function stopVoiceRecognition() {
       if (speechRecognitionInstance) {
