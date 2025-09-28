@@ -15,7 +15,6 @@
   <link rel="icon" type="image/png" href="/icons/192.png">
   <!-- Barcode Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <script src="https://unpkg.com/assemblyai@4.2.0/dist/assemblyai.streaming.umd.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1221,6 +1220,7 @@
         calculateAndSave: "Calculate & Save", or: "OR", setManualGoal: "Set Manual Calorie Goal", saveManualGoal: "Save Manual Goal",
         analysing: "Analysing...", noFavourites: "No favourite meals yet. Click the star on a meal to add it.",
         didYouMean: 'Did you mean "{foodName}"?', listening: 'Listening...', checkingSpeech: 'Checking your speech...', speechError: 'Could not recognize speech: {error}',
+        speechUnsupported: 'Speech recognition is not supported in this browser. Please use the latest Chrome, Edge, or Safari.',
         deletingData: 'Deleting data...', signingIn: 'Signing in...', loadingData: 'Loading your data...', barcodeLookup: 'Found barcode: {barcode}. Looking up...',
         offlineTitle: "You're Offline", offlineMessage: "Please check your internet connection and try again.",
         specifyQuantityTitle: "Specify Quantity",
@@ -1263,6 +1263,7 @@
         calculateAndSave: "计算并保存", or: "要么", setManualGoal: "设置手动卡路里目标", saveManualGoal: "保存手动目标",
         analysing: "分析中...", noFavourites: "还没有喜欢的食物。点击星星添加。",
         didYouMean: '您是指“{foodName}”吗？', listening: '正在听...', checkingSpeech: '正在检查您的语音...', speechError: '无法识别语音: {error}',
+        speechUnsupported: '此浏览器不支持语音识别。请使用最新版的 Chrome、Edge 或 Safari。',
         deletingData: '正在删除数据...', signingIn: '登录中...', loadingData: '正在加载您的数据...', barcodeLookup: '找到条形码: {barcode}。查询中...',
         offlineTitle: "您已离线", offlineMessage: "请检查您的网络连接并重试。",
         specifyQuantityTitle: "指定份量",
@@ -1397,9 +1398,8 @@
     let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, html5QrCodeInstance = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
 
     let foodNameForQuantitySpec = '';
-    let assemblyAITranscriber = null;
-    let assemblyAIReady = false;
-    let mediaRecorder = null;
+    let speechRecognitionInstance = null;
+    let listeningModalCloseHandler = null;
     let finalTranscript = '';
 
     /**
@@ -3190,113 +3190,124 @@
 
 
     async function startVoiceRecognition() {
-        const currentLang = localStorage.getItem('language') || 'en';
-        listeningTextStatus.textContent = translations[currentLang].listening;
-        listeningModal.showModal();
+      const currentLang = localStorage.getItem('language') || 'en';
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        let stream;
-        try {
-            assemblyAIReady = false;
-            // 1. サーバーから一時的な認証トークンを取得
-            const tokenResponse = await fetch('/api/assemblyai-token');
-            if (!tokenResponse.ok) {
-                let tokenErrorMessage = 'Could not get AssemblyAI token.';
-                try {
-                    const errorPayload = await tokenResponse.json();
-                    if (errorPayload && typeof errorPayload.error === 'string' && errorPayload.error.trim().length > 0) {
-                        tokenErrorMessage = `${tokenErrorMessage} ${errorPayload.error}`;
-                    }
-                } catch (parseError) {
-                    // ignore JSON parsing errors and fall back to the default message
-                }
-                throw new Error(tokenErrorMessage);
+      if (!Recognition) {
+        const unsupportedMessage = translations[currentLang]?.speechUnsupported ||
+          'Speech recognition is not supported in this browser. Please try using the latest Chrome, Edge, or Safari.';
+        await showAlert(unsupportedMessage);
+        return;
+      }
+
+      // Reset any existing recognition session
+      stopVoiceRecognition();
+
+      finalTranscript = '';
+      listeningTextStatus.textContent = translations[currentLang].listening;
+      listeningModal.showModal();
+
+      if (listeningModalCloseHandler) {
+        listeningModal.removeEventListener('close', listeningModalCloseHandler);
+        listeningModalCloseHandler = null;
+      }
+
+      listeningModalCloseHandler = () => {
+        stopVoiceRecognition();
+        listeningModal.removeEventListener('close', listeningModalCloseHandler);
+        listeningModalCloseHandler = null;
+      };
+      listeningModal.addEventListener('close', listeningModalCloseHandler);
+
+      try {
+        speechRecognitionInstance = new Recognition();
+        speechRecognitionInstance.lang = currentLang === 'zh' ? 'zh-CN' : 'en-US';
+        speechRecognitionInstance.continuous = true;
+        speechRecognitionInstance.interimResults = true;
+        speechRecognitionInstance.maxAlternatives = 1;
+
+        speechRecognitionInstance.onresult = (event) => {
+          let interimTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const result = event.results[i];
+            const transcript = result[0]?.transcript || '';
+            if (result.isFinal) {
+              finalTranscript += `${transcript.trim()} `;
+            } else {
+              interimTranscript += transcript;
             }
-            const { token } = await tokenResponse.json();
+          }
+          const combinedTranscript = `${finalTranscript}${interimTranscript}`.trim();
+          if (combinedTranscript) {
+            foodInput.value = combinedTranscript;
+          }
+        };
 
-            // 2. マイクの音声ストリームを取得
-            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        speechRecognitionInstance.onerror = async (event) => {
+          if (event?.error === 'aborted') {
+            return;
+          }
+          console.error('Speech recognition error:', event);
+          const errorText = event?.error || 'unknown error';
+          const messageTemplate = translations[currentLang]?.speechError || 'Could not recognize speech: {error}';
+          stopVoiceRecognition();
+          await showAlert(messageTemplate.replace('{error}', errorText));
+        };
 
-            // 3. AssemblyAIのTranscriberを初期化
-            assemblyAITranscriber = new assemblyai.StreamingTranscriber({ token });
-
-            assemblyAITranscriber.on('open', () => {
-                assemblyAIReady = true;
-            });
-
-            // 4. 文字起こし結果を受け取るイベントリスナーを設定
-            assemblyAITranscriber.on('transcript', (transcript) => {
-                if (transcript.message_type === 'FinalTranscript') {
-                    finalTranscript += transcript.text + ' ';
-                    foodInput.value = finalTranscript.trim();
-                }
-            });
-
-            assemblyAITranscriber.on('error', (error) => {
-                console.error('AssemblyAI Error:', error);
-                showAlert('An error occurred during transcription.');
-                stopVoiceRecognition();
-            });
-
-            // 5. 接続を開始
-            await assemblyAITranscriber.connect();
-            assemblyAIReady = true;
-
-            // 6. MediaRecorderを使ってマイク音声を送信
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.addEventListener('dataavailable', (event) => {
-                if (event.data.size > 0 && assemblyAIReady && assemblyAITranscriber) {
-                    assemblyAITranscriber.sendAudio(event.data);
-                }
-            });
-            mediaRecorder.start(1000); // 1秒ごとに音声データを送信
-
-            // モーダルが閉じられたら停止する
-            listeningModal.addEventListener('close', stopVoiceRecognition, { once: true });
-
-        } catch (error) {
-            console.error("Error starting voice recognition:", error);
-            assemblyAIReady = false;
-            let alertMessage = "Could not start voice recognition.";
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-            if (error && typeof error === 'object') {
-                const { name, message } = error;
-                if (name === 'NotAllowedError' || name === 'SecurityError') {
-                    alertMessage = 'Microphone access was denied. Please allow microphone access in your browser settings.';
-                } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
-                    alertMessage = 'No suitable microphone was found. Please check your audio input device.';
-                } else if (typeof message === 'string' && message.includes('Failed to fetch')) {
-                    alertMessage = 'Could not contact the transcription service. Please check your internet connection and try again.';
-                } else if (typeof message === 'string' && message.trim().length > 0) {
-                    alertMessage = `Could not start voice recognition: ${message}`;
-                }
-            }
-            showAlert(alertMessage);
+        speechRecognitionInstance.onend = () => {
+          if (finalTranscript.trim()) {
+            foodInput.value = finalTranscript.trim();
+          }
+          if (listeningModal.open) {
             listeningModal.close();
+          }
+          if (listeningModalCloseHandler) {
+            listeningModal.removeEventListener('close', listeningModalCloseHandler);
+            listeningModalCloseHandler = null;
+          }
+          speechRecognitionInstance = null;
+          finalTranscript = '';
+        };
+
+        speechRecognitionInstance.start();
+      } catch (error) {
+        console.error('Error starting voice recognition:', error);
+        let alertMessage = 'Could not start voice recognition.';
+        if (error && typeof error === 'object') {
+          const { name, message } = error;
+          if (name === 'NotAllowedError' || name === 'SecurityError') {
+            alertMessage = 'Microphone access was denied. Please allow microphone access in your browser settings.';
+          } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+            alertMessage = 'No suitable microphone was found. Please check your audio input device.';
+          } else if (typeof message === 'string' && message.trim().length > 0) {
+            alertMessage = `Could not start voice recognition: ${message}`;
+          }
         }
     }
+    function stopVoiceRecognition() {
+      if (speechRecognitionInstance) {
+        try {
+          speechRecognitionInstance.stop();
+        } catch (error) {
+          console.error('Error stopping speech recognition:', error);
+        }
+      }
 
-    async function stopVoiceRecognition() {
-        if (assemblyAITranscriber) {
-            await assemblyAITranscriber.close();
-            assemblyAITranscriber = null;
-        }
-        assemblyAIReady = false;
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            mediaRecorder = null;
-        }
-        if (finalTranscript.trim()) {
-            foodInput.value = finalTranscript.trim();
-        }
-        finalTranscript = ''; // リセット
+      if (listeningModalCloseHandler) {
+        listeningModal.removeEventListener('close', listeningModalCloseHandler);
+        listeningModalCloseHandler = null;
+      }
 
-        // モーダルがまだ開いていれば閉じる
-        if (listeningModal.open) {
-            listeningModal.close();
-        }
+      if (listeningModal.open) {
+        listeningModal.close();
+      }
+
+      if (finalTranscript.trim()) {
+        foodInput.value = finalTranscript.trim();
+      }
+
+      finalTranscript = '';
+      speechRecognitionInstance = null;
     }
     /**
 
