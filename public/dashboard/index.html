@@ -691,6 +691,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                         </path>
                       </svg>
+
+                      <input type="date" id="calendar-date-input" class="hidden" />
+                      <input type="week" id="calendar-week-input" class="hidden" />
+                      <input type="month" id="calendar-month-input" class="hidden" />
+
                     </div>
                     <button id="next-period-btn"
                       class="p-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1008,47 +1013,6 @@
             <button class="btn w-full btn-ghost" data-lang-key="closeButton">Close</button>
           </form>
         </div>
-      </div>
-    </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
-
-  <!-- Calendar Modal -->
-  <!-- Calendar Modal (DaisyUI v5 Dialog) -->
-  <dialog id="calendar-modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box max-w-xs w-full">
-      <form method="dialog">
-        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-      </form>
-      <div id="calendar-header" class="flex justify-between items-center mb-4">
-        <button id="calendar-prev-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-            </path>
-          </svg>
-        </button>
-        <h3 id="calendar-month-year" class="font-bold text-lg"></h3>
-        <button id="calendar-next-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </button>
-      </div>
-      <div id="calendar-weekdays" class="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 font-semibold mb-2">
-        <!-- Day names (S, M, T, etc.) will be generated here -->
-      </div>
-      <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center">
-        <!-- Dates will be generated here -->
-      </div>
-      <div id="calendar-month-grid" class="hidden grid grid-cols-3 gap-2 text-center mt-4">
-        <!-- Months will be generated here -->
-      </div>
-      <div class="modal-action">
-        <form method="dialog">
-          <button class="btn btn-ghost" data-lang-key="closeButton">Close</button>
-        </form>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">
@@ -1374,7 +1338,6 @@
     const barChartContainer = document.getElementById('bar-chart-container');
     const periodGoalText = document.getElementById('period-goal-text');
     const periodActualText = document.getElementById('period-actual-text');
-    const calendarModal = document.getElementById('calendar-modal');
     const calendarMonthYear = document.getElementById('calendar-month-year');
     const calendarGrid = document.getElementById('calendar-grid');
     const calendarWeekdays = document.getElementById('calendar-weekdays');
@@ -2242,8 +2205,7 @@
       periodTitleContainer.addEventListener('click', () => {
         calendarDisplayDate = new Date(currentDate);
         calendarMode = (activePeriod === 'day' || activePeriod === 'week') ? 'day' : 'month';
-        renderCalendar(calendarDisplayDate);
-        calendarModal.showModal(); // CHANGED: Use showModal() instead of classList.remove('hidden')
+        chooseFromNativeCalendar(calendarDisplayDate);
       });
     }
     /**
@@ -2811,76 +2773,75 @@
       }
       return allMeals.filter(meal => { const mealDate = new Date(meal.timestamp); return mealDate >= start && mealDate <= end; });
     }
+
     /**
-
      * Renders calendar widget for date/period selection
-
      *
-
      * @param {any} date - The date parameter
-
      * @returns {any} The rendered or created element/data
-
      */
-
-    function renderCalendar(date) {
+    function chooseFromNativeCalendar(date) {
       const lang = localStorage.getItem('language') || 'en', today = new Date();
-      today.setHours(0, 0, 0, 0);
       const year = date.getFullYear();
-      calendarGrid.innerHTML = '';
-      calendarWeekdays.innerHTML = '';
-      calendarMonthGrid.innerHTML = '';
-      if (calendarMode === 'month') {
-        calendarMonthYear.textContent = year;
-        calendarWeekdays.classList.add('hidden');
-        calendarGrid.classList.add('hidden');
-        calendarMonthGrid.classList.remove('hidden');
-        const months = Array.from({ length: 12 }, (_, i) => new Date(year, i).toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', { month: 'short' }));
-        months.forEach((monthName, index) => {
-          const monthCell = document.createElement('button');
-          monthCell.textContent = monthName;
-          monthCell.className = 'p-3 rounded-lg hover:bg-blue-100 transition-colors';
-          if (index === currentDate.getMonth() && year === currentDate.getFullYear()) monthCell.classList.add('bg-blue-500', 'text-white');
-          monthCell.addEventListener('click', () => {
-            currentDate = new Date(year, index, 1);
-            calendarModal.close(); // CHANGED: Use close() instead of classList.add('hidden')
-            updateDashboard('month');
-          });
-          calendarMonthGrid.appendChild(monthCell);
+      const month = date.getMonth() + 1;
+      const week = date.getWeek();
+      today.setHours(0, 0, 0, 0);
+      if (activePeriod === 'month') {
+        document.getElementById("calendar-month-input").value = `${year}-${month}`;
+        document.getElementById("calendar-month-input").showPicker()
+        document.getElementById('calendar-month-input').addEventListener('input', function (event) {
+          currentDate = new Date(event.target.value + "-01");
+          updateDashboard('month');
         });
+
+      }
+      else if (activePeriod === "week") {
+        document.getElementById("calendar-week-input").value = `${year}-W${week}`;
+        document.getElementById("calendar-week-input").showPicker();
+        document.getElementById('calendar-week-input').addEventListener('input', function (event) {
+          currentDate = getStartDateOfISOWeek(event.target.value);
+          const startOfWeek = new Date(currentDate);
+          startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+          startOfWeek.setHours(0, 0, 0, 0);
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(endOfWeek.getDate() + 6);
+          updateDashboard('week');
+        })
       } else {
-        calendarMonthYear.textContent = date.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long' });
-        calendarWeekdays.classList.remove('hidden');
-        calendarGrid.classList.remove('hidden');
-        calendarMonthGrid.classList.add('hidden');
-        const weekdays = (lang === 'zh') ? ['日', '一', '二', '三', '四', '五', '六'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-        weekdays.forEach(day => { const dayEl = document.createElement('div'); dayEl.textContent = day; calendarWeekdays.appendChild(dayEl); });
-        const month = date.getMonth(), firstDayOfMonth = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
-        for (let i = 0; i < firstDayOfMonth; i++) calendarGrid.appendChild(document.createElement('div'));
-        for (let i = 1; i <= daysInMonth; i++) {
-          const dayCell = document.createElement('button'), cellDate = new Date(year, month, i);
-          dayCell.textContent = i;
-          dayCell.className = 'p-1 rounded-full w-8 h-8 flex items-center justify-center mx-auto transition-colors';
-          if (activePeriod === 'week') {
-            const startOfWeek = new Date(currentDate);
-            startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-            startOfWeek.setHours(0, 0, 0, 0);
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(endOfWeek.getDate() + 6);
-            if (cellDate >= startOfWeek && cellDate <= endOfWeek) dayCell.classList.add('bg-blue-200');
-          }
-          if (cellDate.toDateString() === today.toDateString()) dayCell.classList.add('border-2', 'border-gray-400');
-          if (cellDate.toDateString() === currentDate.toDateString()) dayCell.classList.add('bg-blue-500', 'text-white', 'font-bold');
-          else dayCell.classList.add('hover:bg-blue-100');
-          dayCell.addEventListener('click', () => {
-            currentDate = new Date(year, month, i);
-            calendarModal.close(); // CHANGED: Use close() instead of classList.add('hidden')
-            updateDashboard(activePeriod);
-          });
-          calendarGrid.appendChild(dayCell);
-        }
+        document.getElementById("calendar-date-input").value = date;
+        document.getElementById("calendar-date-input").showPicker();
+        document.getElementById('calendar-date-input').addEventListener('input', function (event) {
+          currentDate = new Date(event.target.value);
+          updateDashboard('date');
+        })
       }
     }
+
+    Date.prototype.getWeek = function () {
+      var date = new Date(this.getTime());
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() + 4 - (date.getDay() || 7));
+      var yearStart = new Date(date.getFullYear(), 0, 1);
+      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    };
+
+    function getStartDateOfISOWeek(isoWeekStr) {
+      const [yearStr, weekStr] = isoWeekStr.split('-W');
+      const year = parseInt(yearStr, 10);
+      const week = parseInt(weekStr, 10);
+
+      // January 4th is always in week 1 under ISO 8601
+      const simple = new Date(year, 0, 4);
+      // Get the Monday of week 1
+      const dayOfWeek = simple.getDay() || 7; // 1 (Mon) - 7 (Sun)
+      const mondayOfWeek1 = new Date(simple);
+      mondayOfWeek1.setDate(simple.getDate() - dayOfWeek + 1);
+      // Compute offset for desired week
+      const mondayOfTargetWeek = new Date(mondayOfWeek1);
+      mondayOfTargetWeek.setDate(mondayOfWeek1.getDate() + (week - 1) * 7);
+      return mondayOfTargetWeek;
+    }
+
     /**
 
      * Initializes and starts barcode scanner using device camera
@@ -3478,7 +3439,7 @@
         calendarPrevMonth.addEventListener('click', () => {
           if (calendarMode === 'month') calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() - 1);
           else calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() - 1);
-          renderCalendar(calendarDisplayDate);
+          chooseFromNativeCalendar(calendarDisplayDate);
         });
       }
 
@@ -3486,7 +3447,7 @@
         calendarNextMonth.addEventListener('click', () => {
           if (calendarMode === 'month') calendarDisplayDate.setFullYear(calendarDisplayDate.getFullYear() + 1);
           else calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() + 1);
-          renderCalendar(calendarDisplayDate);
+          chooseFromNativeCalendar(calendarDisplayDate);
         });
       }
       if (quantitySpecModal) {
