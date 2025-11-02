@@ -342,9 +342,12 @@
   <div id="splash-screen"
     class="transition-opacity duration-500 ease-out overflow-hidden fixed inset-0 bg-gray-100 flex flex-col items-center justify-center z-50">
     <div id="recovery-message" class="hidden text-center p-4">
-      <svg class="w-12 h-12 text-blue-500 mx-auto animate-spin mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      <svg class="w-12 h-12 text-blue-500 mx-auto animate-spin mb-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+        </path>
       </svg>
       <p class="text-lg text-gray-600"></p>
     </div>
@@ -1067,13 +1070,14 @@
           data-lang-key="quantityLabel">Enter
           quantity (e.g., 1 piece, 100g)</label>
         <input type="text" id="quantity-input" class="input input-bordered w-full">
-        </form> <div class="modal-action">
-          <form method="dialog">
-            <button class="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
-          </form>
-          <button type="submit" form="quantity-form" class="btn btn-primary"
-            data-lang-key="confirmButton">Confirm</button>
-        </div>
+      </form>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
+        </form>
+        <button type="submit" form="quantity-form" class="btn btn-primary"
+          data-lang-key="confirmButton">Confirm</button>
+      </div>
       </form>
     </div>
     <form method="dialog" class="modal-backdrop">
@@ -1192,7 +1196,7 @@
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
     // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
     const GEMINI_API_KEY = "PLACEHOLDER_API_KEY";
-    
+
 
     const firebaseConfig = {
       apiKey: "AIzaSyB2uJs32bmnoOgHcB6GTZuu0eBanfZWLWE",
@@ -2189,54 +2193,29 @@
 
      */
 
+    // Example function for sending a prompt to the nutrition analysis API route
     async function getNutritionalInfo(prompt) {
-      console.log("Using Gemini API for analysis.");
-
-      const chatHistory = [{ 
-        role: "user", 
-        parts: [{ 
-          text: `You are an expert nutrition analyst. Your task is to provide the estimated nutritional information for "${prompt}" in a valid JSON format. 
-          The JSON object should only contain these keys: "food" (string), "calories" (number), "protein" (number, in grams), "fat" (number, in grams), and "carbs" (number, in grams).
-          
-          --- IMPORTANT RULES FOR ESTIMATING PORTION SIZE ---
-          1.  If the user does NOT specify any quantity (e.g., "ramen", "chicken rice"), you MUST assume a standard, single serving size (an average portion for one person).
-          2.  If the user specifies a very small, ambiguous quantity using words like "bite", "mouthful", "spoonful", or the Chinese characters "口", "匙", you MUST estimate a very small, appropriate nutritional value (e.g., 10-30 kcal per bite). Do not assume it's a full meal in this case.
-          3.  If the user specifies a clear quantity (e.g., "1 cup of rice", "200g chicken"), use that specified quantity for your calculation.`
-        }] 
-      }];
-
-
-      const payload = { 
-        contents: chatHistory, 
-        generationConfig: { 
-          responseMimeType: "application/json", 
-          responseSchema: { 
-            "type": "OBJECT", 
-            "properties": { 
-              "food": { "type": "STRING" }, 
-              "calories": { "type": "NUMBER" }, 
-              "protein": { "type": "NUMBER" }, 
-              "fat": { "type": "NUMBER" }, 
-              "carbs": { "type": "NUMBER" } 
-            }, 
-            "required": ["food", "calories", "protein", "fat", "carbs"] 
-          } 
-        } 
-      };
-      
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-      
       try {
-          const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-          if (response.status === 429) throw new Error("RATE_LIMIT_EXCEEDED");
-          if (!response.ok) throw new Error(`API request failed. Status: ${response.status}`);
-          const result = await response.json();
-          const text = result.candidates[0].content.parts[0].text;
-          return JSON.parse(text);
+        const response = await fetch('/api/gemini/getnutriinfo/v1', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt })
+        });
+
+        // Handle HTTP errors
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Request failed');
+        }
+
+        // Parse successful result
+        const result = await response.json();
+        console.log(result); // will contain { food, calories, protein, fat, carbs }
+        return result;
       } catch (error) {
-          console.error("An error occurred while fetching data from the Gemini API:", error);
-          if (error.message === "RATE_LIMIT_EXCEEDED") throw error;
-          return null;
+        console.error('Error:', error.message);
       }
     }
 
@@ -3581,8 +3560,8 @@
         console.log('Recovery mode detected, skipping splash animation.');
         splashScreen.style.opacity = '0';
         setTimeout(() => {
-            splashScreen.classList.add('hidden');
-            mainAppContent.style.opacity = '1';
+          splashScreen.classList.add('hidden');
+          mainAppContent.style.opacity = '1';
         }, 500); // Fade out quickly in 0.5 seconds
 
       } else {
@@ -3594,7 +3573,7 @@
           mainAppContent.style.opacity = '1';
         }, 2700);
       }
-      
+
       // Display screen according to login status
       if (user) {
         await loadUserGoals();
@@ -3623,7 +3602,7 @@
         const recoveryText = recoveryContainer.querySelector('p');
         recoveryText.textContent = translations[currentLang]?.recoveringAnalysis || "Recovering interrupted photo analysis...";
         recoveryContainer.classList.remove('hidden');
-        
+
         readImage().then(savedImage => {
           if (savedImage) {
             console.log('Photo recovered from IndexedDB. Restarting analysis.');
@@ -3632,8 +3611,8 @@
             localStorage.removeItem('photo_pending');
           }
         }).catch(err => {
-            console.error('Failed to recover photo:', err);
-            localStorage.removeItem('photo_pending');
+          console.error('Failed to recover photo:', err);
+          localStorage.removeItem('photo_pending');
         });
 
       }
