@@ -1166,7 +1166,7 @@
 
 
     const firebaseConfig = {
-      apiKey: "AIzaSyD9nJtVF9z7ETXSmILReMcfqt1XJIfESZA", 
+      apiKey: "AIzaSyD9nJtVF9z7ETXSmILReMcfqt1XJIfESZA",
       authDomain: "nutriquest-6c40d.firebaseapp.com",
       projectId: "nutriquest-6c40d",
       storageBucket: "nutriquest-6c40d.firebasestorage.app",
@@ -2097,7 +2097,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ prompt })
+          body: JSON.stringify({ "prompt": prompt })
         });
 
         // Handle HTTP errors
@@ -2111,7 +2111,7 @@
         console.log(result); // will contain { food, calories, protein, fat, carbs }
         return result;
       } catch (error) {
-        console.error('Error:', error.message);
+        console.error(error.message);
       }
     }
 
