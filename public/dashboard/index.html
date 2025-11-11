@@ -1163,7 +1163,8 @@
       <p>Copyright (c) 2025 Shun1115sei</p>
       <p>This project is licensed under the MIT license, and the source code is freely accessible at the following link.
       </p>
-      <a href="https://github.com/Shun1115sei/NutriQuest">https://github.com/Shun1115sei/NutriQuest</a>
+      <a class="link link-primary"
+        href="https://github.com/Shun1115sei/NutriQuest">https://github.com/Shun1115sei/NutriQuest</a>
       <div class="divider">ABOUT</div>
       <p>Just take a photo of your meal, talk about it, or type it in. NutriQuest is a new type of nutrition management
         tool that uses powerful AI (gemini-2.0-flash) to automatically analyse and record your meals. It eliminates the
@@ -3185,6 +3186,25 @@
       finalTranscript = '';
       speechRecognitionInstance = null;
     }
+
+    //feedback nudge
+    let wasOpen = true;
+    const dialogs = document.querySelectorAll("dialog");
+
+    dialogs.forEach(dialog => {
+      dialog.addEventListener("close", () => {
+        setTimeout(() => {
+          const openDialogs = document.querySelectorAll("dialog:modal");
+          if (openDialogs.length === 0) {
+            // No modal dialogs are currently open
+            if (wasOpen) {
+              openFeedbackModal();
+              wasOpen = false;
+            }
+          }
+        }, 5000);
+      });
+    });
 
     // --- APPLICATION INITIALIZATION ---
     /**
