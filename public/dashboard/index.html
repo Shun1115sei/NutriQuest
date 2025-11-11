@@ -549,13 +549,13 @@
             <div class="flex justify-center space-x-2 mb-6">
               <button data-period="day"
                 class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
-                data-lang-key="today">Today</button>
+                data-lang-key="day">Day</button>
               <button data-period="week"
                 class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
-                data-lang-key="thisWeek">This Week</button>
+                data-lang-key="week">Week</button>
               <button data-period="month"
                 class="filter-btn bg-white hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-all"
-                data-lang-key="thisMonth">This Month</button>
+                data-lang-key="month">Month</button>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -581,9 +581,11 @@
                         </path>
                       </svg>
 
-                      <input type="date" id="calendar-date-input" class="opacity-0 w-0 h-0 absolute" />
-                      <input type="week" id="calendar-week-input" class="opacity-0 w-0 h-0 absolute" />
-                      <input type="month" id="calendar-month-input" class="opacity-0 w-0 h-0 absolute" />
+                      <input type="date" id="calendar-date-input" value="2025-11-11"
+                        class="opacity-0 w-0 h-0 absolute" />
+                      <input type="week" id="calendar-week-input" value="2025-W47" class="opacity-0 w-0 h-0 absolute" />
+                      <input type="month" id="calendar-month-input" value="2025-11"
+                        class="opacity-0 w-0 h-0 absolute" />
 
                     </div>
                     <button id="next-period-btn"
@@ -1183,7 +1185,6 @@
         passwordLabel: "Password",
         loginButton: "Login",
         authUnavailable: "Authentication is currently unavailable. Please continue as a guest or try again later.",
-        authTogglePrompt: "Need an account?",
         authToggleAction: "Sign Up",
         signUpTitle: "Sign Up",
         guestButton: "Continue as Guest",
@@ -1215,6 +1216,9 @@
         today: "Today",
         thisWeek: "This Week",
         thisMonth: "This Month",
+        day: "Day",
+        week: "Week",
+        month: "Month",
         todaysTotals: "Today's Totals",
         thisWeeksTotals: "This Week's Total Calories",
         thisMonthsTotals: "This Month's Total Calories",
@@ -1297,7 +1301,6 @@
         emailLabel: "电子邮件",
         passwordLabel: "密码",
         loginButton: "登录",
-        authTogglePrompt: "需要一个账户？",
         authToggleAction: "注册",
         signUpTitle: "注册",
         guestButton: "以访客身份继续",
@@ -1511,9 +1514,6 @@
     const appHeader = document.getElementById('app-header');
     const listeningModal = document.getElementById('listening-modal');
     const listeningTextStatus = document.getElementById('listening-text-status');
-    const prevPeriodBtn = document.getElementById('prev-period-btn');
-    const nextPeriodBtn = document.getElementById('next-period-btn');
-    const periodTitleContainer = document.getElementById('period-title-container');
     const periodTitle = document.getElementById('period-title');
     const dynamicChartTitle = document.getElementById('dynamic-chart-title');
     const calorieGaugeChartEl = document.getElementById('calorie-gauge-chart');
@@ -1527,12 +1527,6 @@
     const barChartContainer = document.getElementById('bar-chart-container');
     const periodGoalText = document.getElementById('period-goal-text');
     const periodActualText = document.getElementById('period-actual-text');
-    const calendarMonthYear = document.getElementById('calendar-month-year');
-    const calendarGrid = document.getElementById('calendar-grid');
-    const calendarWeekdays = document.getElementById('calendar-weekdays');
-    const calendarPrevMonth = document.getElementById('calendar-prev-month');
-    const calendarNextMonth = document.getElementById('calendar-next-month');
-    const calendarMonthGrid = document.getElementById('calendar-month-grid');
     const quantityModal = document.getElementById('quantity-modal');
     const quantityForm = document.getElementById('quantity-form');
     const identifiedFoodNameEl = document.getElementById('identified-food-name');
@@ -1581,8 +1575,6 @@
     let periodChart = null
     let activePeriod = 'day'
     let currentDate = new Date()
-    let calendarDisplayDate = new Date()
-    let calendarMode = 'day'
     let isLoginMode = true
     let html5QrCodeInstance = null
     let currentScannedProduct = null
@@ -1617,28 +1609,6 @@
      *
      * @param {string} inputId - The inputid parameter
      */
-
-    function setupStepper(inputId) {
-      const input = document.getElementById(inputId);
-      if (!input) return;
-
-      const container = input.closest('.stepper-container');
-      if (!container) return;
-
-      const decrementBtn = container.querySelector(`[data-stepper-decrement="${inputId}"]`);
-      const incrementBtn = container.querySelector(`[data-stepper-increment="${inputId}"]`);
-
-      if (decrementBtn) {
-        decrementBtn.addEventListener('click', () => {
-          input.stepDown();
-        });
-      }
-      if (incrementBtn) {
-        incrementBtn.addEventListener('click', () => {
-          input.stepUp();
-        });
-      }
-    }
 
     let foodKeyReverseMap = {};
 
@@ -1727,10 +1697,6 @@
         }
       });
 
-      const authTogglePromptEl = document.querySelector('[data-lang-key="authTogglePrompt"]');
-      const authToggleActionEl = document.querySelector('[data-lang-key="authToggleAction"]');
-      if (authTogglePromptEl) authTogglePromptEl.textContent = translation.authTogglePrompt;
-      if (authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction;
 
       document.querySelectorAll('[data-lang-key-placeholder]').forEach(element => {
         const key = element.getAttribute('data-lang-key-placeholder');
@@ -2305,39 +2271,6 @@
     }
 
     /**
-     * Sets up event listeners for dashboard UI interactions and navigation
-     *
-     * @returns {any} The function return value
-     */
-    function setupDashboardListeners() {
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => { activePeriod = btn.dataset.period; currentDate = new Date(); updateDashboard(activePeriod); }));
-      resetAllBtn.addEventListener('click', resetAllData);
-      if (resetTodayBtn) resetTodayBtn.addEventListener('click', resetTodayData);
-      toggleDetailsBtn.addEventListener('click', () => { isDetailedView = !isDetailedView; updateDashboard(activePeriod); });
-      prevPeriodBtn.addEventListener('click', () => navigatePeriod(-1));
-      nextPeriodBtn.addEventListener('click', () => navigatePeriod(1));
-      periodTitleContainer.addEventListener('click', () => {
-        calendarDisplayDate = new Date(currentDate);
-        calendarMode = (activePeriod === 'day' || activePeriod === 'week') ? 'day' : 'month';
-        chooseFromNativeCalendar(calendarDisplayDate);
-      });
-    }
-
-    /**
-     * Navigates between different time periods (day/week/month) in the dashboard
-     *
-     * @param {any} direction - The direction parameter
-     */
-    function navigatePeriod(direction) {
-      const newDate = new Date(currentDate);
-      if (activePeriod === 'day') newDate.setDate(newDate.getDate() + direction);
-      else if (activePeriod === 'week') newDate.setDate(newDate.getDate() + (7 * direction));
-      else if (activePeriod === 'month') newDate.setMonth(newDate.getMonth() + direction);
-      currentDate = newDate;
-      updateDashboard(activePeriod);
-    }
-
-    /**
      * Updates the entire dashboard with filtered meal data and nutritional summaries
      *
      * @param {string} period - The period parameter
@@ -2803,6 +2736,38 @@
       return allMeals.filter(meal => { const mealDate = new Date(meal.timestamp); return mealDate >= start && mealDate <= end; });
     }
 
+    //calendar related code
+
+    /**
+     * Navigates between different time periods (day/week/month) in the dashboard
+     *
+     * @param {any} direction - The direction parameter
+     */
+    function navigatePeriod(direction) {
+      const newDate = new Date(currentDate);
+      if (activePeriod === 'day') {
+        newDate.setDate(newDate.getDate() + direction);
+      }
+      else if (activePeriod === 'week') {
+        newDate.setDate(newDate.getDate() + (7 * direction));
+      }
+      else if (activePeriod === 'month') {
+        newDate.setMonth(newDate.getMonth() + direction);
+      }
+      currentDate = newDate;
+      updateDashboard(activePeriod);
+    }
+
+    const prevPeriodBtn = document.getElementById('prev-period-btn');
+    const nextPeriodBtn = document.getElementById('next-period-btn');
+    prevPeriodBtn.addEventListener('click', () => navigatePeriod(-1));
+    nextPeriodBtn.addEventListener('click', () => navigatePeriod(1));
+
+    const periodTitleContainer = document.getElementById('period-title-container');
+    periodTitleContainer.addEventListener('click', () => {
+      chooseFromNativeCalendar(new Date(currentDate));
+    });
+
     /**
      * Renders calendar widget for date/period selection
      *
@@ -2810,14 +2775,13 @@
      * @returns {any} The rendered or created element/data
      */
     function chooseFromNativeCalendar(date) {
-      const lang = localStorage.getItem('language') || 'en', today = new Date();
       const year = date.getFullYear();
-      const month = date.getMonth() + 1;
+      const humanMonth = date.getMonth() + 1;
       const week = date.getWeek();
       today.setHours(0, 0, 0, 0);
       if (activePeriod === 'month') {
         const calendarMonthInput = document.getElementById("calendar-month-input");
-        calendarMonthInput.value = `${year}-${month}`;
+        calendarMonthInput.value = `${year}-${humanMonth}`;
         if (typeof calendarMonthInput.showPicker === "function") {
           calendarMonthInput.showPicker();
         } else {
@@ -3382,10 +3346,6 @@
 
       if (deleteAllDataBtn) deleteAllDataBtn.addEventListener('click', resetAllData);
 
-      setupStepper('age');
-      setupStepper('height');
-      setupStepper('weight');
-
       if (quantitySpecModal) {
         quantitySlider.addEventListener('input', () => {
           const currentLang = localStorage.getItem('language') || 'en';
@@ -3444,8 +3404,13 @@
         });
       }
       if (offlineCloseBtn) offlineCloseBtn.addEventListener('click', () => offlineModal.classList.add('hidden'));
-      setupDashboardListeners();
+
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => { activePeriod = btn.dataset.period; currentDate = new Date(); updateDashboard(activePeriod); }));
+      resetAllBtn.addEventListener('click', resetAllData);
+      if (resetTodayBtn) resetTodayBtn.addEventListener('click', resetTodayData);
+      toggleDetailsBtn.addEventListener('click', () => { isDetailedView = !isDetailedView; updateDashboard(activePeriod); });
     }
+
 
     const splashScreenFinished = new Promise(resolve => {
       window.addEventListener('load', () => {
