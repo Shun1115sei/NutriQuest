@@ -1157,21 +1157,16 @@
   <!--hidden file input for food image upload-->
   <input type="file" id="new-cam-module" accept="image/*" capture="environment" class="hidden" />
 
+  <script src="/api/firebase-config.js"></script>
   <!--application logic-->
   <script>
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-    // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
+    if (!window.__FIREBASE_CONFIG__) {
+      throw new Error('Firebase configuration could not be loaded. Ensure the /api/firebase-config endpoint is configured.');
+    }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD9nJtVF9z7ETXSmILReMcfqt1XJIfESZA",
-      authDomain: "nutriquest-6c40d.firebaseapp.com",
-      projectId: "nutriquest-6c40d",
-      storageBucket: "nutriquest-6c40d.firebasestorage.app",
-      messagingSenderId: "893360379713",
-      appId: "1:893360379713:web:4f7952bf9094caf139b3c0",
-      measurementId: "G-C9V61B19G7"
-    };
+    const firebaseConfig = window.__FIREBASE_CONFIG__;
     // --- Firebase Initialization ---
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
