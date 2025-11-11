@@ -36,7 +36,7 @@
       "src": "/icons/thinScr.png",
       "sizes": "826x1490",
       "type": "image/png",
-      "form_factor": "thin",
+      "form_factor": "narrow",
       "label": "screenshot"
     }
   ]
