@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 
-export default function Login() {
+export default function Signup() {
 
   const googleSignInBtnRef = useRef<HTMLButtonElement | null>(null);
   const authSubmitBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -47,13 +47,13 @@ export default function Login() {
       if (passwordInput) {
         password = passwordInput.value;
       }
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       window.location.href = "/dashboard/";
     } catch (error) {
       if (error instanceof Error) {
         setAuthError(error.message);
       } else {
-        setAuthError('An unknown error occurred. Authentication failed.');
+        setAuthError('An unknown error occurred. Signup failed.');
       }
     }
   }
@@ -105,7 +105,7 @@ export default function Login() {
             </div>
           </div>
           <h1 id="auth-title" data-lang-key="loginTitle" className="text-3xl font-bold text-center text-gray-800 mb-6">
-            Login
+            Sign Up
           </h1>
           <p id="auth-error" className="text-red-500 text-center mb-4">{authError}</p>
 
@@ -152,35 +152,14 @@ export default function Login() {
               </p>
             </fieldset>
 
-            <div className="text-right mb-6">
-              <a
-                id="forgot-password-link"
-                className="text-sm link link-hover link-primary"
-                href="#"
-                data-lang-key="forgotPassword"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const email = prompt("Please enter your email for password reset:");
-                  if (email) {
-                    sendPasswordResetEmail(auth, email).then(() => {
-                      alert("Password reset email sent.");
-                    }).catch((error) => {
-                      setAuthError(error.message);
-                    });
-                  }
-                }}
-              >
-                Forgot Password?
-              </a>
-
-            </div>
-            <button ref={authSubmitBtnRef} id="auth-submit-btn" className="w-full btn btn-primary" type="submit"
+            <button ref={authSubmitBtnRef} id="auth-submit-btn" className="w-full btn btn-primary mt-4" type="submit"
               data-lang-key="loginButton">Login</button>
           </form>
           <p className="text-center text-sm text-gray-600 mt-4">
-            <span data-lang-key="authTogglePrompt">Don't have an account yet? </span>
-            <Link id="auth-toggle-link" className="link link-hover link-primary" to="/signup" data-lang-key="authToggleAction">Sign
-              Up</Link>
+            <span data-lang-key="authTogglePrompt">Already have an account? </span>
+            <Link id="auth-toggle-link" className="link link-hover link-primary" to="/login" data-lang-key="authToggleAction">
+              Log In
+            </Link>
           </p>
 
           <div className="divider">OR</div>
@@ -200,7 +179,7 @@ export default function Login() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 fill="#EA4335"></path>
             </svg>
-            <span data-lang-key="googleSignIn" onClick={signInWithGoogle}>Log in with Google</span>
+            <span data-lang-key="googleSignIn" onClick={signInWithGoogle}>Sign up with Google</span>
           </button>
           <button id="guest-mode-btn" onClick={() => { document.cookie = "userMode=guest;path=/"; window.location.href = "/dashboard/" }} className="w-full mt-4 btn btn-soft" data-lang-key="guestButton">
             Continue as Guest

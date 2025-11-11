@@ -530,9 +530,9 @@
             </div>
             <!-- Guest Login Button -->
             <div id="guest-header" class="flex-none hidden">
-              <button id="go-to-login-btn" class="btn btn-primary btn-sm">
+              <a href="/login/" class="btn btn-primary btn-sm">
                 <span data-lang-key="loginButton">Login</span>
-              </button>
+              </a>
             </div>
             <!-- Favourites and Settings Buttons -->
             <button id="favourites-btn" class="btn btn-ghost btn-circle text-gray-500 hover:text-yellow-500"
@@ -1869,15 +1869,6 @@
       appContainer.classList.remove('hidden');
       userHeader.style.display = isLoggedIn ? 'flex' : 'none';
       guestHeader.style.display = isLoggedIn ? 'none' : 'flex';
-    }
-
-    /**
-     * Shows the authentication container (login/signup forms)
-     *
-     */
-    function showAuthContainer() {
-      appContainer.classList.add('hidden');
-      authContainer.classList.remove('hidden');
     }
 
     /**
@@ -3328,7 +3319,6 @@
           }
         });
       }
-      if (goToLoginBtn) goToLoginBtn.addEventListener('click', showAuthContainer);
       if (settingsBtn) settingsBtn.addEventListener('click', () => settingsModal.showModal());
       if (favouritesBtn) favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.showModal(); });
 
@@ -3518,7 +3508,7 @@
         await loadMealsFromFirestore();
         hideLoader();
       } else {
-        showAuthContainer();
+        showAppContainer(false);
         if (!firebaseReady) {
           const currentLang = localStorage.getItem('language') || 'en';
           authError.textContent = translations[currentLang]?.authUnavailable || 'Authentication is currently unavailable.';
