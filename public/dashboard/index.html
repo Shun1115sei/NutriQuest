@@ -1162,8 +1162,6 @@
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
     // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
-    const GEMINI_API_KEY = "PLACEHOLDER_API_KEY";
-
 
     const firebaseConfig = {
       apiKey: "AIzaSyD9nJtVF9z7ETXSmILReMcfqt1XJIfESZA",
@@ -2058,19 +2056,19 @@
       } else {
         base64ImageData = imageData;
       }
-      const prompt = `You are an expert food identifier specializing in Asian cuisine, particularly Singaporean dishes. Your task is to look at the image and identify the main dish.
-      Return ONLY the most common name for the food (e.g., "Hainanese chicken rice", "Laksa", "Ramen").
-      Do not add any descriptions or extra words.
-      If the image does not contain food, or you cannot identify it, return the single word "unknown".`;
-      const payload = { contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64ImageData } }] }] };
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+      
       try {
-        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const response = await fetch('/api/gemini/identifyfood/v1', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageData: base64ImageData })
+        });
+        const result = await response.json().catch(() => ({}));
         if (response.status === 429) throw new Error("RATE_LIMIT_EXCEEDED");
-        if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-        const result = await response.json();
-        const text = result.candidates[0].content.parts[0].text;
-        return text.toLowerCase().includes('not food') ? null : text;
+        if (!response.ok) throw new Error(result.error || `API request failed with status ${response.status}`);
+        const foodName = result.foodName;
+        if (!foodName) return null;
+        return foodName.toLowerCase().includes('not food') ? null : foodName;
       } catch (error) {
         console.error("Error fetching from Gemini Vision API:", error);
         if (error.message === "RATE_LIMIT_EXCEEDED") throw error;
