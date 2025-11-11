@@ -1312,6 +1312,35 @@
     const loadingText = document.getElementById('loading-text');
     const mainAppContent = document.getElementById('main-app-content');
     const splashScreen = document.getElementById('splash-screen');
+    let splashHideTimer = null;
+    let splashDismissed = false;
+
+    function hideSplash({ delay = 0 } = {}) {
+      if (!splashScreen) return;
+
+      const runHide = () => {
+        if (!splashScreen || splashDismissed) return;
+        splashDismissed = true;
+        splashScreen.style.opacity = '0';
+        setTimeout(() => {
+          splashScreen.classList.add('hidden');
+          if (mainAppContent) {
+            mainAppContent.style.opacity = '1';
+          }
+        }, 500);
+      };
+
+      if (delay > 0) {
+        if (splashHideTimer) clearTimeout(splashHideTimer);
+        splashHideTimer = setTimeout(runHide, delay);
+      } else {
+        if (splashHideTimer) {
+          clearTimeout(splashHideTimer);
+          splashHideTimer = null;
+        }
+        runHide();
+      }
+    }
     const appHeader = document.getElementById('app-header');
     const listeningModal = document.getElementById('listening-modal');
     const listeningTextStatus = document.getElementById('listening-text-status');
@@ -3275,20 +3304,12 @@
       if (isRecovering) {
         // In recovery mode, animations are terminated immediately.
         console.log('Recovery mode detected, skipping splash animation.');
-        splashScreen.style.opacity = '0';
-        setTimeout(() => {
-          splashScreen.classList.add('hidden');
-          mainAppContent.style.opacity = '1';
-        }, 500); // Fade out quickly in 0.5 seconds
+        hideSplash();
 
       } else {
         // In the case of normal startup, execute normal animation.
         console.log('Normal startup, running splash animation.');
-        setTimeout(() => { splashScreen.style.opacity = '0'; }, 2200);
-        setTimeout(() => {
-          splashScreen.classList.add('hidden');
-          mainAppContent.style.opacity = '1';
-        }, 2700);
+        hideSplash({ delay: 2200 });
       }
 
       // Display screen according to login status
@@ -3307,6 +3328,13 @@
 
     window.addEventListener('load', () => {
       const currentLang = localStorage.getItem('language') || 'en';
+
+      setTimeout(() => {
+        if (!splashDismissed) {
+          console.warn('Splash screen timeout reached. Forcing hide.');
+          hideSplash();
+        }
+      }, 4000);
 
       if (localStorage.getItem('photo_pending') === 'true') {
         console.log('Reload detected. Switching to recovery splash screen...');
