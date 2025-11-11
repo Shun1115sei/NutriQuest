@@ -16,6 +16,7 @@
   "dependencies": {
     "@react-router/node": "^7.8.1",
     "@vercel/react-router": "^1.2.3",
+    "firebase": "^12.5.0",
     "isbot": "^5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

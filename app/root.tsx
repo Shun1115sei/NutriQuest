@@ -9,6 +9,8 @@ export default function Root() {
         <title>NutriQuest</title>
         <link rel="manifest" href="manifest.json" />
         <link rel="icon" type="image/png" href="/icons/192.png" />
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+
         {/* You can't use <script> tags in head directly, use <Scripts /> below */}
       </head>
       <body style={{ height: "100%", margin: "0", padding: "0" }}>
@@ -17,6 +19,8 @@ export default function Root() {
         <Scripts />
         {/* If you have global 3rd party scripts, see their integrations for React file-based routing.
             You may include them in components or with <script dangerouslySetInnerHTML={...} /> if needed. */}
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
       </body>
     </html>
   );

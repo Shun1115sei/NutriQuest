@@ -1226,13 +1226,14 @@
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
     const firebaseConfig = {
+      apiKey: "AIzaSyB2uJs32bmnoOgHcB6GTZuu0eBanfZWLWE",
       authDomain: "nutriquest-6c40d.firebaseapp.com",
       projectId: "nutriquest-6c40d",
       storageBucket: "nutriquest-6c40d.firebasestorage.app",
       messagingSenderId: "893360379713",
       appId: "1:893360379713:web:4f7952bf9094caf139b3c0",
       measurementId: "G-C9V61B19G7"
-    } || null;
+    };
     let firebaseReady = !!firebaseConfig;
     let auth;
     let db;
@@ -1501,6 +1502,28 @@
     const confirmQuantitySpecBtn = document.getElementById('confirm-quantity-spec-btn');
     const unsureQuantitySpecBtn = document.getElementById('unsure-quantity-spec-btn');
     const newCamModule = document.getElementById('new-cam-module');
+
+    function getCookie(cname) {
+      let name = cname + "=";
+      let decodedCookie = decodeURIComponent(document.cookie);
+      let ca = decodedCookie.split(';');
+      for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    let isGuest = getCookie("userMode") === "guest"
+
+    if (!isGuest && !auth.currentUser) {
+      window.location.href = "/login/";
+    }
 
     if (!firebaseReady) {
       if (googleSignInBtn) {
@@ -3005,8 +3028,15 @@
         const favEl = document.createElement('div');
         favEl.className = 'flex justify-between items-center p-2 bg-gray-100 rounded-md';
         favEl.innerHTML = `<span class="capitalize cursor-pointer hover:text-blue-600 flex-grow text-left">${fav.food}</span><div class="flex items-center"><span class="text-xs text-gray-500 mr-4">${Math.round(fav.calories)} kcal</span><button data-id="${fav.id}" class="delete-favourite-btn text-xl font-bold text-red-400 hover:text-red-600 leading-none p-1">&times;</button></div>`;
-        favEl.querySelector('span.capitalize').addEventListener('click', () => { processNewMeal(fav); favouritesModal.close(); });
-        favEl.querySelector('.delete-favourite-btn').addEventListener('click', async (e) => { const favId = e.currentTarget.dataset.id; if (await showConfirm(translations[localStorage.getItem('language') || 'en'].removeFavouriteConfirm)) await removeFavourite(favId); });
+        favEl.querySelector('span.capitalize').addEventListener('click', () => {
+          processNewMeal(fav);
+          favouritesModal.close();
+        });
+        favEl.querySelector('.delete-favourite-btn').addEventListener('click', async (e) => {
+          const favId = e.currentTarget.dataset.id;
+          if (await showConfirm(translations[localStorage.getItem('language') || 'en'].removeFavouriteConfirm))
+            await removeFavourite(favId);
+        });
         favouritesList.appendChild(favEl);
       });
     }
