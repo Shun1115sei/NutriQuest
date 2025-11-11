@@ -1,49 +1,4 @@
-import type { Route } from "./+types/firebase-config.js";
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
-
-let envHydrated = false;
-
-function hydrateEnvFromFile() {
-  if (envHydrated) {
-    return;
-  }
-
-  if (process.env.FIREBASE_API_KEY || process.env.GEMINI_API_KEY) {
-    envHydrated = true;
-    return;
-  }
-
-  const envPath = resolve(process.cwd(), ".env");
-  if (!existsSync(envPath)) {
-    envHydrated = true;
-    return;
-  }
-
-  const fileContents = readFileSync(envPath, "utf8");
-  for (const rawLine of fileContents.split(/\r?\n/)) {
-    const line = rawLine.trim();
-
-    if (!line || line.startsWith("#")) {
-      continue;
-    }
-
-    const separatorIndex = line.indexOf("=");
-    if (separatorIndex === -1) {
-      continue;
-    }
-
-    const key = line.slice(0, separatorIndex).trim();
-    if (!key || process.env[key]) {
-      continue;
-    }
-
-    const value = line.slice(separatorIndex + 1).trim().replace(/^['"]|['"]$/g, "");
-    process.env[key] = value;
-  }
-
-  envHydrated = true;
-}
+import type { Route } from "./+types/firebase-config";
 
 const defaultConfig = {
   authDomain: "nutriquest-6c40d.firebaseapp.com",
@@ -55,7 +10,6 @@ const defaultConfig = {
 };
 
 export async function loader(_args: Route.LoaderArgs) {
-  hydrateEnvFromFile();
 
   const apiKey = process.env.FIREBASE_API_KEY || process.env.GEMINI_API_KEY;
 
@@ -84,6 +38,8 @@ export async function loader(_args: Route.LoaderArgs) {
   };
 
   const serializedConfig = JSON.stringify(firebaseConfig);
+
+  console.log(firebaseConfig)
 
   return new Response(`window.__FIREBASE_CONFIG__ = ${serializedConfig};`, {
     status: 200,
