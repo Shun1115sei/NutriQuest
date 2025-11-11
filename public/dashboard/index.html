@@ -377,104 +377,6 @@
   <!-- Main Application and Auth Containers -->
   <div id="main-app-content" class="opacity-0  bg-gray-100 text-gray-800">
     <div id="main-content">
-      <!-- Authentication Container -->
-      <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-        <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
-          <div class="flex justify-end mb-4">
-            <div class="join">
-              <input type="radio" name="login-language" value="en" class="lang-radio join-item btn btn-sm"
-                aria-label="EN" checked>
-              <input type="radio" name="login-language" value="zh" class="lang-radio join-item btn btn-sm"
-                aria-label="中">
-            </div>
-          </div>
-          <h1 id="auth-title" data-lang-key="loginTitle" class="text-3xl font-bold text-center text-gray-800 mb-6">Login
-          </h1>
-          <p id="auth-error" class="text-red-500 text-center mb-4"></p>
-
-          <form id="auth-form">
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend" data-lang-key="emailLabel">Email</legend>
-              <label class="input validator">
-                <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
-                    stroke="currentColor">
-                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                  </g>
-                </svg>
-                <input id="email" type="email" placeholder="mail@site.com" required>
-              </label>
-              <div class="validator-hint hidden">Enter valid email address</div>
-            </fieldset>
-
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend" data-lang-key="passwordLabel">Password</legend>
-              <label class="input validator">
-                <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
-                    stroke="currentColor">
-                    <path
-                      d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z">
-                    </path>
-                    <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
-                  </g>
-                </svg>
-                <input id="password" type="password" required placeholder="Password" minlength="8"
-                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                  title="Must be more than 8 characters, including number, lowercase letter, uppercase letter" />
-              </label>
-              <p class="validator-hint hidden">
-                Must be more than 8 characters, including
-                <br />
-                At least one number
-                <br />
-                At least one lowercase letter
-                <br />
-                At least one uppercase letter
-              </p>
-            </fieldset>
-
-            <div class="text-right mb-6">
-              <a id="forgot-password-link" class="text-sm link link-hover link-primary" href="#"
-                data-lang-key="forgotPassword">Forgot
-                Password?</a>
-            </div>
-            <button id="auth-submit-btn" class="w-full btn btn-primary" type="submit"
-              data-lang-key="loginButton">Login</button>
-          </form>
-          <p class="text-center text-sm text-gray-600 mt-4">
-            <span data-lang-key="authTogglePrompt">Need an account?</span>
-            <a id="auth-toggle-link" class="link link-hover link-primary" href="#" data-lang-key="authToggleAction">Sign
-              Up</a>
-          </p>
-
-          <div class="divider">OR</div>
-
-          <button id="google-signin-btn" class="w-full flex items-center justify-center btn btn-outline mt-4">
-            <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                fill="#4285F4"></path>
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"></path>
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-                fill="#FBBC05"></path>
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"></path>
-            </svg>
-            <span data-lang-key="googleSignIn">Sign in with Google</span>
-          </button>
-          <button id="guest-mode-btn" class="w-full mt-4 btn btn-soft" data-lang-key="guestButton">
-            Continue as Guest
-          </button>
-        </div>
-      </div>
-
-
       <!-- Main Application Container -->
       <div id="app-container" class="hidden h-screen flex flex-col">
         <!-- Header -->
@@ -575,7 +477,7 @@
 
           <div class="search-container max-w-xl mx-auto text-center">
             <div
-              class="relative flex items-center bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg focus-within:shadow-lg">
+              class="relative flex items-center bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg focus-within:shadow-lg over-3d">
               <div class="pl-5"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none"
                   viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -623,8 +525,8 @@
 
             <div class="mt-6">
               <button id="analyse-btn"
-                class="analyse-btn bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-8 text-lg rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-px transition-all">
-                <span class="relative z-10" data-lang-key="analyseMealButton">Analyse Meal</span>
+                class="over-3d analyse-btn bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-8 text-lg rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-px transition-all">
+                <span class="relative z-10 " data-lang-key="analyseMealButton">Analyse Meal</span>
               </button>
             </div>
 
@@ -767,7 +669,7 @@
                   </div>
                 </div>
                 <!-- Nutrition Advice Card -->
-                <div id="advice-card" class="card shadow-sm hidden">
+                <div id="advice-card" class="card over-3d shadow-sm hidden">
                   <h2 class="card-title mb-2" data-lang-key="nutritionAdvice">Nutrition Advice
                   </h2>
                   <div id="advice-content" class="flex items-start space-x-4">
@@ -1358,13 +1260,7 @@
     };
 
     // --- DOM Elements ---
-    const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
-    const authForm = document.getElementById('auth-form');
-    const authToggleLink = document.getElementById('auth-toggle-link');
-    const authTitle = document.getElementById('auth-title');
-    const authSubmitBtn = document.getElementById('auth-submit-btn');
-    const authError = document.getElementById('auth-error');
     const foodInput = document.getElementById('food-input');
     const accountMenuBtn = document.getElementById('account-menu-btn');
     const accountDropdown = document.getElementById('account-dropdown');
@@ -1525,22 +1421,24 @@
       window.location.href = "/login/";
     }
 
-    if (!firebaseReady) {
-      if (googleSignInBtn) {
-        googleSignInBtn.disabled = true;
-        googleSignInBtn.classList.add('btn-disabled', 'opacity-60', 'cursor-not-allowed');
-      }
-      if (authSubmitBtn) authSubmitBtn.disabled = true;
-    }
-
-    // Mobile Header Buttons
-    const accountMenuBtnMobile = document.getElementById('account-menu-btn-mobile');
-    const goToLoginBtnMobile = document.getElementById('go-to-login-btn-mobile');
-    const favouritesBtnMobile = document.getElementById('favourites-btn-mobile');
-    const settingsBtnMobile = document.getElementById('settings-btn-mobile');
-
-    let allMeals = [], favouriteMeals = [], userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }, nutritionChart = null, calorieGaugeChart = null, proteinGaugeChart = null, fatGaugeChart = null, carbsGaugeChart = null, periodChart = null, activePeriod = 'day', currentDate = new Date(), calendarDisplayDate = new Date(), calendarMode = 'day', isLoginMode = true, html5QrCodeInstance = null, currentScannedProduct = null, isDetailedView = false, identifiedFoodName = '';
-
+    let allMeals = [];
+    let favouriteMeals = []
+    let userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }
+    let nutritionChart = null
+    let calorieGaugeChart = null
+    let proteinGaugeChart = null
+    let fatGaugeChart = null
+    let carbsGaugeChart = null
+    let periodChart = null
+    let activePeriod = 'day'
+    let currentDate = new Date()
+    let calendarDisplayDate = new Date()
+    let calendarMode = 'day'
+    let isLoginMode = true
+    let html5QrCodeInstance = null
+    let currentScannedProduct = null
+    let isDetailedView = false
+    let identifiedFoodName = '';
     let foodNameForQuantitySpec = '';
     let speechRecognitionInstance = null;
     let listeningModalCloseHandler = null;
@@ -1693,17 +1591,6 @@
         const key = element.getAttribute('data-lang-key-title');
         if (translation[key]) element.title = translation[key];
       });
-
-      if (isLoginMode) {
-        authTitle.textContent = translation.loginTitle;
-        authSubmitBtn.textContent = translation.loginButton;
-        if (authToggleActionEl) authToggleActionEl.textContent = translation.authToggleAction; // Sign Up
-      } else {
-        authTitle.textContent = translation.signUpTitle;
-        authSubmitBtn.textContent = translation.signUpTitle;
-        if (authToggleActionEl) authToggleActionEl.textContent = translation.loginButton; // Login
-      }
-
       if (!appContainer.classList.contains('hidden')) updateDashboard(activePeriod);
       syncToggleDashboardButton();
       updateHeaderDate();
@@ -1717,7 +1604,6 @@
      * Sets the default meal type (Breakfast/Lunch/Dinner/Snack) based on current time of day
      *
      */
-
     function setDefaultMealType() {
       const hour = new Date().getHours();
       let defaultMealType = (hour >= 5 && hour < 11) ? 'Breakfast' : (hour >= 11 && hour < 17) ? 'Lunch' : 'Dinner';
@@ -1840,32 +1726,12 @@
       });
     }
 
-
-    /**
-     * Initiates Google OAuth sign-in process using Firebase authentication
-     *
-     * @returns {Promise} Promise that resolves when the operation completes
-     * @async
-     */
-
-    async function signInWithGoogle() {
-      if (!firebaseReady) {
-        const currentLang = localStorage.getItem('language') || 'en';
-        authError.textContent = translations[currentLang]?.authUnavailable || 'Authentication is currently unavailable.';
-        return;
-      }
-      const provider = new firebase.auth.GoogleAuthProvider();
-      try { await auth.signInWithPopup(provider); }
-      catch (error) { authError.textContent = error.message; }
-    }
-
     /**
      * Shows the main application container and updates header based on authentication status
      *
      * @param {any} isLoggedIn - The isloggedin parameter
      */
     function showAppContainer(isLoggedIn) {
-      authContainer.classList.add('hidden');
       appContainer.classList.remove('hidden');
       userHeader.style.display = isLoggedIn ? 'flex' : 'none';
       guestHeader.style.display = isLoggedIn ? 'none' : 'flex';
@@ -3259,53 +3125,6 @@
           if (infoText) {
             alert(infoText);
           }
-        });
-      }
-
-      // --- Auth Page Listeners (安全チェックを追加) ---
-      if (authForm) {
-        authForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-          authError.textContent = '';
-          if (!firebaseReady) {
-            const currentLang = localStorage.getItem('language') || 'en';
-            authError.textContent = translations[currentLang]?.authUnavailable || 'Authentication is currently unavailable.';
-            return;
-          }
-          showLoader('signingIn');
-          try {
-            if (isLoginMode) await auth.signInWithEmailAndPassword(email, password);
-            else await auth.createUserWithEmailAndPassword(email, password);
-          } catch (error) { authError.textContent = error.message; }
-          finally { hideLoader(); }
-        });
-      }
-      if (googleSignInBtn) googleSignInBtn.addEventListener('click', signInWithGoogle);
-      if (authToggleLink) authToggleLink.addEventListener('click', (e) => { e.preventDefault(); isLoginMode = !isLoginMode; setLanguage(localStorage.getItem('language') || 'en'); });
-      if (forgotPasswordLink) {
-        forgotPasswordLink.addEventListener('click', async (e) => {
-          e.preventDefault();
-          const email = document.getElementById('email').value;
-          const currentLang = localStorage.getItem('language') || 'en';
-          if (!email) { await showAlert(translations[currentLang].enterEmailForReset); return; }
-          if (!firebaseReady) {
-            await showAlert(translations[currentLang]?.authUnavailable || 'Authentication is currently unavailable.');
-            return;
-          }
-          try {
-            await auth.sendPasswordResetEmail(email);
-            await showAlert(translations[currentLang].passwordResetSent);
-          } catch (error) { authError.textContent = error.message; }
-        });
-      }
-      if (guestModeBtn) {
-        guestModeBtn.addEventListener('click', () => {
-          loadUserGoals();
-          loadFavourites();
-          showAppContainer(false);
-          loadMealsFromStorage();
         });
       }
 
