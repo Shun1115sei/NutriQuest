@@ -308,11 +308,6 @@
       transform: translateX(100%);
     }
 
-    #install-banner {
-      background: #fef3c7;
-      color: #333;
-    }
-
     .custom-titlebar {
       width: env(titlebar-area-width, 100%);
       left: env(titlebar-area-x, 0px);
@@ -330,13 +325,6 @@
 
 <body>
   <!-- PWA Install Prompt Button (hidden by default) -->
-  <div id="install-banner" class="w-full bg-transparent p-4 pl-2 text-lg focus:outline-none text-center hidden"
-    data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken">
-    <span class="text-gray-900 font-semibold mr-4">Install NutriQuest on your device for best experience!</span>
-    <button id="install-btn"
-      class="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-800 transition-all shadow">Install</button>
-  </div>
-  <!-- Spacer to prevent overlap, optional -->
 
   <!-- Splash Screen -->
   <div id="splash-screen"
@@ -700,6 +688,24 @@
       </div>
     </div>
   </div>
+
+
+  <!-- PWA Install Modal -->
+  <dialog id="pwa-install-modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <div class="flex flex-col justify-center">
+        <p>Install NutriQuest on your device for best experience!</p>
+        <button id="install-btn" class="btn btn-primary mt-4">Install </button>
+      </div>
+
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
   <!-- Camera Choice Modal -->
   <dialog id="camera-choice-modal" class="modal modal-bottom sm:modal-middle">
@@ -3081,7 +3087,7 @@
     }
 
     //feedback nudge
-    let wasOpen = true;
+    let wasFeedbackOpen = true;
     const dialogs = document.querySelectorAll("dialog");
 
     dialogs.forEach(dialog => {
@@ -3090,9 +3096,9 @@
           const openDialogs = document.querySelectorAll("dialog:modal");
           if (openDialogs.length === 0) {
             // No modal dialogs are currently open
-            if (wasOpen) {
+            if (wasFeedbackOpen) {
               openFeedbackModal();
-              wasOpen = false;
+              wasFeedbackOpen = false;
             }
           }
         }, 5000);
@@ -3461,26 +3467,8 @@
   <script>
     // --- PWA INSTALL LOGIC ---
     let deferredPrompt = null;
-    const installBanner = document.getElementById('install-banner');
     const installBtn = document.getElementById('install-btn');
-    const navInstallBtn = document.getElementById('nav-install-btn'); // if you have one
-
-    // Function to hide the install UI
-    function hideInstallUI() {
-      if (installBanner) installBanner.classList.add('hidden');
-      if (navInstallBtn) navInstallBtn.classList.add('hidden');
-    }
-
-    // Function to show the install UI
-    function showInstallUI() {
-      if (installBanner) installBanner.classList.remove('hidden');
-      if (navInstallBtn) navInstallBtn.classList.remove('hidden');
-    }
-
-    // Check if the app is already installed and hide the banner if it is.
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-      hideInstallUI();
-    }
+    const pwaInstallModal = document.getElementById("pwa-install-modal")
 
     window.addEventListener('beforeinstallprompt', (e) => {
       // Prevent the mini-infobar from appearing on mobile
@@ -3490,7 +3478,7 @@
       // Update the UI to show the install button.
       // Only show the banner if it's not already installed.
       if (!window.matchMedia('(display-mode: standalone)').matches && !window.navigator.standalone) {
-        showInstallUI();
+        pwaInstallModal.showModal();
       }
     });
 
@@ -3502,25 +3490,15 @@
         // Wait for the user to respond to the prompt.
         await deferredPrompt.userChoice;
         // We've used the prompt, and can't use it again, so hide the install UI.
-        hideInstallUI();
+        pwaInstallModal.close();
         // Clear the deferred prompt variable, since it can only be used once.
-        deferredPrompt = null;
-      });
-    }
-
-    if (navInstallBtn) {
-      navInstallBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        hideInstallUI();
         deferredPrompt = null;
       });
     }
 
     window.addEventListener('appinstalled', () => {
       // Hide the install UI when the app is installed.
-      hideInstallUI();
+      pwaInstallModal.close();
       // Clear the deferredPrompt so it can be garbage collected
       deferredPrompt = null;
     });
