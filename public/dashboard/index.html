@@ -1151,7 +1151,6 @@
   </dialog>
 
   <!-- about modal-->
-
   <dialog id="about-modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
       <form method="dialog">
@@ -1160,11 +1159,15 @@
 
       <h1 class="text-3xl font-bold text-center">Nutriquest</h1>
       <p class="text-center">Version 1.0 Beta, 11 Nov 2025 Build</p>
-      <div class="divider"></div>
+      <div class="divider">COPYRIGHT INFO</div>
+      <p>Copyright (c) 2025 Shun1115sei</p>
+      <p>This project is licensed under the MIT license, and the source code is freely accessible at the following link.
+      </p>
+      <a href="https://github.com/Shun1115sei/NutriQuest">https://github.com/Shun1115sei/NutriQuest</a>
+      <div class="divider">ABOUT</div>
       <p>Just take a photo of your meal, talk about it, or type it in. NutriQuest is a new type of nutrition management
         tool that uses powerful AI (gemini-2.0-flash) to automatically analyse and record your meals. It eliminates the
         hassle of manual input, making it easy for anyone to start managing their health.</p>
-
 
       <div class="modal-action justify-center">
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSea7FPGg8jfparcjMRra1KjXl_op3Qj-nJlGTlV94EV3xGyug/viewform"
@@ -1174,6 +1177,34 @@
         <form method="dialog">
           <button class="btn btn-ghost">
             <span>Done</span>
+          </button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- feedback modal-->
+  <dialog id="feedback-modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+
+      <h1 class="text-3xl font-bold text-center">Hi there!</h1>
+      <div class="divider"></div>
+      <p>Would you want to submit a feedback to this app? This will mean a lot in the development of this application!
+        Thanks! With love, from the NutriQuest developers.</p>
+      <div class="modal-action justify-center">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSea7FPGg8jfparcjMRra1KjXl_op3Qj-nJlGTlV94EV3xGyug/viewform"
+          class="btn btn-primary">
+          <span>Send feedback</span>
+        </a>
+        <form method="dialog">
+          <button class="btn btn-ghost">
+            <span>Dismiss</span>
           </button>
         </form>
       </div>
@@ -2180,7 +2211,7 @@
       } else {
         base64ImageData = imageData;
       }
-      
+
       try {
         const response = await fetch('/api/gemini/identifyfood/v1', {
           method: 'POST',
@@ -3512,6 +3543,10 @@
 
     function openAboutModal() {
       document.getElementById("about-modal").showModal();
+    }
+
+    function openFeedbackModal() {
+      document.getElementById("feedback-modal").showModal();
     }
 
     // Function to open the modal
