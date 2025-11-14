@@ -1096,6 +1096,10 @@
       <div class="divider"></div>
       <p>Would you want to submit a feedback to this app? This will mean a lot in the development of this application!
         Thanks! With love, from the NutriQuest developers.</p>
+      <label class="label mt-4">
+        <input type="checkbox" id="feedbackModalBlock" class="checkbox" />
+        Don't show this again
+      </label>
       <div class="modal-action justify-center">
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSea7FPGg8jfparcjMRra1KjXl_op3Qj-nJlGTlV94EV3xGyug/viewform"
           class="btn btn-primary">
@@ -2106,6 +2110,18 @@
       buttonTextSpan.setAttribute('data-lang-key', isHidden ? 'viewDashboard' : 'hideDashboard');
     }
 
+    //feedback nudge
+
+    let feedbackBlock = false
+    const feedbackModalBlock = document.getElementById('feedbackModalBlock');
+    feedbackModalBlock.addEventListener('change', () => {
+      if (feedbackModalBlock.checked) {
+        feedbackBlock = true
+      } else {
+        feedbackBlock = false
+      }
+    });
+
     /**
      * Main function to process and analyze a new meal entry with AI nutrition analysis
      * Uses Google Gemini AI for food recognition and nutrition analysis
@@ -2175,6 +2191,12 @@
         if (!dashboard.classList.contains('hidden')) {
           setTimeout(() => dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
         }
+
+        setTimeout(() => {
+          if (!feedbackBlock) {
+            openFeedbackModal();
+          }
+        }, 5000);
       }
     }
 
@@ -3192,25 +3214,6 @@
       finalTranscript = '';
       speechRecognitionInstance = null;
     }
-
-    //feedback nudge
-    let wasFeedbackOpen = true;
-    const dialogs = document.querySelectorAll("dialog");
-
-    dialogs.forEach(dialog => {
-      dialog.addEventListener("close", () => {
-        setTimeout(() => {
-          const openDialogs = document.querySelectorAll("dialog:modal");
-          if (openDialogs.length === 0) {
-            // No modal dialogs are currently open
-            if (wasFeedbackOpen) {
-              openFeedbackModal();
-              wasFeedbackOpen = false;
-            }
-          }
-        }, 5000);
-      });
-    });
 
     // --- APPLICATION INITIALIZATION ---
     /**
