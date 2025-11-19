@@ -521,6 +521,8 @@
           </button>
         </div>
 
+        <p id="voice-suggestion" class="text-sm text-blue-600 mt-2 hidden"></p>
+
         <!-- Meal Type Selector -->
         <div id="meal-type-selector" class="flex flex-wrap justify-center gap-2 mt-4">
           <button data-type="Breakfast"
@@ -1467,6 +1469,7 @@
     const forgotPasswordLink = document.getElementById('forgot-password-link');
     const toggleDashboardBtn = document.getElementById('toggle-dashboard-btn');
     const voiceInputBtn = document.getElementById('voice-input-btn');
+    const voiceSuggestionText = document.getElementById('voice-suggestion');
     const cameraScanBtn = document.getElementById('camera-scan-btn');
     const cameraChoiceModal = document.getElementById('camera-choice-modal');
     const scanMealBtn = document.getElementById('scan-meal-btn');
@@ -1615,6 +1618,108 @@
     let speechRecognitionInstance = null;
     let listeningModalCloseHandler = null;
     let finalTranscript = '';
+    let matchedVoiceFood = '';
+
+    function getKnownFoodNames() {
+      const names = new Set();
+
+      document.querySelectorAll('.quick-food-btn').forEach(btn => {
+        const label = btn.textContent?.trim();
+        if (label) names.add(label.toLowerCase());
+      });
+
+      favouriteMeals.forEach(fav => {
+        if (fav?.food) names.add(fav.food.toLowerCase());
+      });
+
+      allMeals.forEach(meal => {
+        if (meal?.food) names.add(meal.food.toLowerCase());
+      });
+
+      return Array.from(names);
+    }
+
+    function levenshteinDistance(a, b) {
+      const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]);
+      for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+      }
+
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          if (b.charAt(i - 1) === a.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1];
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j - 1] + 1,
+              matrix[i][j - 1] + 1,
+              matrix[i - 1][j] + 1
+            );
+          }
+        }
+      }
+
+      return matrix[b.length][a.length];
+    }
+
+    function similarityScore(a, b) {
+      if (!a || !b) return 0;
+      const distance = levenshteinDistance(a, b);
+      return 1 - distance / Math.max(a.length, b.length, 1);
+    }
+
+    function hideVoiceSuggestion() {
+      if (!voiceSuggestionText) return;
+      voiceSuggestionText.textContent = '';
+      voiceSuggestionText.classList.add('hidden');
+    }
+
+    function showVoiceSuggestion(foodName) {
+      if (!voiceSuggestionText) return;
+      const currentLang = localStorage.getItem('language') || 'en';
+      const template = translations[currentLang]?.didYouMean || 'Did you mean "{foodName}"?';
+      voiceSuggestionText.textContent = template.replace('{foodName}', foodName);
+      voiceSuggestionText.classList.remove('hidden');
+    }
+
+    function mapTranscriptToFood(transcript) {
+      const normalizedTranscript = transcript.trim().toLowerCase();
+      const knownFoods = getKnownFoodNames();
+
+      if (!normalizedTranscript) {
+        hideVoiceSuggestion();
+        matchedVoiceFood = '';
+        return '';
+      }
+
+      if (knownFoods.length === 0) {
+        hideVoiceSuggestion();
+        matchedVoiceFood = normalizedTranscript;
+        return normalizedTranscript;
+      }
+
+      const exactMatch = knownFoods.find(food => food === normalizedTranscript);
+      if (exactMatch) {
+        hideVoiceSuggestion();
+        matchedVoiceFood = exactMatch;
+        return exactMatch;
+      }
+
+      let bestFood = knownFoods[0];
+      let bestScore = similarityScore(normalizedTranscript, bestFood);
+
+      knownFoods.slice(1).forEach(food => {
+        const score = similarityScore(normalizedTranscript, food);
+        if (score > bestScore) {
+          bestScore = score;
+          bestFood = food;
+        }
+      });
+
+      showVoiceSuggestion(bestFood);
+      matchedVoiceFood = bestFood;
+      return bestFood;
+    }
 
     /**
      * Opens the quantity specification modal for a given food item
@@ -3334,6 +3439,8 @@
       stopVoiceRecognition();
 
       finalTranscript = '';
+      matchedVoiceFood = '';
+      hideVoiceSuggestion();
       listeningTextStatus.textContent = translations[currentLang].listening;
       listeningModal.showModal();
 
@@ -3369,7 +3476,8 @@
           }
           const combinedTranscript = `${finalTranscript}${interimTranscript}`.trim();
           if (combinedTranscript) {
-            foodInput.value = combinedTranscript;
+            const matchedFood = mapTranscriptToFood(combinedTranscript);
+            foodInput.value = matchedFood;
           }
         };
 
@@ -3385,8 +3493,9 @@
         };
 
         speechRecognitionInstance.onend = () => {
-          if (finalTranscript.trim()) {
-            foodInput.value = finalTranscript.trim();
+          const resolvedTranscript = matchedVoiceFood || finalTranscript.trim();
+          if (resolvedTranscript) {
+            foodInput.value = resolvedTranscript;
           }
           if (listeningModal.open) {
             listeningModal.close();
@@ -3397,6 +3506,7 @@
           }
           speechRecognitionInstance = null;
           finalTranscript = '';
+          matchedVoiceFood = '';
         };
 
         speechRecognitionInstance.start();
@@ -3434,11 +3544,14 @@
         listeningModal.close();
       }
 
-      if (finalTranscript.trim()) {
-        foodInput.value = finalTranscript.trim();
+      const resolvedTranscript = matchedVoiceFood || finalTranscript.trim();
+      if (resolvedTranscript) {
+        foodInput.value = resolvedTranscript;
       }
 
+      hideVoiceSuggestion();
       finalTranscript = '';
+      matchedVoiceFood = '';
       speechRecognitionInstance = null;
     }
 
