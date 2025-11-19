@@ -36,6 +36,10 @@
       font-family: 'Inter', sans-serif;
     }
 
+    #header-greeting {
+      white-space: nowrap;
+    }
+
     .filter-btn.active,
     .meal-type-btn.active {
       background-color: #374151;
@@ -3664,6 +3668,9 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       updateHeaderDate();
+      const handleGreetingResize = debounce(adjustHeaderGreetingSize, 150);
+      window.addEventListener('resize', handleGreetingResize);
+      window.addEventListener('orientationchange', handleGreetingResize);
     });
   </script>
 
