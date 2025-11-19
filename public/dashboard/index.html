@@ -1595,10 +1595,6 @@
 
     let isGuest = getCookie("userMode") === "guest"
 
-    if (!isGuest && !auth.currentUser) {
-      window.location.href = "/login/";
-    }
-
     let allMeals = [];
     let favouriteMeals = []
     let userGoals = { calories: 2000, protein: 100, fat: 67, carbs: 250 }
@@ -3663,6 +3659,10 @@
         await loadMealsFromFirestore();
         hideLoader();
       } else {
+        if (!isGuest) {
+          window.location.href = "/login/";
+          return;
+        }
         showAppContainer(false);
         if (!firebaseReady) {
           const currentLang = localStorage.getItem('language') || 'en';
