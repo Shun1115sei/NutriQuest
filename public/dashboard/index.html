@@ -1260,7 +1260,8 @@
         analysing: "Analysing...", noFavourites: "No favourite meals yet. Click the star on a meal to add it.",
         didYouMean: 'Did you mean "{foodName}"?', listening: 'Listening...', checkingSpeech: 'Checking your speech...', speechError: 'Could not recognize speech: {error}',
         speechUnsupported: 'Speech recognition is not supported in this browser. Please use the latest Chrome, Edge, or Safari.',
-        deletingData: 'Deleting data...', signingIn: 'Signing in...', loadingData: 'Loading your data...', barcodeLookup: 'Found barcode: {barcode}. Looking up...',
+        deletingData: 'Deleting data...', signingIn: 'Signing in...', signingOut: 'Signing out...', loadingData: 'Loading your data...', barcodeLookup: 'Found barcode: {barcode}. Looking up...',
+        signOutError: 'Failed to sign out. Please try again.',
         offlineTitle: "You're Offline", offlineMessage: "Please check your internet connection and try again.",
         specifyQuantityTitle: "Specify Quantity",
         intuitiveQuantity: "Intuitive Quantity",
@@ -1373,7 +1374,8 @@
         analysing: "分析中...", noFavourites: "还没有喜欢的食物。点击星星添加。",
         didYouMean: '您是指“{foodName}”吗？', listening: '正在听...', checkingSpeech: '正在检查您的语音...', speechError: '无法识别语音: {error}',
         speechUnsupported: '此浏览器不支持语音识别。请使用最新版的 Chrome、Edge 或 Safari。',
-        deletingData: '正在删除数据...', signingIn: '登录中...', loadingData: '正在加载您的数据...', barcodeLookup: '找到条形码: {barcode}。查询中...',
+        deletingData: '正在删除数据...', signingIn: '登录中...', signingOut: '登出中...', loadingData: '正在加载您的数据...', barcodeLookup: '找到条形码: {barcode}。查询中...',
+        signOutError: '登出失败。请再试一次。',
         offlineTitle: "您已离线", offlineMessage: "请检查您的网络连接并重试。",
         specifyQuantityTitle: "指定份量",
         intuitiveQuantity: "直观份量",
@@ -1904,6 +1906,70 @@
       mainAppContent.classList.remove('hidden');
       userHeader.style.display = isLoggedIn ? 'flex' : 'none';
       guestHeader.style.display = isLoggedIn ? 'none' : 'flex';
+    }
+
+    function openAccountDropdown() {
+      if (userHeader) {
+        userHeader.classList.add('dropdown-open');
+      }
+      if (accountMenuBtn) {
+        accountMenuBtn.setAttribute('aria-expanded', 'true');
+      }
+      if (accountDropdown) {
+        accountDropdown.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function closeAccountDropdown() {
+      if (userHeader) {
+        userHeader.classList.remove('dropdown-open');
+      }
+      if (accountMenuBtn) {
+        accountMenuBtn.setAttribute('aria-expanded', 'false');
+      }
+      if (accountDropdown) {
+        accountDropdown.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    function toggleAccountDropdown() {
+      if (!userHeader) return;
+      if (userHeader.classList.contains('dropdown-open')) {
+        closeAccountDropdown();
+      } else {
+        openAccountDropdown();
+      }
+    }
+
+    closeAccountDropdown();
+
+    async function handleSignOut(event) {
+      event.preventDefault();
+      if (!auth) return;
+
+      closeAccountDropdown();
+
+      const currentLang = localStorage.getItem('language') || 'en';
+
+      try {
+        showLoader('signingOut');
+        await auth.signOut();
+        hideLoader();
+        userEmailDropdown.textContent = '';
+        allMeals = [];
+        favouriteMeals = [];
+        dashboard.classList.add('hidden');
+        updateDashboard(activePeriod);
+        localStorage.removeItem('guestMeals');
+        localStorage.removeItem('guestFavourites');
+        localStorage.removeItem('guestGoals');
+        showAppContainer(false);
+      } catch (error) {
+        hideLoader();
+        console.error('Failed to sign out:', error);
+        const errorMessage = translations[currentLang]?.signOutError || 'Failed to sign out. Please try again.';
+        showAlert(errorMessage);
+      }
     }
 
     /**
@@ -3308,15 +3374,19 @@
       }
 
       // --- Header Buttons ---
-      if (signOutBtnDropdown) signOutBtnDropdown.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+      if (signOutBtnDropdown) signOutBtnDropdown.addEventListener('click', handleSignOut);
       if (accountMenuBtn) {
-        accountMenuBtn.addEventListener('click', () => accountDropdown.classList.toggle('hidden'));
-        window.addEventListener('click', (e) => {
-          if (accountMenuBtn && !accountMenuBtn.contains(e.target) && accountDropdown && !accountDropdown.contains(e.target)) {
-            accountDropdown.classList.add('hidden');
-          }
+        accountMenuBtn.setAttribute('aria-expanded', 'false');
+        accountMenuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleAccountDropdown();
         });
       }
+      window.addEventListener('click', (e) => {
+        if (userHeader && !userHeader.contains(e.target)) {
+          closeAccountDropdown();
+        }
+      });
       if (settingsBtn) settingsBtn.addEventListener('click', () => settingsModal.showModal());
       if (favouritesBtn) favouritesBtn.addEventListener('click', () => { renderFavouritesList(); favouritesModal.showModal(); });
 
