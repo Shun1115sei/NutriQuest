@@ -379,8 +379,8 @@
           </path>
         </svg>
         <div class="sm:text-left">
-          <h1 id="header-date-display" class="text-lg sm:text-2xl font-bold text-gray-700"></h1>
-          <p data-lang-key="todaysRecord" class="text-gray-500 text-sm">Today's Record</p>
+          <h1 id="header-greeting" class="text-lg sm:text-2xl font-bold text-gray-700"></h1>
+          <p id="header-date-subtitle" class="text-gray-500 text-sm"></p>
         </div>
       </div>
 
@@ -1640,19 +1640,79 @@
     }
 
     /**
-     * Updates the header date display with the current date in the appropriate locale format
+     * Returns a contextual greeting based on the current hour and language
      *
-     * @returns {any} The function return value
+     * @param {string} lang - The lang parameter
+     * @param {number} hour - The hour of day from 0 - 23
+     * @returns {string} Localized greeting text
+     */
+
+    function getHeaderGreeting(lang, hour) {
+      const greetings = {
+        en: {
+          morning: 'Good morning',
+          afternoon: 'Good afternoon',
+          evening: 'Good evening',
+        },
+        zh: {
+          morning: '早上好',
+          afternoon: '下午好',
+          evening: '晚上好',
+        },
+      };
+      const normalizedLang = greetings[lang] ? lang : 'en';
+      let period = 'evening';
+      if (hour >= 5 && hour < 12) {
+        period = 'morning';
+      } else if (hour >= 12 && hour < 18) {
+        period = 'afternoon';
+      }
+      return greetings[normalizedLang][period];
+    }
+
+    /**
+     * Generates a short date string (e.g. "19 Nov, Wed") for the header subtitle
+     *
+     * @param {Date} date - The date to format
+     * @param {string} lang - The active language
+     * @returns {string} The formatted subtitle text
+     */
+
+    function formatHeaderSubtitle(date, lang) {
+      const locale = lang === 'zh' ? 'zh-CN' : 'en-SG';
+
+      if (lang === 'zh') {
+        const month = new Intl.DateTimeFormat(locale, { month: 'numeric' }).format(date);
+        const day = new Intl.DateTimeFormat(locale, { day: 'numeric' }).format(date);
+        const weekday = new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date);
+        return `${month}月${day}日 ${weekday}`;
+      }
+
+      const day = new Intl.DateTimeFormat(locale, { day: 'numeric' }).format(date);
+      const month = new Intl.DateTimeFormat(locale, { month: 'short' }).format(date);
+      const weekday = new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date);
+      return `${day} ${month}, ${weekday}`;
+    }
+
+    /**
+     * Updates the header with a contextual greeting and short date subtitle
+     *
      */
 
     function updateHeaderDate() {
-      const dateEl = document.getElementById('header-date-display');
-      if (dateEl) {
-        const today = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const lang = localStorage.getItem('language') || 'en';
-        const locale = lang === 'zh' ? 'zh-CN' : 'en-SG';
-        dateEl.textContent = today.toLocaleDateString(locale, options);
+      const greetingEl = document.getElementById('header-greeting');
+      const subtitleEl = document.getElementById('header-date-subtitle');
+      if (!greetingEl && !subtitleEl) return;
+
+      const today = new Date();
+      const lang = localStorage.getItem('language') || 'en';
+
+      if (greetingEl) {
+        greetingEl.textContent = getHeaderGreeting(lang, today.getHours());
+      }
+
+      if (subtitleEl) {
+        subtitleEl.textContent = formatHeaderSubtitle(today, lang);
       }
     }
     /**
@@ -3603,17 +3663,7 @@
   <!--language logic-->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const dateEl = document.getElementById('header-date-display');
-      if (dateEl) {
-        const today = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const lang = localStorage.getItem('language') || 'en';
-
-        // Language will be Chinese if it is 'zh', else ('en'), use Singapore English.
-        const locale = lang === 'zh' ? 'zh-CN' : 'en-SG';
-
-        dateEl.textContent = today.toLocaleDateString(locale, options);
-      }
+      updateHeaderDate();
     });
   </script>
 
