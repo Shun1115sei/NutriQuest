@@ -12,4 +12,5 @@ export default [
   route("signup", "./signup.tsx"),
   route("api/gemini/getnutriinfo/v1", "./gemininutrition.ts"),
   route("api/gemini/identifyfood/v1", "./geminiidentify.ts"),
+  route("api/gemini/nutritionadvice/v1", "./geminiadvice.ts"),
 ] satisfies RouteConfig;

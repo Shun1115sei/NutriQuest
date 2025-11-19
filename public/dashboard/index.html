@@ -2613,21 +2613,72 @@
      *
      * @param {any} periodMeals - The periodmeals parameter
      */
-    function provideNutritionalAdvice(periodMeals) {
+    async function provideNutritionalAdvice(periodMeals) {
       const adviceCard = document.getElementById('advice-card'), adviceIcon = document.getElementById('advice-icon'), adviceText = document.getElementById('advice-text'), currentLang = localStorage.getItem('language') || 'en';
       if (periodMeals.length === 0) { adviceCard.classList.add('hidden'); return; }
-      const lastMeal = periodMeals.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0], totals = calculateTotals(periodMeals), proteinCalories = totals.protein * 4, fatCalories = totals.fat * 9, totalCalories = proteinCalories + fatCalories + (totals.carbs * 4);
-      let suggestionKey = '', isBalanced = true, mealOrder = ['Breakfast', 'Lunch', 'Dinner'], lastMealIndex = mealOrder.indexOf(lastMeal.mealType), nextMealTypeKey = lastMealIndex !== -1 && lastMealIndex < 2 ? mealOrder[lastMealIndex + 1].toLowerCase() : 'nextMeal', nextMealTranslated = translations[currentLang][nextMealTypeKey];
+      
+      const showAdvice = (message, isBalanced) => {
+        adviceText.textContent = message;
+        adviceCard.classList.remove('hidden');
+        if (isBalanced) {
+          adviceCard.className = 'p-6 rounded-xl shadow-sm bg-green-50 border-l-4 border-green-400';
+          adviceIcon.textContent = '✅';
+        } else {
+          adviceCard.className = 'p-6 rounded-xl shadow-sm bg-yellow-50 border-l-4 border-yellow-400';
+          adviceIcon.textContent = '💡';
+        }
+      };
+
+      const sortedMeals = [...periodMeals].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      const lastMeal = sortedMeals[0];
+      const totals = calculateTotals(periodMeals);
+      const mealOrder = ['Breakfast', 'Lunch', 'Dinner'];
+      const lastMealIndex = mealOrder.indexOf(lastMeal?.mealType);
+      const nextMealTypeKey = lastMealIndex !== -1 && lastMealIndex < 2 ? mealOrder[lastMealIndex + 1].toLowerCase() : 'nextMeal';
+      const nextMealTranslated = translations[currentLang][nextMealTypeKey] || translations[currentLang].nextMeal;
+
+      try {
+        const response = await fetch('/api/gemini/nutritionadvice/v1', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            totals,
+            meals: periodMeals.slice(-5).map(({ mealType, calories, protein, fat, carbs, timestamp }) => ({
+              mealType,
+              calories,
+              protein,
+              fat,
+              carbs,
+              timestamp
+            })),
+            nextMealType: nextMealTypeKey,
+            nextMealLabel: nextMealTranslated,
+            language: currentLang
+          })
+        });
+
+        if (response.status === 429) throw new Error('RATE_LIMIT_EXCEEDED');
+        if (!response.ok) throw new Error('FAILED');
+
+        const adviceResult = await response.json();
+        if (adviceResult?.advice) {
+          showAdvice(adviceResult.advice, adviceResult.status === 'balanced');
+          return;
+        }
+      } catch (error) {
+        console.error('Gemini nutrition advice failed, falling back to local copy:', error);
+      }
+
+      const proteinCalories = totals.protein * 4, fatCalories = totals.fat * 9, totalCalories = proteinCalories + fatCalories + (totals.carbs * 4);
+      let suggestionKey = '', isBalanced = true;
       if (totalCalories > 0) {
         const proteinPercentage = (proteinCalories / totalCalories) * 100, fatPercentage = (fatCalories / totalCalories) * 100;
         if (proteinPercentage < 15) { suggestionKey = 'adviceLowProtein'; isBalanced = false; }
         else if (fatPercentage > 35) { suggestionKey = 'adviceHighFat'; isBalanced = false; }
         else suggestionKey = 'adviceBalanced';
       } else suggestionKey = 'adviceStart';
-      adviceText.textContent = translations[currentLang][suggestionKey].replace('{nextMeal}', nextMealTranslated);
-      adviceCard.classList.remove('hidden');
-      if (isBalanced) { adviceCard.className = 'p-6 rounded-xl shadow-sm bg-green-50 border-l-4 border-green-400'; adviceIcon.textContent = '✅'; }
-      else { adviceCard.className = 'p-6 rounded-xl shadow-sm bg-yellow-50 border-l-4 border-yellow-400'; adviceIcon.textContent = '💡'; }
+      
+      showAdvice(translations[currentLang][suggestionKey].replace('{nextMeal}', nextMealTranslated), isBalanced);
     }
 
     /**
