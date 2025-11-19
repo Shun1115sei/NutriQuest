@@ -55,6 +55,7 @@ Total nutrition so far: ${JSON.stringify(safeTotals)}.
 Recent meals: ${JSON.stringify(recentMeals)}.
 The next meal to plan for is ${nextMealType} (${nextMealLabel}).
 Provide 2 concise sentences of practical nutrition advice that considers macro balance and highlights any areas needing attention.
+Also recommend one realistic food or meal idea that best suits ${nextMealLabel}. Make sure it is specific (e.g. "grilled salmon with steamed broccoli") and fits their nutritional needs.
 Respond in ${targetLanguage} and be encouraging yet clear.`;
 
     const payload = {
@@ -77,9 +78,10 @@ Respond in ${targetLanguage} and be encouraging yet clear.`;
             status: {
               type: "STRING",
               enum: ["balanced", "needs_attention"]
-            }
+            },
+            foodSuggestion: { type: "STRING" }
           },
-          required: ["advice", "status"]
+          required: ["advice", "status", "foodSuggestion"]
         }
       }
     };

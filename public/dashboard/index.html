@@ -393,7 +393,7 @@
   </div>
 
   <!-- Main Application Container -->
-  <div id="main-app-content" class="opacity-0 bg-gray-100 text-gray-800 hidden h-screen flex flex-col">
+  <div id="main-app-content" class="opacity-0 bg-gray-100 text-gray-800 hidden min-h-screen flex flex-col">
 
     <!-- Header - DaisyUI Navbar: NutriQuest App Header -->
     <header class="custom-titlebar navbar bg-base-100 shadow sticky top-0 z-50">
@@ -688,7 +688,10 @@
               </h2>
               <div id="advice-content" class="flex items-start space-x-4">
                 <span id="advice-icon" class="text-3xl"></span>
-                <p id="advice-text" class="text-gray-700"></p>
+                <div>
+                  <p id="advice-text" class="text-gray-700"></p>
+                  <p id="advice-food" class="text-gray-600 text-sm mt-2 hidden"></p>
+                </div>
               </div>
             </div>
           </div>
@@ -1304,6 +1307,10 @@
         adviceHighFat: "For {nextMeal}, try a lower-fat option. Steamed vegetables and a lean protein source would be a great choice.",
         adviceBalanced: "You're doing great! For {nextMeal}, a balanced meal with whole grains, lean protein, and colourful vegetables would be perfect to continue your streak.",
         adviceStart: "Let's get started! For your next meal, try to include a mix of protein, healthy fats, and complex carbs.",
+        adviceLowProteinFood: "Suggested food for {nextMeal}: grilled chicken breast with quinoa and steamed vegetables.",
+        adviceHighFatFood: "Suggested food for {nextMeal}: a big mixed salad with chickpeas, citrus dressing, and a lean protein like turkey breast.",
+        adviceBalancedFood: "Suggested food for {nextMeal}: baked salmon with brown rice and roasted vegetables.",
+        adviceStartFood: "Suggested food for {nextMeal}: a bowl of oatmeal topped with berries, yogurt, and almonds.",
         rateLimitError: "Requests are currently busy. Please wait a moment and try again.",
         removeFavouriteConfirm: "Are you sure you want to remove this favourite?",
         removeMealConfirm: "Are you sure you want to delete this meal record?",
@@ -1418,6 +1425,10 @@
         adviceHighFat: "对于{nextMeal}，尝试低脂的选择。蒸蔬菜和瘦肉蛋白是一个很好的选择。",
         adviceBalanced: "你做得很好！对于{nextMeal}，一顿均衡的膳食，包括全谷物、瘦肉蛋白和五颜六色的蔬菜，将是保持健康的完美选择。",
         adviceStart: "让我们开始吧！下一餐，试着摄入蛋白质、健康脂肪和复合碳水化合物的混合物。",
+        adviceLowProteinFood: "适合{nextMeal}的推荐食物：烤鸡胸搭配藜麦和蒸蔬菜。",
+        adviceHighFatFood: "适合{nextMeal}的推荐食物：鹰嘴豆混合沙拉，配上柑橘酱汁和瘦火鸡肉。",
+        adviceBalancedFood: "适合{nextMeal}的推荐食物：烤三文鱼配糙米和烤时蔬。",
+        adviceStartFood: "适合{nextMeal}的推荐食物：一碗加入浆果、酸奶和杏仁的燕麦粥。",
         rateLimitError: "请求繁忙。请稍后再试。",
         removeFavouriteConfirm: "您确定要删除这个收藏吗？",
         removeMealConfirm: "您确定要删除这条膳食记录吗？",
@@ -2614,11 +2625,18 @@
      * @param {any} periodMeals - The periodmeals parameter
      */
     async function provideNutritionalAdvice(periodMeals) {
-      const adviceCard = document.getElementById('advice-card'), adviceIcon = document.getElementById('advice-icon'), adviceText = document.getElementById('advice-text'), currentLang = localStorage.getItem('language') || 'en';
+      const adviceCard = document.getElementById('advice-card'), adviceIcon = document.getElementById('advice-icon'), adviceText = document.getElementById('advice-text'), adviceFood = document.getElementById('advice-food'), currentLang = localStorage.getItem('language') || 'en';
       if (periodMeals.length === 0) { adviceCard.classList.add('hidden'); return; }
       
-      const showAdvice = (message, isBalanced) => {
+      const showAdvice = (message, isBalanced, foodSuggestion) => {
         adviceText.textContent = message;
+        if (foodSuggestion) {
+          adviceFood.textContent = foodSuggestion;
+          adviceFood.classList.remove('hidden');
+        } else {
+          adviceFood.textContent = '';
+          adviceFood.classList.add('hidden');
+        }
         adviceCard.classList.remove('hidden');
         if (isBalanced) {
           adviceCard.className = 'p-6 rounded-xl shadow-sm bg-green-50 border-l-4 border-green-400';
@@ -2662,7 +2680,7 @@
 
         const adviceResult = await response.json();
         if (adviceResult?.advice) {
-          showAdvice(adviceResult.advice, adviceResult.status === 'balanced');
+          showAdvice(adviceResult.advice, adviceResult.status === 'balanced', adviceResult.foodSuggestion);
           return;
         }
       } catch (error) {
@@ -2678,7 +2696,11 @@
         else suggestionKey = 'adviceBalanced';
       } else suggestionKey = 'adviceStart';
       
-      showAdvice(translations[currentLang][suggestionKey].replace('{nextMeal}', nextMealTranslated), isBalanced);
+      const messageTemplate = translations[currentLang][suggestionKey] || '';
+      const fallbackFoodTemplate = translations[currentLang][`${suggestionKey}Food`] || '';
+      const message = messageTemplate.replace('{nextMeal}', nextMealTranslated);
+      const fallbackFood = fallbackFoodTemplate ? fallbackFoodTemplate.replace('{nextMeal}', nextMealTranslated) : '';
+      showAdvice(message, isBalanced, fallbackFood);
     }
 
     /**
