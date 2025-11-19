@@ -40,6 +40,32 @@
       white-space: nowrap;
     }
 
+    .header-greeting-wrapper {
+      transition: transform 0.2s ease;
+    }
+
+    .header-heart-icon {
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+      .header-greeting-wrapper {
+        transform: translateX(-10px);
+      }
+
+      .header-heart-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+
+    @media (min-width: 640px) {
+      .header-heart-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+
     .filter-btn.active,
     .meal-type-btn.active {
       background-color: #374151;
@@ -371,7 +397,7 @@
     <header class="custom-titlebar navbar bg-base-100 shadow sticky top-0 z-50">
       <!-- Left: Logo and Date -->
       <div class="flex items-center gap-2 sm:gap-3">
-        <svg class="w-6 h-6 sm:w-10 sm:h-10 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 sm:w-10 sm:h-10 header-heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <defs>
             <linearGradient id="headerHeartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" style="stop-color:rgb(239,68,68)" />
@@ -382,7 +408,7 @@
             d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
           </path>
         </svg>
-        <div class="sm:text-left">
+        <div class="sm:text-left header-greeting-wrapper">
           <h1 id="header-greeting" class="text-lg sm:text-2xl font-bold text-gray-700"></h1>
           <p id="header-date-subtitle" class="text-gray-500 text-sm"></p>
         </div>
