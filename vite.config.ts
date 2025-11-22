@@ -18,6 +18,18 @@ export default defineConfig({
       }
     }],
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    cssCodeSplit: false,
+
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/globals.css'; // fixed name & path
+          }
+          return assetInfo.name || '';
+        },
+      },
+    },
   }
 });

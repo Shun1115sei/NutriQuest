@@ -9,13 +9,13 @@
     "lib": [
       "DOM",
       "DOM.Iterable",
-      "ES2022"
+      "esnext"
     ],
     "types": [
       "vite/client"
     ],
-    "target": "ES2022",
-    "module": "ES2022",
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "rootDirs": [

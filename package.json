@@ -4,7 +4,7 @@
     "start": "vite",
     "dev": "vite",
     "build": "react-router build",
-    "serve": "vite preview"
+    "serve": "react-router-serve build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js"
   },
   "devDependencies": {
     "@react-router/dev": "^7.8.2",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@react-router/node": "^7.8.1",
+    "@react-router/serve": "^7.9.6",
     "@tailwindcss/vite": "^4.1.17",
     "@vercel/react-router": "^1.2.3",
     "firebase": "^12.5.0",
