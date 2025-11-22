@@ -4,8 +4,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [
-    reactRouter(),
     tailwindcss(),
+    reactRouter(),
     {
       name: 'dashboard-static-redirect',
       configureServer(server) {
