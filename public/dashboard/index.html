@@ -438,8 +438,7 @@
           <ul tabindex="0" id="account-dropdown"
             class="menu dropdown-content bg-base-100 rounded-box z-1 w-64 max-w-xs p-2 shadow">
             <li>
-              <div id="user-email-dropdown" class="text-sm font-medium text-gray-700 break-words whitespace-normal">
-              </div>
+              <div id="user-email-dropdown" class="text-sm font-medium text-gray-700 break-words whitespace-normal"></div>
             </li>
             <li>
               <a href="#" id="sign-out-btn-dropdown" data-lang-key="signOutButton">Sign Out</a>
@@ -1158,8 +1157,6 @@
 
   <!--hidden file input for food image upload-->
   <input type="file" id="new-cam-module" accept="image/*" capture="environment" class="hidden" />
-
-  <div id="react-dashboard"></div>
 
   <!--application logic-->
   <script>
@@ -2626,7 +2623,7 @@
     async function provideNutritionalAdvice(periodMeals) {
       const adviceCard = document.getElementById('advice-card'), adviceIcon = document.getElementById('advice-icon'), adviceText = document.getElementById('advice-text'), adviceFood = document.getElementById('advice-food'), currentLang = localStorage.getItem('language') || 'en';
       if (periodMeals.length === 0) { adviceCard.classList.add('hidden'); return; }
-
+      
       const showAdvice = (message, isBalanced, foodSuggestion) => {
         adviceText.textContent = message;
         if (foodSuggestion) {
@@ -2694,7 +2691,7 @@
         else if (fatPercentage > 35) { suggestionKey = 'adviceHighFat'; isBalanced = false; }
         else suggestionKey = 'adviceBalanced';
       } else suggestionKey = 'adviceStart';
-
+      
       const messageTemplate = translations[currentLang][suggestionKey] || '';
       const fallbackFoodTemplate = translations[currentLang][`${suggestionKey}Food`] || '';
       const message = messageTemplate.replace('{nextMeal}', nextMealTranslated);

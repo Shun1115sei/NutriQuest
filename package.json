@@ -3,9 +3,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "dev:dashboard": "vite --config vite.config.dashboard.ts",
     "build": "react-router build",
-    "build:dashboard": "vite build --config vite.config.dashboard.ts",
     "serve": "vite preview"
   },
   "devDependencies": {
@@ -13,7 +11,6 @@
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.1.1",
     "vite": "^7.1.5"
   },
   "dependencies": {

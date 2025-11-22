@@ -1,10 +1,10 @@
-import { StrictMode } from 'react';
+import * as React from "react";
 import { hydrateRoot } from "react-dom/client";
 import { HydratedRouter } from "react-router/dom";
 
 hydrateRoot(
   document,
-  <StrictMode>
+  <React.StrictMode>
     <HydratedRouter />
-  </StrictMode>
+  </React.StrictMode>
 );
