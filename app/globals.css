@@ -1,0 +1,331 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+
+#main-app-content {
+  font-family: 'Inter', sans-serif;
+  transition: opacity 1s ease-in;
+}
+
+#splash-screen {
+  font-family: 'Inter', sans-serif;
+}
+
+#header-greeting {
+  white-space: nowrap;
+}
+
+.header-greeting-wrapper {
+  transition: transform 0.2s ease;
+}
+
+.header-heart-icon {
+  flex-shrink: 0;
+  transition: transform 0.2s ease, width 0.2s ease, height 0.2s ease;
+}
+
+@media (max-width: 640px) {
+  .header-greeting-wrapper {
+    transform: translateX(-10px);
+  }
+
+  .header-heart-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    transform: translateX(-5px);
+  }
+}
+
+@media (min-width: 640px) {
+  .header-heart-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+.filter-btn.active,
+.meal-type-btn.active {
+  background-color: #374151;
+  color: white;
+  border-color: #374151;
+}
+
+.favourite-star {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.favourite-star.favourited {
+  color: #facc15;
+}
+
+.favourite-star:not(.favourited) svg {
+  fill: none;
+}
+
+.favourite-star.favourited svg {
+  fill: currentColor;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.4);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.star-pop {
+  animation: pop 0.3s ease-in-out;
+}
+
+.favourite-star-container {
+  position: relative;
+}
+
+.favourite-star-container.sparkling::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  border: 2px solid #facc15;
+  transform: scale(0);
+  opacity: 0;
+  animation: sparkle-ring 0.5s ease-out;
+}
+
+@keyframes sparkle-ring {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.loader {
+  width: 80px;
+  aspect-ratio: 1;
+  color: #E8204E;
+  background:
+    radial-gradient(circle at 60% 65%, currentColor 62%, #0000 65%) top left,
+    radial-gradient(circle at 40% 65%, currentColor 62%, #0000 65%) top right,
+    linear-gradient(to bottom left, currentColor 42%, #0000 43%) bottom left,
+    linear-gradient(to bottom right, currentColor 42%, #0000 43%) bottom right;
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+.loader:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  opacity: 0.4;
+  animation: l3 1.5s infinite;
+}
+
+@keyframes l3 {
+  to {
+    transform: scale(1.8);
+    opacity: 0
+  }
+}
+
+.ecg-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  overflow: visible;
+}
+
+.ecg-path {
+  stroke: white;
+  stroke-dasharray: 190;
+  stroke-dashoffset: 190;
+  animation: draw-line 1.5s ease-in-out infinite;
+}
+
+@keyframes draw-line {
+  0% {
+    stroke-dashoffset: 190;
+  }
+
+  50% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: -190;
+  }
+}
+
+#splash-heart {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  fill: #E8204E;
+  opacity: 0;
+  z-index: 5;
+  animation: heart-beat-behind 1.0s ease-in-out 0.8s forwards;
+}
+
+#splash-heart-shockwave {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  stroke: #E8204E;
+  stroke-width: 0.25px;
+  fill: none;
+  opacity: 0;
+  z-index: 4;
+  animation: heart-shockwave 0.6s ease-out 1s forwards;
+}
+
+#splash-nutri {
+  animation: slideInFromLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+#splash-quest {
+  animation: slideInFromRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-150%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(150%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes heart-beat-behind {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  25% {
+    opacity: 0.5;
+    transform: scale(1.8);
+  }
+
+  35% {
+    transform: scale(1.4);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes heart-shockwave {
+  0% {
+    opacity: 0.6;
+    transform: scale(1.4);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+#splash-ecg-line {
+  animation: fadeIn 0.1s ease-out 0.8s forwards;
+}
+
+.splash-ecg-path {
+  stroke-dasharray: 450;
+  stroke-dashoffset: 450;
+  animation: drawSplashLine 0.8s ease-in-out 0.8s forwards;
+}
+
+@keyframes drawSplashLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+#splash-tagline {
+  animation: fadeIn 1s ease-in 0.8s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.analyse-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.analyse-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(110deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 60%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease-in-out;
+}
+
+.analyse-btn:hover::after {
+  transform: translateX(100%);
+}
+
+.custom-titlebar {
+  width: env(titlebar-area-width, 100%);
+  left: env(titlebar-area-x, 0px);
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.custom-titlebar button,
+.custom-titlebar input {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}

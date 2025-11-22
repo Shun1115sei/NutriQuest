@@ -11,15 +11,18 @@
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
+    "daisyui": "^5.5.5",
     "vite": "^7.1.5"
   },
   "dependencies": {
     "@react-router/node": "^7.8.1",
+    "@tailwindcss/vite": "^4.1.17",
     "@vercel/react-router": "^1.2.3",
     "firebase": "^12.5.0",
     "isbot": "^5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router": "^7.8.1"
+    "react-router": "^7.8.1",
+    "tailwindcss": "^4.1.17"
   }
 }

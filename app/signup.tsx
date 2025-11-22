@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { initializeApp, getApps } from "firebase/app";
@@ -94,8 +96,8 @@ export default function Signup() {
 
   return (
     <>
-      <div id="auth-container" className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-        <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
+      <div id="auth-container" className="min-h-screen flex items-center justify-center p-4 bg-base-200">
+        <div className="bg-base-100 p-8 rounded-2xl shadow-lg w-full max-w-sm">
           <div className="flex justify-end mb-4">
             <div className="join">
               <input type="radio" name="login-language" value="en" className="lang-radio join-item btn btn-sm"
@@ -104,10 +106,10 @@ export default function Signup() {
                 aria-label="中" />
             </div>
           </div>
-          <h1 id="auth-title" data-lang-key="loginTitle" className="text-3xl font-bold text-center text-gray-800 mb-6">
+          <h1 id="auth-title" data-lang-key="loginTitle" className="text-3xl font-bold text-center mb-6">
             Sign Up
           </h1>
-          <p id="auth-error" className="text-red-500 text-center mb-4">{authError}</p>
+          <p id="auth-error" className="text-error text-center mb-4">{authError}</p>
 
           <form onSubmit={authTry} id="auth-form">
             <fieldset className="fieldset">
@@ -155,7 +157,7 @@ export default function Signup() {
             <button ref={authSubmitBtnRef} id="auth-submit-btn" className="w-full btn btn-primary mt-4" type="submit"
               data-lang-key="loginButton">Login</button>
           </form>
-          <p className="text-center text-sm text-gray-600 mt-4">
+          <p className="text-center text-sm mt-4">
             <span data-lang-key="authTogglePrompt">Already have an account? </span>
             <Link id="auth-toggle-link" className="link link-hover link-primary" to="/login" data-lang-key="authToggleAction">
               Log In
