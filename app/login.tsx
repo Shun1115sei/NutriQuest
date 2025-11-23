@@ -2,28 +2,15 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail } from "firebase/auth";
+import { useFirebase } from './firebaseconfig';
 
 export default function Login() {
+  const { auth, firebaseReady } = useFirebase();
 
   const googleSignInBtnRef = useRef<HTMLButtonElement | null>(null);
   const authSubmitBtnRef = useRef<HTMLButtonElement | null>(null);
   const [authError, setAuthError] = useState("")
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyB2uJs32bmnoOgHcB6GTZuu0eBanfZWLWE",
-    authDomain: "nutriquest-6c40d.firebaseapp.com",
-    projectId: "nutriquest-6c40d",
-    storageBucket: "nutriquest-6c40d.firebasestorage.app",
-    messagingSenderId: "893360379713",
-    appId: "1:893360379713:web:4f7952bf9094caf139b3c0",
-    measurementId: "G-C9V61B19G7"
-  };
-
-  let firebaseReady = !!firebaseConfig
-  const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-  const auth = getAuth(app)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

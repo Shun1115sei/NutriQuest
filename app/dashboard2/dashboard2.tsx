@@ -1,5 +1,25 @@
-import { useState } from "react"
+"use client"
+
+import React, { useRef, useEffect, useState, type FormEvent } from 'react';
+import { Link } from 'react-router';
+import { useFirebase } from '~/firebaseconfig';
 import Dialog from "~/components/dialog"
+
+interface NutritionInfo {
+  food: string;
+  calories: number;
+  protein: number; // grams
+  fat: number;     // grams
+  carbs: number;   // grams
+}
+
+interface NutritionInfoWithMealType extends NutritionInfo {
+  mealType: "breakfast" | "lunch" | "dinner" | "snack";
+}
+
+interface NutritionInfoWithIdAndMealType extends NutritionInfoWithMealType {
+  id: string;
+}
 
 export default function Dashboard2() {
 
@@ -16,11 +36,14 @@ export default function Dashboard2() {
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false)
   const [loaderOverlayOpen, setLoaderOverlayOpen] = useState(false)
 
-
   const [confirmMessage, setConfirmMessage] = useState("")
   const [alertMessage, setAlertMessage] = useState("")
   const [loaderMessage, setLoaderMessage] = useState("")
+  const [currentMeal, setCurrentMeal] = useState("")
+  const [portionSize, setPortionSize] = useState(2);
+  const [allMeals, setAllMeals] = useState<NutritionInfoWithIdAndMealType[]>([])
 
+  const { auth, db, isLoggedIn, getCollection, addDocument } = useFirebase();
 
   function showAlert(alertMessage: string) {
     setAlertMessage(alertMessage)
@@ -66,8 +89,22 @@ export default function Dashboard2() {
       }
 
       // Parse successful result
-      const result = await response.json();
+      const result: NutritionInfo = await response.json();
+      function isValidNutritionInfo(obj: any) {
+        if (typeof obj.food !== 'string') return false;
+        if (typeof obj.calories !== 'number') return false;
+        if (typeof obj.protein !== 'number') return false;
+        if (typeof obj.fat !== 'number') return false;
+        if (typeof obj.carbs !== 'number') return false;
+        return true;
+      }
+
+      if (!isValidNutritionInfo(result)) {
+        throw new Error('Invalid nutrition info format');
+      }
+
       return result;
+
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -77,9 +114,37 @@ export default function Dashboard2() {
     }
   }
 
+  /**
+ * Saves meal data to localStorage for guest users
+ */
+  function copyMealsToLocalStorage() {
+    localStorage.setItem('guestMeals', JSON.stringify(allMeals));
+  }
+
+  /**
+  * Saves a new meal entry to Firebase (authenticated users) or localStorage (guests)
+  * Handles both authenticated (Firebase) and guest (localStorage) users
+  *
+  * @param {any} newMeal - The newmeal parameter
+  * @returns {Promise} Promise that resolves when the operation completes
+  * @async
+  */
+  async function saveMeal(newMeal: NutritionInfoWithMealType) {
+    if (auth.currentUser) {
+      const mealsCollectionRef = getCollection('users', auth.currentUser.uid, 'meals');
+      const docRef = await addDocument(mealsCollectionRef, newMeal);
+      setAllMeals(prevMeals => [...prevMeals, { id: docRef.id, ...newMeal }]);
+    } else {
+      const mealWithId = { ...newMeal, id: Date.now().toString() };
+      setAllMeals((prevMeals) => [...prevMeals, mealWithId]);
+      copyMealsToLocalStorage();
+    }
+  }
+
   async function processNewMeal(foodName: string, mealType: "breakfast" | "lunch" | "dinner" | "snack", bypassQuantityCheck = false) {
     const hasNumber = /\d/.test(foodName);
     if (!hasNumber && !bypassQuantityCheck) {
+      setCurrentMeal(foodName)
       setServingSizeModalOpen(true)
       return;
     } else {
@@ -92,19 +157,51 @@ export default function Dashboard2() {
           mealType,
           timestamp: new Date().toISOString()
         };
-
+        await saveMeal(newMeal)
         setLoaderOverlayOpen(false)
 
-      } catch {
-
+      } catch (error) {
+        if (error instanceof Error) {
+          showAlert(error.message)
+        } else {
+          showAlert("sorry, something went wrong. ")
+        }
       }
     }
-
-
   }
 
+  async function processNewMealFromTextBox(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const mealName = formData.get("food-input")
+    if (typeof mealName === "string" && mealName !== "") {
+      await processNewMeal(mealName, "snack", false)
+    } else {
+      showAlert("An error occured. Is the text box empty?")
+    }
+  }
 
+  async function processNewMealFromPortionSize(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const specificPortion = formData.get("specific-portion")
+    if (typeof specificPortion === "string" && specificPortion !== "") {
+      setServingSizeModalOpen(false)
+      await processNewMeal(`${currentMeal} - ${specificPortion}`, "snack", true)
+    } else {
+      setServingSizeModalOpen(false)
+      await processNewMeal(`${currentMeal} - ${portionSize === 0 ? "Very Small (0.5x)"
+        : portionSize === 1 ? "A Little Less (0.8x)"
+          : portionSize === 3 ? "A Little More (1.2x)"
+            : portionSize === 4 ? "Very Large (1.5x)"
+              : "Regular Portion (1x)"}`, "snack", true)
+    }
+  }
 
+  function handlePortionSizeChange(event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    setPortionSize(event.target.valueAsNumber)
+  }
 
   return (
     <>
@@ -137,9 +234,9 @@ export default function Dashboard2() {
           </div>
 
           <div id="guest-header" className="flex-none">
-            <a href="/login/" className="btn btn-primary btn-sm">
+            <Link to="/login/" className="btn btn-primary btn-sm">
               <span data-lang-key="loginButton">Login</span>
-            </a>
+            </Link>
           </div>
 
           <div id="user-header" className="dropdown dropdown-end">
@@ -200,61 +297,63 @@ export default function Dashboard2() {
         </div>
 
         <div className="search-container max-w-xl mx-auto text-center">
-          <div
-            className="relative bg-base-100 border border-base-300 rounded-full shadow-md hover:shadow-lg focus-within:shadow-lg over-3d">
-            <div className="flex gap-1 sm:gap-2 items-center mr-2">
-              <div className="pl-5"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-base-content/50" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+          <form onSubmit={processNewMealFromTextBox}>
+            <div
+              className="relative bg-base-100 border border-base-300 rounded-full shadow-md hover:shadow-lg focus-within:shadow-lg over-3d">
+              <div className="flex gap-1 sm:gap-2 items-center mr-2">
+                <div className="pl-5"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-base-content/50" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                </div>
+                <input type="text" id="food-input" name="food-input"
+                  className="w-full bg-transparent p-4 pl-2 text-lg rounded-full focus:outline-none border-none shadow-none"
+                  data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken" />
+                <button id="voice-input-btn" type="button" className="btn btn-ghost btn-circle text-base-content/60 hover:text-primary/80"
+                  onClick={() => setVoiceListeningModalOpen(true)} data-lang-key-title="voiceInputTitle" title="Voice Input">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                    </path>
+                  </svg>
+                </button>
+                <button id="camera-scan-btn" type="button" className=" btn btn-ghost btn-circle text-base-content/60 hover:text-primary/80"
+                  onClick={() => setCameraChoiceModalOpen(true)} data-lang-key-title="scanWithCameraTitle" title="Scan with Camera">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
               </div>
-              <input type="text" id="food-input"
-                className="w-full bg-transparent p-4 pl-2 text-lg rounded-full focus:outline-none border-none shadow-none"
-                data-lang-key-placeholder="foodInputPlaceholder" placeholder="e.g., 1 cup of rice and grilled chicken" />
-              <button id="voice-input-btn" className="btn btn-ghost btn-circle text-base-content/60 hover:text-primary/80"
-                onClick={() => setVoiceListeningModalOpen(true)} data-lang-key-title="voiceInputTitle" title="Voice Input">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
-                  </path>
-                </svg>
-              </button>
-              <button id="camera-scan-btn" className=" btn btn-ghost btn-circle text-base-content/60 hover:text-primary/80"
-                onClick={() => setCameraChoiceModalOpen(true)} data-lang-key-title="scanWithCameraTitle" title="Scan with Camera">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+            </div>
+
+            <div id="meal-type-selector" className="flex flex-wrap justify-center gap-2 mt-4">
+              <button data-type="Breakfast"
+                className="btn btn-lg rounded-full text-base"
+                data-lang-key="breakfast">Breakfast</button>
+              <button data-type="Lunch"
+                className="btn btn-lg rounded-full text-base"
+                data-lang-key="lunch">Lunch</button>
+              <button data-type="Dinner"
+                className="btn btn-lg rounded-full text-base"
+                data-lang-key="dinner">Dinner</button>
+              <button data-type="Snack"
+                className="btn btn-lg rounded-full text-base"
+                data-lang-key="snack">Snack</button>
+            </div>
+
+            <div className="mt-6">
+              <button id="analyse-btn" type="submit"
+                className="over-3d analyse-btn bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-8 text-lg rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-px transition-all">
+                <span className="relative z-10 " data-lang-key="analyseMealButton">Analyse Meal</span>
               </button>
             </div>
-          </div>
-
-          <div id="meal-type-selector" className="flex flex-wrap justify-center gap-2 mt-4">
-            <button data-type="Breakfast"
-              className="btn btn-lg rounded-full text-base"
-              data-lang-key="breakfast">Breakfast</button>
-            <button data-type="Lunch"
-              className="btn btn-lg rounded-full text-base"
-              data-lang-key="lunch">Lunch</button>
-            <button data-type="Dinner"
-              className="btn btn-lg rounded-full text-base"
-              data-lang-key="dinner">Dinner</button>
-            <button data-type="Snack"
-              className="btn btn-lg rounded-full text-base"
-              data-lang-key="snack">Snack</button>
-          </div>
-
-          <div className="mt-6">
-            <button id="analyse-btn"
-              className="over-3d analyse-btn bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-8 text-lg rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-px transition-all">
-              <span className="relative z-10 " data-lang-key="analyseMealButton">Analyse Meal</span>
-            </button>
-          </div>
+          </form>
 
           <div id="quick-access" className="mt-8 text-center">
             <h3 className="text-lg font-semibold text-base-content/80 mb-3" data-lang-key="quickAccess">Quick
@@ -495,51 +594,58 @@ export default function Dashboard2() {
 
       {/*serving size modal*/}
       <Dialog open={servingSizeModalOpen} onClose={() => setServingSizeModalOpen(false)}>
-
         <h2 className="text-2xl font-bold mb-2 text-center" data-lang-key="specifyQuantityTitle">
           Specify Quantity
         </h2>
-        <p className="text-center text-gray-600 mb-6">
-          For: <strong id="quantity-spec-food-name"></strong>
-        </p>
-
-        <fieldset className="fieldset w-full max-w-xs">
-          <legend className="fieldset-legend" data-lang-key="intuitiveQuantity">Intuitive Quantity</legend>
-          <input type="range" className="range range-primary w-full" id="quantity-slider" min="0" max="4" value="2"
-            step="1" />
-          <div className="flex justify-between px-2.5 mt-2 text-xs w-full">
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
+        <form onSubmit={processNewMealFromPortionSize}>
+          <p className="text-center text-base-content/50 mb-6">
+            For: <a className="font-bold">{currentMeal}</a>
+          </p>
+          <div className="flex justify-center">
+            <fieldset className="fieldset w-full max-w-xs">
+              <legend className="fieldset-legend" data-lang-key="intuitiveQuantity">Intuitive Quantity</legend>
+              <input type="range" className="range range-primary w-full" id="quantity-slider" min="0" max="4" value={portionSize}          // Controlled by state
+                onChange={handlePortionSizeChange}
+                step="1" />
+              <div className="flex justify-between px-2.5 mt-2 text-xs w-full">
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+                <span>|</span>
+              </div>
+              <div id="slider-label" className="text-center font-semibold text-primary mt-2">
+                {portionSize === 0 ? "Very Small (0.5x)"
+                  : portionSize === 1 ? "A Little Less (0.8x)"
+                    : portionSize === 3 ? "A Little More (1.2x)"
+                      : portionSize === 4 ? "Very Large (1.5x)"
+                        : "Regular Portion (1x)"}
+              </div>
+            </fieldset>
           </div>
-          <div id="slider-label" className="text-center font-semibold text-blue-600 mt-2">
-            Regular Portion
-          </div>
-        </fieldset>
 
-        <div className="divider" data-lang-key="or">OR</div>
+          <div className="divider" data-lang-key="or">OR</div>
 
-        <fieldset className="fieldset w-full">
-          <legend className="fieldset-legend" data-lang-key="specificQuantity">Specific Quantity</legend>
-          <input type="text" id="quantity-spec-text" className="input" data-lang-key-placeholder="quantityPlaceholder"
-            placeholder="e.g., 1 bowl, 200g, half" />
-        </fieldset>
+          <fieldset className="fieldset w-full">
+            <legend className="fieldset-legend" data-lang-key="specificQuantity">Specific Quantity</legend>
+            <input type="text" name="specific-portion" id="quantity-spec-text" className="input" data-lang-key-placeholder="quantityPlaceholder"
+              placeholder="e.g., 1 bowl, 200g, half" />
+          </fieldset>
 
-        <div className="flex items-center justify-between mt-6 w-full">
-          <button type="button" id="unsure-quantity-spec-btn" className="btn btn-secondary" data-lang-key="imNotSure">
-            I'm not sure
-          </button>
-          <div className="flex gap-2">
-            <form method="dialog">
-              <button className="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
-            </form>
-            <button type="button" id="confirm-quantity-spec-btn" className="btn btn-primary" data-lang-key="confirmButton">
-              Confirm
+          <div className="flex items-center justify-between mt-6 w-full">
+            <button type="submit" id="unsure-quantity-spec-btn" className="btn btn-secondary" data-lang-key="imNotSure">
+              I'm not sure
             </button>
+            <div className="flex gap-2">
+              <form method="dialog">
+                <button className="btn btn-ghost" data-lang-key="cancelButton">Cancel</button>
+              </form>
+              <button type="submit" id="confirm-quantity-spec-btn" className="btn btn-primary" data-lang-key="confirmButton">
+                Confirm
+              </button>
+            </div>
           </div>
-        </div>
+        </form>
       </Dialog>
 
       {/*favorites modal*/}
@@ -558,17 +664,20 @@ export default function Dashboard2() {
       <Dialog open={confirmModalOpen} onClose={() => setConfirmModalOpen(false)}>
         <p id="alert-message" className="text-lg mb-6 text-center">{confirmMessage}</p>
         <div id="alert-buttons" className="modal-action justify-center">
-          <button id="alert-ok-btn" className="btn btn-primary px-8" data-lang-key="okButton">OK</button>
           <button id="alert-confirm-btn" className="btn btn-primary px-8" data-lang-key="confirmButton">Confirm</button>
-          <button id="alert-cancel-btn" className="btn btn-ghost px-8" data-lang-key="cancelButton">Cancel</button>
+          <form method="dialog">
+            <button className="btn btn-ghost px-8" data-lang-key="cancelButton">Cancel</button>
+          </form>
         </div>
       </Dialog>
 
       {/*alert Modal */}
       <Dialog open={alertModalOpen} onClose={() => setAlertModalOpen(false)}>
         <p id="alert-message" className="text-lg mb-6 text-center">{alertMessage}</p>
-        <div id="alert-buttons" className="modal-action justify-center">
-          <button id="alert-ok-btn" className="btn btn-primary px-8" data-lang-key="okButton">OK</button>
+        <div className="modal-action justify-center">
+          <form method="dialog">
+            <button className="btn btn-ghost" data-lang-key="closeButton">Close</button>
+          </form>
         </div>
       </Dialog>
 
@@ -641,7 +750,7 @@ export default function Dashboard2() {
             <fieldset className="fieldset">
               <legend className="fieldset-legend" data-lang-key="setManualGoal">Set Manual Calorie Goal</legend>
               <input type="number" id="manual-calories" value="2000" className="input" />
-              <button type="submit" className="btn btn-soft btn-neutral w-full mt-4" data-lang-key="saveManualGoal">
+              <button type="submit" className="btn btn-soft w-full mt-4" data-lang-key="saveManualGoal">
                 Save Manual Goal
               </button>
             </fieldset>
@@ -672,7 +781,7 @@ export default function Dashboard2() {
         <div className="text-center">
           <svg className="w-16 h-16 text-blue-500 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            <path strokeLinecap="round" strokeLinejoin="round" stroke-width="2"
               d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
             </path>
           </svg>
