@@ -10,6 +10,11 @@ export default function Root() {
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/png" href="/icons/192.png" />
         <link rel="stylesheet" href="/assets/globals.css" type="text/css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap"
+          rel="stylesheet"></link>
         {/* You can't use <script> tags in head directly, use <Scripts /> below */}
       </head>
       <body style={{ height: "100%", margin: "0", padding: "0" }}>
