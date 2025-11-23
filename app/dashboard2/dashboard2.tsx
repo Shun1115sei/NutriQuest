@@ -460,15 +460,21 @@ export default function Dashboard2() {
                       <h3 id="dynamic-chart-title" className="text-lg font-bold text-center text-base-800 mb-2"></h3>
                       <p id="period-goal-text" className="text-center text-base-500 text-sm mb-1 hidden"></p>
                       <p id="period-actual-text" className="text-center font-semibold text-sm mb-2 hidden"></p>
-                      <canvas id="calorie-gauge-chart"></canvas>
+                      <div className="overflow-x-auto">
+                        <canvas id="calorie-gauge-chart"></canvas>
+                      </div>
                       <div id="bar-chart-container" className="relative h-80 hidden">
-                        <canvas id="period-bar-chart"></canvas>
+                        <div className="overflow-x-auto">
+                          <canvas id="period-bar-chart"></canvas>
+                        </div>
                       </div>
                     </div>
                     <div id="nutrition-balance-wrapper">
                       <h3 className="text-lg font-bold text-center text-base-800 mb-2" data-lang-key="nutritionBalance">
                         Nutrition Balance</h3>
-                      <canvas id="nutrition-chart"></canvas>
+                      <div className="overflow-x-auto">
+                        <canvas id="nutrition-chart"></canvas>
+                      </div>
                       <div id="nutrition-balance-text" className="hidden text-left"></div>
                     </div>
                   </div>
@@ -476,15 +482,21 @@ export default function Dashboard2() {
                     <div>
                       <h3 className="text-md font-bold text-center text-base-800 mb-1" data-lang-key="protein">Protein
                       </h3>
-                      <canvas id="protein-gauge-chart"></canvas>
+                      <div className="overflow-x-auto">
+                        <canvas id="protein-gauge-chart"></canvas>
+                      </div>
                     </div>
                     <div>
                       <h3 className="text-md font-bold text-center text-base-800 mb-1" data-lang-key="fat">Fat</h3>
-                      <canvas id="fat-gauge-chart"></canvas>
+                      <div className="overflow-x-auto">
+                        <canvas id="fat-gauge-chart"></canvas>
+                      </div>
                     </div>
                     <div>
                       <h3 className="text-md font-bold text-center text-base-800 mb-1" data-lang-key="carbs">Carbs</h3>
-                      <canvas id="carbs-gauge-chart"></canvas>
+                      <div className="overflow-x-auto">
+                        <canvas id="carbs-gauge-chart"></canvas>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -526,27 +538,29 @@ export default function Dashboard2() {
             </button>
           </div>
         </div>
-      </div>
+      </div >
 
       <input type="file" id="image-upload-input" accept="image/*" className="hidden" />
       <input type="file" id="new-cam-module" accept="image/*" capture="environment" className="hidden" />
 
       {/* Loader Overlay */}
-      {loaderOverlayOpen ? (
-        <div id="loading-overlay"
-          className="fixed inset-0 bg-black/40 backdrop-blur flex items-center justify-center z-[1000]">
-          <div className="flex flex-col items-center justify-center text-white">
-            <div className="relative w-24 h-24 flex items-center justify-center">
-              <div className="loader"></div>
-              <svg className="ecg-line" width="120" height="80" viewBox="0 0 120 80">
-                <path className="ecg-path" d="M0 40 H30 L35 20 L45 60 L50 35 L55 40 H120" stroke-width="3" fill="none">
-                </path>
-              </svg>
+      {
+        loaderOverlayOpen ? (
+          <div id="loading-overlay"
+            className="fixed inset-0 bg-black/40 backdrop-blur flex items-center justify-center z-[1000]">
+            <div className="flex flex-col items-center justify-center text-white">
+              <div className="relative w-24 h-24 flex items-center justify-center">
+                <div className="loader"></div>
+                <svg className="ecg-line" width="120" height="80" viewBox="0 0 120 80">
+                  <path className="ecg-path" d="M0 40 H30 L35 20 L45 60 L50 35 L55 40 H120" stroke-width="3" fill="none">
+                  </path>
+                </svg>
+              </div>
+              <p id="loading-text" className="mt-8 text-lg font-semibold" data-lang-key="analyzing">{loaderMessage}</p>
             </div>
-            <p id="loading-text" className="mt-8 text-lg font-semibold" data-lang-key="analyzing">{loaderMessage}</p>
           </div>
-        </div>
-      ) : null}
+        ) : null
+      }
 
       {/*pwa install modal*/}
       <Dialog open={pwaInstallModalOpen} onClose={() => setPwaInstallModalOpen(false)}>
