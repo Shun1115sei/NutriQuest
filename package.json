@@ -12,7 +12,7 @@
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
     "daisyui": "^5.5.5",
-    "vite": "^7.1.5"
+    "vite": "^7.2.7"
   },
   "dependencies": {
     "@react-router/node": "^7.8.1",
